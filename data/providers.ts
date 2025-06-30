@@ -431,6 +431,10 @@ export const providers: Provider[] = [
   }
 ];
 
+export const getProviders = (): Provider[] => {
+  return providers;
+};
+
 export const getProviderById = (id: string): Provider | undefined => {
   return providers.find(provider => provider.id === id);
 };

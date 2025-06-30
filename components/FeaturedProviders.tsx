@@ -283,4 +283,6 @@ const FeaturedProviders = () => {
   )
 }
 
-export { FeaturedProviders } 
+export { FeaturedProviders }
+
+export default FeaturedProviders; 

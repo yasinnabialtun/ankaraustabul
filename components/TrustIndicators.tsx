@@ -74,4 +74,6 @@ export function TrustIndicators() {
       </div>
     </div>
   )
-} 
+}
+
+export default TrustIndicators; 

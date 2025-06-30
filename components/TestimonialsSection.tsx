@@ -163,4 +163,6 @@ export function TestimonialsSection() {
       </div>
     </section>
   )
-} 
+}
+
+export default TestimonialsSection; 

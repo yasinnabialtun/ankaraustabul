@@ -4,9 +4,9 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { 
   Zap, Droplets, Sparkles, Truck, Wrench, Shield, 
-  TreePine, Snowflake, Building2, Flame, Window, 
+  TreePine, Snowflake, Building2, Flame, 
   Car, Monitor, Smartphone, ChefHat, Bath, 
-  Home, HardDrive, Hammer, Saw, BrickWall, 
+  Home, HardDrive, Hammer, 
   Palette, ArrowRight, Star, Clock, Users
 } from 'lucide-react'
 
@@ -128,7 +128,7 @@ const CategoryGrid = () => {
       id: 'cam-balkon',
       name: 'Cam Balkon',
       slug: 'cam-balkon',
-      icon: Window,
+      icon: Car,
       description: 'Cam balkon kurulumu, onarım, sistemleri',
       color: 'from-sky-400 to-blue-500',
       bgColor: 'bg-sky-50',
@@ -227,7 +227,7 @@ const CategoryGrid = () => {
       id: 'marangoz',
       name: 'Marangoz',
       slug: 'marangoz',
-      icon: Saw,
+      icon: Car,
       description: 'Ahşap işleri, mobilya yapımı, kapı yapımı',
       color: 'from-orange-600 to-red-700',
       bgColor: 'bg-orange-50',
@@ -238,7 +238,7 @@ const CategoryGrid = () => {
       id: 'seramik',
       name: 'Seramik',
       slug: 'seramik',
-      icon: BrickWall,
+      icon: Palette,
       description: 'Seramik döşeme, fayans döşeme, seramik onarımı',
       color: 'from-red-600 to-pink-700',
       bgColor: 'bg-red-50',
@@ -358,4 +358,6 @@ const CategoryGrid = () => {
   )
 }
 
-export { CategoryGrid } 
+export { CategoryGrid }
+
+export default CategoryGrid; 

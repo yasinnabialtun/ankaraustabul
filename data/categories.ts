@@ -435,6 +435,10 @@ export const serviceCategories: ServiceCategory[] = [
 // Export categories for sitemap
 export const categories = serviceCategories;
 
+export const getCategories = (): ServiceCategory[] => {
+  return serviceCategories;
+};
+
 export const getCategoryBySlug = (slug: string): ServiceCategory | undefined => {
   return serviceCategories.find(category => category.slug === slug);
 };
