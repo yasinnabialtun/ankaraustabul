@@ -8,6 +8,8 @@ import UstaDetay from './pages/UstaDetay';
 import UstaEkle from './pages/UstaEkle';
 import Blog from './pages/Blog';
 import BlogDetay from './pages/BlogDetay';
+import Payment from './pages/Payment';
+import PaymentSuccess from './pages/PaymentSuccess';
 import NotFound from './pages/NotFound';
 import './index.css';
 
@@ -24,6 +26,8 @@ function App() {
           <Route path="usta-ekle" element={<UstaEkle />} />
           <Route path="blog" element={<Blog />} />
           <Route path="blog/:slug" element={<BlogDetay />} />
+          <Route path="payment/:ustaId" element={<Payment />} />
+          <Route path="payment-success" element={<PaymentSuccess />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

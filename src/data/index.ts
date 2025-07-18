@@ -10,7 +10,9 @@ export const ustalar: Usta[] = [
     location: 'Çankaya, Ankara',
     phone: '0532 123 45 67',
     description: '15 yıllık deneyimle elektrik tesisatı ve arıza giderme konusunda uzman. Ev ve işyeri elektrik işlerinde güvenilir hizmet.',
-    image: '/images/usta1.jpg'
+    image: '/images/usta1.jpg',
+    hourlyRate: 150,
+    reviews: 127
   },
   {
     id: '2',
@@ -21,7 +23,9 @@ export const ustalar: Usta[] = [
     location: 'Keçiören, Ankara',
     phone: '0533 234 56 78',
     description: 'Su tesisatı, kanal açma ve tıkanıklık giderme işlerinde uzman. Acil durumlarda 7/24 hizmet.',
-    image: '/images/usta2.jpg'
+    image: '/images/usta2.jpg',
+    hourlyRate: 120,
+    reviews: 89
   },
   {
     id: '3',
@@ -32,7 +36,9 @@ export const ustalar: Usta[] = [
     location: 'Mamak, Ankara',
     phone: '0534 345 67 89',
     description: 'İnşaat, tadilat ve yapı işlerinde 20 yıllık deneyim. Kaliteli işçilik ve uygun fiyat.',
-    image: '/images/usta3.jpg'
+    image: '/images/usta3.jpg',
+    hourlyRate: 200,
+    reviews: 156
   },
   {
     id: '4',
@@ -43,7 +49,9 @@ export const ustalar: Usta[] = [
     location: 'Yenimahalle, Ankara',
     phone: '0535 456 78 90',
     description: 'Ev ve ofis temizlik hizmetleri. Detaylı temizlik ve düzenli bakım hizmetleri.',
-    image: '/images/usta4.jpg'
+    image: '/images/usta4.jpg',
+    hourlyRate: 80,
+    reviews: 94
   },
   {
     id: '5',
@@ -54,7 +62,9 @@ export const ustalar: Usta[] = [
     location: 'Etimesgut, Ankara',
     phone: '0536 567 89 01',
     description: 'İç ve dış cephe boya işleri. Profesyonel boya uygulamaları ve dekoratif boya işleri.',
-    image: '/images/usta5.jpg'
+    image: '/images/usta5.jpg',
+    hourlyRate: 100,
+    reviews: 73
   },
   {
     id: '6',
@@ -65,7 +75,9 @@ export const ustalar: Usta[] = [
     location: 'Sincan, Ankara',
     phone: '0537 678 90 12',
     description: 'Elektrik tesisatı ve küçük elektrik işleri. Kadın elektrikçi olarak güvenilir hizmet.',
-    image: '/images/usta6.jpg'
+    image: '/images/usta6.jpg',
+    hourlyRate: 110,
+    reviews: 45
   },
   {
     id: '7',
@@ -76,7 +88,9 @@ export const ustalar: Usta[] = [
     location: 'Altındağ, Ankara',
     phone: '0538 789 01 23',
     description: 'Su tesisatı ve ısıtma sistemleri uzmanı. Kombi ve kalorifer tesisatı işleri.',
-    image: '/images/usta7.jpg'
+    image: '/images/usta7.jpg',
+    hourlyRate: 140,
+    reviews: 112
   },
   {
     id: '8',
@@ -87,7 +101,9 @@ export const ustalar: Usta[] = [
     location: 'Gölbaşı, Ankara',
     phone: '0539 890 12 34',
     description: 'Özel temizlik hizmetleri. Halı yıkama, cam temizliği ve genel temizlik.',
-    image: '/images/usta8.jpg'
+    image: '/images/usta8.jpg',
+    hourlyRate: 75,
+    reviews: 67
   }
 ];
 

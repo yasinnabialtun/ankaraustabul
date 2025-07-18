@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { Star, MapPin, Phone, Clock, ArrowLeft, MessageCircle, Calendar } from 'lucide-react';
+import { Star, MapPin, Phone, Clock, ArrowLeft, MessageCircle, CreditCard } from 'lucide-react';
 import { ustalar } from '../data';
 
 function UstaDetay() {
@@ -103,10 +103,13 @@ function UstaDetay() {
                       <MessageCircle className="w-5 h-5 mr-2" />
                       Mesaj Gönder
                     </button>
-                    <button className="flex items-center justify-center border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-xl hover:bg-blue-600 hover:text-white transition-colors font-semibold text-lg">
-                      <Calendar className="w-5 h-5 mr-2" />
-                      Randevu Al
-                    </button>
+                    <Link
+                      to={`/payment/${usta.id}`}
+                      className="flex items-center justify-center bg-purple-600 text-white px-8 py-4 rounded-xl hover:bg-purple-700 transition-colors font-semibold text-lg"
+                    >
+                      <CreditCard className="w-5 h-5 mr-2" />
+                      Hemen Öde
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -127,6 +130,13 @@ function UstaDetay() {
                       <MessageCircle className="w-5 h-5 mr-2" />
                       WhatsApp
                     </button>
+                    <Link
+                      to={`/payment/${usta.id}`}
+                      className="flex items-center justify-center w-full bg-purple-600 text-white py-3 rounded-xl hover:bg-purple-700 transition-colors font-semibold"
+                    >
+                      <CreditCard className="w-5 h-5 mr-2" />
+                      Güvenli Ödeme
+                    </Link>
                   </div>
                   
                   <div className="border-t pt-4">

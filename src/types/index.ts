@@ -8,6 +8,8 @@ export interface Usta {
   phone: string;
   description: string;
   image?: string;
+  hourlyRate: number;
+  reviews: number;
 }
 
 export interface Kategori {
