@@ -3,4 +3,7 @@ services:
     name: ankaraustabul-backend
     env: node
     buildCommand: npm install
-    startCommand: npm start 
+    startCommand: npm run simple
+    envVars:
+      - key: NODE_ENV
+        value: production 
