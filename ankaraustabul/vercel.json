@@ -7,35 +7,23 @@
       "config": {
         "distDir": "dist"
       }
-    },
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
     }
   ],
+  "functions": {
+    "api/health.js": {
+      "runtime": "nodejs18.x"
+    },
+    "api/payment/initiate.js": {
+      "runtime": "nodejs18.x"
+    },
+    "api/payment/status/[transactionId].js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "routes": [
-    {
-      "src": "/api/health",
-      "dest": "/api/health.js"
-    },
-    {
-      "src": "/api/payment/initiate",
-      "dest": "/api/payment/initiate.js"
-    },
-    {
-      "src": "/api/payment/status/(.*)",
-      "dest": "/api/payment/status/[transactionId].js"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
     {
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "env": {
-    "VITE_API_URL": "@vite_api_url"
-  }
+  ]
 } 
