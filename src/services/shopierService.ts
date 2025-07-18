@@ -72,7 +72,7 @@ class ShopierService {
       };
 
       // Simulate API call for development
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         await new Promise(resolve => setTimeout(resolve, 2000));
         
         // Simulate successful payment
@@ -103,7 +103,7 @@ class ShopierService {
   async checkPaymentStatus(transactionId: string): Promise<ShopierPaymentStatus> {
     try {
       // Simulate API call for development
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         return {
@@ -136,7 +136,7 @@ class ShopierService {
   async refundPayment(transactionId: string, amount: number): Promise<ShopierPaymentResponse> {
     try {
       // Simulate API call for development
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         await new Promise(resolve => setTimeout(resolve, 1500));
         
         return {

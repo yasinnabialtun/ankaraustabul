@@ -10,6 +10,7 @@ import Blog from './pages/Blog';
 import BlogDetay from './pages/BlogDetay';
 import Payment from './pages/Payment';
 import PaymentSuccess from './pages/PaymentSuccess';
+import TestPayment from './pages/TestPayment';
 import NotFound from './pages/NotFound';
 import './index.css';
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="blog/:slug" element={<BlogDetay />} />
           <Route path="payment/:ustaId" element={<Payment />} />
           <Route path="payment-success" element={<PaymentSuccess />} />
+          <Route path="test-payment" element={<TestPayment />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
