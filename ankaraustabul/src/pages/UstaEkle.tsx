@@ -471,37 +471,37 @@ const UstaEkle: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Başlangıç Saati
                   </label>
-                  <input
-                    type="time"
-                    name="calismaSaatleriBaslangic"
-                    value={formData.calismaSaatleriBaslangic}
-                    onChange={handleInputChange}
+                      <input
+                        type="time"
+                        name="calismaSaatleriBaslangic"
+                        value={formData.calismaSaatleriBaslangic}
+                        onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
+                      />
+                    </div>
 
-                <div>
+                    <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Bitiş Saati
                   </label>
-                  <input
-                    type="time"
-                    name="calismaSaatleriBitis"
-                    value={formData.calismaSaatleriBitis}
-                    onChange={handleInputChange}
+                      <input
+                        type="time"
+                        name="calismaSaatleriBitis"
+                        value={formData.calismaSaatleriBitis}
+                        onChange={handleInputChange}
                     className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
+                      />
                 </div>
 
                 <div className="space-y-3">
                   <label className="flex items-center space-x-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      name="acilServis"
-                      checked={formData.acilServis}
-                      onChange={handleInputChange}
+                  <input
+                    type="checkbox"
+                    name="acilServis"
+                    checked={formData.acilServis}
+                    onChange={handleInputChange}
                       className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                    />
+                  />
                     <span className="text-sm font-medium text-gray-700">7/24 Acil Servis</span>
                   </label>
 
@@ -514,8 +514,8 @@ const UstaEkle: React.FC = () => {
                       className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                     />
                     <span className="text-sm font-medium text-gray-700">İşçilik Garantisi</span>
-                  </label>
-
+                    </label>
+                  
                   {formData.garanti && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -787,10 +787,10 @@ const UstaEkle: React.FC = () => {
                         <span className="font-bold">Toplam Aylık Ücret:</span>
                         <span className="text-primary-600 font-bold text-lg">₺199</span>
                       </div>
-                    </div>
-                  </div>
                 </div>
               </div>
+            </div>
+          </div>
 
               <div className="flex justify-between">
                 <button
@@ -800,13 +800,13 @@ const UstaEkle: React.FC = () => {
                 >
                   Geri
                 </button>
-                <button
-                  type="submit"
-                  disabled={loading}
+              <button
+                type="submit"
+                disabled={loading}
                   className="btn-primary text-lg px-8 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
+              >
                   {loading ? 'Gönderiliyor...' : 'Başvuruyu Gönder'}
-                </button>
+              </button>
               </div>
             </div>
           )}
