@@ -2,7 +2,7 @@ services:
   - type: web
     name: ankaraustabul-backend
     env: node
-    buildCommand: cp backend-package.json package.json && npm install
+    buildCommand: npm install
     startCommand: npm start
     envVars:
       - key: NODE_ENV
