@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: ankaraustabul-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SHOPIER_API_KEY
+        sync: false
+      - key: SHOPIER_SECRET_KEY
+        sync: false
+      - key: SHOPIER_MERCHANT_ID
+        sync: false
+      - key: SHOPIER_ENVIRONMENT
+        value: sandbox
+      - key: FRONTEND_URL
+        value: https://ankaraustabulweb.vercel.app 
