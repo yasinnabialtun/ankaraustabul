@@ -9,17 +9,6 @@
       }
     }
   ],
-  "functions": {
-    "api/health.js": {
-      "runtime": "nodejs18.x"
-    },
-    "api/payment/initiate.js": {
-      "runtime": "nodejs18.x"
-    },
-    "api/payment/status/[transactionId].js": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "routes": [
     {
       "src": "/(.*)",
