@@ -1,4 +1,4 @@
-// Backend API entegrasyonu için servis
+// Vercel API entegrasyonu için servis
 export interface PaymentRequest {
   amount: number;
   currency: string;
@@ -29,14 +29,14 @@ export interface PaymentStatusResponse {
   error?: string;
 }
 
-// Backend API URL'i
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+// Vercel API URL'i
+const API_BASE_URL = '/api';
 
 class PaymentService {
-  // Backend üzerinden ödeme başlatma
+  // Vercel API üzerinden ödeme başlatma
   async initiatePayment(paymentRequest: PaymentRequest): Promise<PaymentResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/payment/initiate`, {
+      const response = await fetch(`${API_BASE_URL}/payment/initiate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,10 +67,10 @@ class PaymentService {
     }
   }
 
-  // Backend üzerinden ödeme durumu sorgulama
+  // Vercel API üzerinden ödeme durumu sorgulama
   async checkPaymentStatus(transactionId: string): Promise<PaymentStatusResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/payment/status/${transactionId}`, {
+      const response = await fetch(`${API_BASE_URL}/payment/status/${transactionId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -94,10 +94,10 @@ class PaymentService {
     }
   }
 
-  // Backend sağlık kontrolü
+  // Vercel API sağlık kontrolü
   async checkBackendHealth(): Promise<boolean> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/health`);
+      const response = await fetch(`${API_BASE_URL}/health`);
       const data = await response.json();
       return data.status === 'OK';
     } catch (error) {
