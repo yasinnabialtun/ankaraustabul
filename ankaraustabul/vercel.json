@@ -15,6 +15,18 @@
   ],
   "routes": [
     {
+      "src": "/api/health",
+      "dest": "/api/health.js"
+    },
+    {
+      "src": "/api/payment/initiate",
+      "dest": "/api/payment/initiate.js"
+    },
+    {
+      "src": "/api/payment/status/(.*)",
+      "dest": "/api/payment/status/[transactionId].js"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/api/$1"
     },
