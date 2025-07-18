@@ -9,6 +9,7 @@ import UstaEkle from './pages/UstaEkle';
 import Blog from './pages/Blog';
 import BlogDetay from './pages/BlogDetay';
 import NotFound from './pages/NotFound';
+import './index.css';
 
 function App() {
   return (
