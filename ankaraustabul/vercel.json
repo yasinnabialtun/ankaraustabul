@@ -7,21 +7,13 @@
       "config": {
         "distDir": "dist"
       }
+    },
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
-    {
-      "src": "/api/health",
-      "dest": "/api/health.js"
-    },
-    {
-      "src": "/api/payment/initiate",
-      "dest": "/api/payment/initiate.js"
-    },
-    {
-      "src": "/api/payment/status/(.*)",
-      "dest": "/api/payment/status/[transactionId].js"
-    },
     {
       "src": "/(.*)",
       "dest": "/index.html"
