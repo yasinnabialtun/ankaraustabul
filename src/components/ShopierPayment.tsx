@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { CreditCard, Lock, Shield, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
-import shopierService from '../services/shopierService';
+import { shopierService } from '../services/shopierService';
 
 interface PaymentFormData {
   cardNumber: string;
@@ -59,7 +59,7 @@ function ShopierPayment({
   const validateForm = () => {
     const newErrors: Partial<PaymentFormData> = {};
 
-    if (!shopierService.validateCardNumber(formData.cardNumber)) {
+    if (!formData.cardNumber.replace(/\s/g, '').match(/^\d{16}$/)) {
       newErrors.cardNumber = 'Geçerli bir kart numarası giriniz';
     }
 
@@ -75,7 +75,7 @@ function ShopierPayment({
       newErrors.expiryYear = 'Son kullanma yılı gereklidir';
     }
 
-    if (!shopierService.validateCVV(formData.cvv)) {
+    if (!formData.cvv.match(/^\d{3,4}$/)) {
       newErrors.cvv = 'Geçerli bir CVV giriniz';
     }
 
@@ -85,7 +85,14 @@ function ShopierPayment({
 
     // Validate expiry date
     if (formData.expiryMonth && formData.expiryYear) {
-      if (!shopierService.validateExpiryDate(formData.expiryMonth, formData.expiryYear)) {
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth() + 1;
+      
+      const expYear = parseInt(formData.expiryYear);
+      const expMonth = parseInt(formData.expiryMonth);
+      
+      if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
         newErrors.expiryMonth = 'Geçersiz son kullanma tarihi';
       }
     }
@@ -107,6 +114,13 @@ function ShopierPayment({
     } else {
       return v;
     }
+  };
+
+  const formatCurrency = (amount: number): string => {
+    return new Intl.NumberFormat('tr-TR', {
+      style: 'currency',
+      currency: 'TRY'
+    }).format(amount);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -133,22 +147,15 @@ function ShopierPayment({
 
     try {
       // Call Shopier API with enhanced data
-      const paymentResponse = await shopierService.initiateUstaPayment(
-        parseFloat(formData.amount),
-        formData.description,
-        ustaData || {
-          name: formData.cardHolder,
-          category: '',
-          experience: '0',
-          location: '',
-          hourlyRate: '0',
-          specialties: [],
-          serviceAreas: [],
-          email: 'customer@example.com',
-          phone: '+905551234567'
-        },
-        packageType || 'BASIC'
-      );
+      const paymentResponse = await shopierService.initiatePayment({
+        amount: parseFloat(formData.amount),
+        currency: 'TRY',
+        description: formData.description,
+        customerEmail: ustaData?.email || 'customer@example.com',
+        customerName: ustaData?.name || formData.cardHolder,
+        customerPhone: ustaData?.phone || '+905551234567',
+        packageType: packageType || 'BASIC'
+      });
 
       if (paymentResponse.success && paymentResponse.transactionId) {
         setIsSuccess(true);
@@ -173,7 +180,7 @@ function ShopierPayment({
         </p>
         <div className="bg-green-50 rounded-xl p-4">
           <p className="text-sm text-green-700">
-            <strong>İşlem Tutarı:</strong> {shopierService.formatCurrency(parseFloat(formData.amount))}
+            <strong>İşlem Tutarı:</strong> {formatCurrency(parseFloat(formData.amount))}
           </p>
         </div>
       </div>
@@ -196,39 +203,38 @@ function ShopierPayment({
           <div className="flex justify-between items-center">
             <span className="text-gray-600">Ödenecek Tutar:</span>
             <span className="text-2xl font-bold text-gray-800">
-              {shopierService.formatCurrency(parseFloat(formData.amount))}
+              {formatCurrency(parseFloat(formData.amount))}
             </span>
           </div>
         </div>
 
         {/* Card Number */}
         <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            <CreditCard className="w-4 h-4 inline mr-2" />
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             Kart Numarası
           </label>
-          <input
-            type="text"
-            name="cardNumber"
-            value={formData.cardNumber}
-            onChange={handleInputChange}
-            maxLength={19}
-            className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.cardNumber ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="1234 5678 9012 3456"
-          />
+          <div className="relative">
+            <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              name="cardNumber"
+              value={formData.cardNumber}
+              onChange={handleInputChange}
+              placeholder="1234 5678 9012 3456"
+              maxLength={19}
+              className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.cardNumber ? 'border-red-500' : 'border-gray-300'
+              }`}
+            />
+          </div>
           {errors.cardNumber && (
-            <p className="text-red-500 text-sm mt-1 flex items-center">
-              <AlertCircle className="w-4 h-4 mr-1" />
-              {errors.cardNumber}
-            </p>
+            <p className="text-red-500 text-sm mt-1">{errors.cardNumber}</p>
           )}
         </div>
 
         {/* Card Holder */}
         <div>
-          <label className="block text-gray-700 text-sm font-bold mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             Kart Sahibi
           </label>
           <input
@@ -236,30 +242,27 @@ function ShopierPayment({
             name="cardHolder"
             value={formData.cardHolder}
             onChange={handleInputChange}
-            className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            placeholder="Ad Soyad"
+            className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.cardHolder ? 'border-red-500' : 'border-gray-300'
             }`}
-            placeholder="Ad Soyad"
           />
           {errors.cardHolder && (
-            <p className="text-red-500 text-sm mt-1 flex items-center">
-              <AlertCircle className="w-4 h-4 mr-1" />
-              {errors.cardHolder}
-            </p>
+            <p className="text-red-500 text-sm mt-1">{errors.cardHolder}</p>
           )}
         </div>
 
-        {/* Expiry and CVV */}
+        {/* Expiry Date and CVV */}
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Ay
             </label>
             <select
               name="expiryMonth"
               value={formData.expiryMonth}
               onChange={handleInputChange}
-              className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.expiryMonth ? 'border-red-500' : 'border-gray-300'
               }`}
             >
@@ -269,22 +272,19 @@ function ShopierPayment({
               ))}
             </select>
             {errors.expiryMonth && (
-              <p className="text-red-500 text-sm mt-1 flex items-center">
-                <AlertCircle className="w-4 h-4 mr-1" />
-                {errors.expiryMonth}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.expiryMonth}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Yıl
             </label>
             <select
               name="expiryYear"
               value={formData.expiryYear}
               onChange={handleInputChange}
-              className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.expiryYear ? 'border-red-500' : 'border-gray-300'
               }`}
             >
@@ -294,48 +294,31 @@ function ShopierPayment({
               ))}
             </select>
             {errors.expiryYear && (
-              <p className="text-red-500 text-sm mt-1 flex items-center">
-                <AlertCircle className="w-4 h-4 mr-1" />
-                {errors.expiryYear}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.expiryYear}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               CVV
             </label>
-            <input
-              type="text"
-              name="cvv"
-              value={formData.cvv}
-              onChange={handleInputChange}
-              maxLength={4}
-              className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.cvv ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="123"
-            />
-            {errors.cvv && (
-              <p className="text-red-500 text-sm mt-1 flex items-center">
-                <AlertCircle className="w-4 h-4 mr-1" />
-                {errors.cvv}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Security Notice */}
-        <div className="bg-blue-50 rounded-xl p-4">
-          <div className="flex items-start space-x-3">
-            <Lock className="w-5 h-5 text-blue-600 mt-0.5" />
-            <div>
-              <h4 className="text-sm font-semibold text-blue-800 mb-1">Güvenli Ödeme</h4>
-              <p className="text-sm text-blue-700">
-                Kart bilgileriniz SSL şifreleme ile korunmaktadır. 
-                Bilgileriniz hiçbir şekilde saklanmamaktadır.
-              </p>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="password"
+                name="cvv"
+                value={formData.cvv}
+                onChange={handleInputChange}
+                placeholder="123"
+                maxLength={4}
+                className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.cvv ? 'border-red-500' : 'border-gray-300'
+                }`}
+              />
             </div>
+            {errors.cvv && (
+              <p className="text-red-500 text-sm mt-1">{errors.cvv}</p>
+            )}
           </div>
         </div>
 
@@ -343,20 +326,31 @@ function ShopierPayment({
         <button
           type="submit"
           disabled={isProcessing}
-          className="w-full bg-blue-600 text-white py-4 rounded-xl hover:bg-blue-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isProcessing ? (
             <div className="flex items-center justify-center">
-              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              İşlem Yapılıyor...
+              <Loader2 className="animate-spin w-5 h-5 mr-2" />
+              İşleniyor...
             </div>
           ) : (
             <div className="flex items-center justify-center">
-              <Lock className="w-5 h-5 mr-2" />
-              {shopierService.formatCurrency(parseFloat(formData.amount))} Öde
+              <Shield className="w-5 h-5 mr-2" />
+              Güvenli Ödeme Yap
             </div>
           )}
         </button>
+
+        {/* Security Notice */}
+        <div className="bg-blue-50 rounded-xl p-4">
+          <div className="flex items-start">
+            <Shield className="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
+            <div className="text-sm text-blue-700">
+              <p className="font-semibold mb-1">Güvenli Ödeme</p>
+              <p>Bilgileriniz SSL şifreleme ile korunmaktadır. Kart bilgileriniz saklanmaz.</p>
+            </div>
+          </div>
+        </div>
       </form>
     </div>
   );
