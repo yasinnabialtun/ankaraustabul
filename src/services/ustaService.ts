@@ -1,6 +1,20 @@
-// Usta Service for Ankara Usta Bul
+// Usta Service for Ankara Usta Bul with Firebase Firestore
+import { 
+  collection, 
+  addDoc, 
+  getDocs, 
+  updateDoc, 
+  deleteDoc, 
+  doc, 
+  query, 
+  where, 
+  orderBy,
+  serverTimestamp 
+} from 'firebase/firestore';
+import { db } from './firebase';
+
 export interface UstaData {
-  id: string;
+  id?: string;
   name: string;
   email: string;
   phone: string;
@@ -18,31 +32,44 @@ export interface UstaData {
 }
 
 export const ustaService = {
-  // Get all ustalar from localStorage
-  getAllUstalar(): UstaData[] {
+  // Get all ustalar from Firestore
+  async getAllUstalar(): Promise<UstaData[]> {
     try {
-      const ustalar = localStorage.getItem('ankaraustabul_ustalar');
-      return ustalar ? JSON.parse(ustalar) : [];
+      const ustalarRef = collection(db, 'ustalar');
+      const q = query(ustalarRef, orderBy('registrationDate', 'desc'));
+      const querySnapshot = await getDocs(q);
+      
+      const ustalar: UstaData[] = [];
+      querySnapshot.forEach((doc) => {
+        ustalar.push({ id: doc.id, ...doc.data() } as UstaData);
+      });
+      
+      console.log('📊 Ustalar yüklendi:', ustalar.length);
+      return ustalar;
     } catch (error) {
       console.error('❌ Usta verileri alınamadı:', error);
       return [];
     }
   },
 
-  // Add new usta to localStorage
-  addUsta(ustaData: Omit<UstaData, 'id' | 'registrationDate' | 'status'>): UstaData {
+  // Add new usta to Firestore
+  async addUsta(ustaData: Omit<UstaData, 'id' | 'registrationDate' | 'status'>): Promise<UstaData> {
     try {
-      const ustalar = this.getAllUstalar();
+      const ustalarRef = collection(db, 'ustalar');
       
-      const newUsta: UstaData = {
+      const newUstaData = {
         ...ustaData,
-        id: `usta_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         registrationDate: new Date().toISOString(),
-        status: 'pending'
+        status: 'pending',
+        createdAt: serverTimestamp()
       };
 
-      ustalar.push(newUsta);
-      localStorage.setItem('ankaraustabul_ustalar', JSON.stringify(ustalar));
+      const docRef = await addDoc(ustalarRef, newUstaData);
+      
+      const newUsta: UstaData = {
+        id: docRef.id,
+        ...newUstaData
+      };
       
       console.log('✅ Yeni usta eklendi:', newUsta);
       return newUsta;
@@ -53,21 +80,16 @@ export const ustaService = {
   },
 
   // Update usta status
-  updateUstaStatus(ustaId: string, status: 'approved' | 'rejected'): UstaData | null {
+  async updateUstaStatus(ustaId: string, status: 'approved' | 'rejected'): Promise<UstaData | null> {
     try {
-      const ustalar = this.getAllUstalar();
-      const ustaIndex = ustalar.findIndex(u => u.id === ustaId);
+      const ustaRef = doc(db, 'ustalar', ustaId);
+      await updateDoc(ustaRef, { status });
       
-      if (ustaIndex === -1) {
-        console.error('❌ Usta bulunamadı:', ustaId);
-        return null;
-      }
-
-      ustalar[ustaIndex].status = status;
-      localStorage.setItem('ankaraustabul_ustalar', JSON.stringify(ustalar));
+      console.log('✅ Usta durumu güncellendi:', ustaId, status);
       
-      console.log('✅ Usta durumu güncellendi:', ustalar[ustaIndex]);
-      return ustalar[ustaIndex];
+      // Get updated usta
+      const ustalar = await this.getAllUstalar();
+      return ustalar.find(u => u.id === ustaId) || null;
     } catch (error) {
       console.error('❌ Usta durumu güncellenemedi:', error);
       return null;
@@ -75,12 +97,10 @@ export const ustaService = {
   },
 
   // Delete usta
-  deleteUsta(ustaId: string): boolean {
+  async deleteUsta(ustaId: string): Promise<boolean> {
     try {
-      const ustalar = this.getAllUstalar();
-      const filteredUstalar = ustalar.filter(u => u.id !== ustaId);
-      
-      localStorage.setItem('ankaraustabul_ustalar', JSON.stringify(filteredUstalar));
+      const ustaRef = doc(db, 'ustalar', ustaId);
+      await deleteDoc(ustaRef);
       
       console.log('✅ Usta silindi:', ustaId);
       return true;
@@ -91,9 +111,9 @@ export const ustaService = {
   },
 
   // Get usta by ID
-  getUstaById(ustaId: string): UstaData | null {
+  async getUstaById(ustaId: string): Promise<UstaData | null> {
     try {
-      const ustalar = this.getAllUstalar();
+      const ustalar = await this.getAllUstalar();
       return ustalar.find(u => u.id === ustaId) || null;
     } catch (error) {
       console.error('❌ Usta bulunamadı:', error);
@@ -102,10 +122,18 @@ export const ustaService = {
   },
 
   // Get ustalar by status
-  getUstalarByStatus(status: 'pending' | 'approved' | 'rejected'): UstaData[] {
+  async getUstalarByStatus(status: 'pending' | 'approved' | 'rejected'): Promise<UstaData[]> {
     try {
-      const ustalar = this.getAllUstalar();
-      return ustalar.filter(u => u.status === 'pending');
+      const ustalarRef = collection(db, 'ustalar');
+      const q = query(ustalarRef, where('status', '==', status), orderBy('registrationDate', 'desc'));
+      const querySnapshot = await getDocs(q);
+      
+      const ustalar: UstaData[] = [];
+      querySnapshot.forEach((doc) => {
+        ustalar.push({ id: doc.id, ...doc.data() } as UstaData);
+      });
+      
+      return ustalar;
     } catch (error) {
       console.error('❌ Usta listesi alınamadı:', error);
       return [];
@@ -113,9 +141,9 @@ export const ustaService = {
   },
 
   // Get statistics
-  getStatistics() {
+  async getStatistics() {
     try {
-      const ustalar = this.getAllUstalar();
+      const ustalar = await this.getAllUstalar();
       const now = new Date();
       const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const thisWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -143,13 +171,21 @@ export const ustaService = {
     }
   },
 
-  // Clear all data (for testing)
-  clearAllData() {
+  // Search ustalar
+  async searchUstalar(searchTerm: string): Promise<UstaData[]> {
     try {
-      localStorage.removeItem('ankaraustabul_ustalar');
-      console.log('✅ Tüm usta verileri temizlendi');
+      const ustalar = await this.getAllUstalar();
+      const searchLower = searchTerm.toLowerCase();
+      
+      return ustalar.filter(usta => 
+        usta.name.toLowerCase().includes(searchLower) ||
+        usta.email.toLowerCase().includes(searchLower) ||
+        usta.category.toLowerCase().includes(searchLower) ||
+        usta.location.toLowerCase().includes(searchLower)
+      );
     } catch (error) {
-      console.error('❌ Veriler temizlenemedi:', error);
+      console.error('❌ Usta arama hatası:', error);
+      return [];
     }
   }
 }; 

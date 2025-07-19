@@ -31,12 +31,12 @@ function AdminDashboard() {
     navigate('/admin-login');
   };
 
-  // Load real data from localStorage
+  // Load real data from Firestore
   useEffect(() => {
-    const loadData = () => {
+    const loadData = async () => {
       try {
-        const allUstalar = ustaService.getAllUstalar();
-        const statistics = ustaService.getStatistics();
+        const allUstalar = await ustaService.getAllUstalar();
+        const statistics = await ustaService.getStatistics();
         
         setUstalar(allUstalar);
         setStats(statistics);
@@ -59,29 +59,29 @@ function AdminDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleStatusChange = (ustaId: string, newStatus: 'approved' | 'rejected') => {
-    const updatedUsta = ustaService.updateUstaStatus(ustaId, newStatus);
+  const handleStatusChange = async (ustaId: string, newStatus: 'approved' | 'rejected') => {
+    const updatedUsta = await ustaService.updateUstaStatus(ustaId, newStatus);
     if (updatedUsta) {
       setUstalar(prev => prev.map(usta => 
         usta.id === ustaId ? updatedUsta : usta
       ));
       
       // Update statistics
-      const newStats = ustaService.getStatistics();
+      const newStats = await ustaService.getStatistics();
       setStats(newStats);
       
       console.log(`✅ Usta durumu güncellendi: ${ustaId} -> ${newStatus}`);
     }
   };
 
-  const handleDeleteUsta = (ustaId: string) => {
+  const handleDeleteUsta = async (ustaId: string) => {
     if (window.confirm('Bu ustayı silmek istediğinizden emin misiniz?')) {
-      const success = ustaService.deleteUsta(ustaId);
+      const success = await ustaService.deleteUsta(ustaId);
       if (success) {
         setUstalar(prev => prev.filter(usta => usta.id !== ustaId));
         
         // Update statistics
-        const newStats = ustaService.getStatistics();
+        const newStats = await ustaService.getStatistics();
         setStats(newStats);
         
         console.log(`✅ Usta silindi: ${ustaId}`);

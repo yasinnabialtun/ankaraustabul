@@ -223,7 +223,7 @@ function UstaEkle() {
     try {
       console.log('💳 Ödeme başarılı! Transaction ID:', transactionId);
       
-      // Usta verilerini localStorage'a kaydet
+      // Usta verilerini Firestore'a kaydet
       const ustaData = {
         name: form.name,
         email: form.email,
@@ -240,7 +240,7 @@ function UstaEkle() {
       };
 
       // ustaService ile kaydet
-      const savedUsta = ustaService.addUsta(ustaData);
+      const savedUsta = await ustaService.addUsta(ustaData);
       console.log('✅ Usta kaydedildi:', savedUsta);
       
       // E-posta bildirimi gönder
