@@ -26,8 +26,7 @@ class UstaService {
       const q = query(
         collection(db, this.collectionName),
         where('status', '==', 'approved'),
-        orderBy('priorityRank', 'desc'),
-        orderBy('rating', 'desc')
+        orderBy('registrationDate', 'desc')
       );
       const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map(doc => ({
@@ -47,8 +46,7 @@ class UstaService {
         collection(db, this.collectionName),
         where('status', '==', 'approved'),
         where('isFeatured', '==', true),
-        orderBy('priorityRank', 'desc'),
-        orderBy('rating', 'desc'),
+        orderBy('registrationDate', 'desc'),
         limit(limit)
       );
       const querySnapshot = await getDocs(q);
@@ -69,8 +67,7 @@ class UstaService {
         collection(db, this.collectionName),
         where('status', '==', 'approved'),
         where('category', '==', category),
-        orderBy('priorityRank', 'desc'),
-        orderBy('rating', 'desc')
+        orderBy('registrationDate', 'desc')
       );
       const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map(doc => ({
@@ -108,13 +105,13 @@ class UstaService {
 
       // Sıralama
       if (filters.sortBy === 'featured') {
-        q = query(q, orderBy('priorityRank', 'desc'));
+        q = query(q, orderBy('registrationDate', 'desc'));
       } else if (filters.sortBy === 'rating') {
         q = query(q, orderBy('rating', filters.sortOrder || 'desc'));
       } else if (filters.sortBy === 'price') {
         q = query(q, orderBy('hourlyRate', filters.sortOrder || 'asc'));
       } else {
-        q = query(q, orderBy('priorityRank', 'desc'), orderBy('rating', 'desc'));
+        q = query(q, orderBy('registrationDate', 'desc'));
       }
 
       const querySnapshot = await getDocs(q);

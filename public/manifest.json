@@ -1,73 +1,21 @@
 {
   "name": "Ankara Usta Bul",
   "short_name": "Ankara Usta Bul",
-  "description": "Ankara'da güvenilir usta arama platformu",
+  "description": "Ankara'da güvenilir usta bulma platformu",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
-  "orientation": "portrait-primary",
-  "scope": "/",
-  "lang": "tr",
-  "dir": "ltr",
-  "categories": ["business", "productivity", "utilities"],
   "icons": [
     {
-      "src": "/favicon.ico",
-      "sizes": "16x16 32x32 48x48",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "/icon-192.png",
+      "src": "/vite.svg",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/svg+xml"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/vite.svg",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Usta Ekle",
-      "short_name": "Usta Ekle",
-      "description": "Yeni usta kaydı oluştur",
-      "url": "/usta-ekle",
-      "icons": [
-        {
-          "src": "/favicon.ico",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Admin Panel",
-      "short_name": "Admin",
-      "description": "Admin paneline eriş",
-      "url": "/admin-login",
-      "icons": [
-        {
-          "src": "/favicon.ico",
-          "sizes": "96x96"
-        }
-      ]
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshot-wide.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
-    },
-    {
-      "src": "/screenshot-narrow.png",
-      "sizes": "750x1334",
-      "type": "image/png",
-      "form_factor": "narrow"
+      "type": "image/svg+xml"
     }
   ]
 } 

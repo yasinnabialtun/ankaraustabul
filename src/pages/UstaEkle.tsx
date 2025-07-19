@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ustaService } from '../services/ustaService';
+import { UstaData } from '../types';
 import ShopierPayment from '../components/ShopierPayment';
 import StepProgress from '../components/StepProgress';
 import { emailService } from '../services/emailService';
 import { whatsappService } from '../services/whatsappService';
 import { CheckCircle, AlertCircle, ArrowLeft, ArrowRight, CreditCard, Star, Users, Shield, Zap, Crown, MapPin, User, Phone, Mail, Wrench, Clock, DollarSign, Calendar, Package, Check, X, Briefcase, Award } from 'lucide-react';
-import { ustaService } from '../services/ustaService';
 
 // Form Steps
 const STEP_BASIC_INFO = 1;
