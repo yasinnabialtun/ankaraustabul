@@ -1,133 +1,131 @@
-// WhatsApp Notification Service for Usta Registration
-interface WhatsAppNotificationData {
+// WhatsApp service for sending notifications
+export interface UstaRegistrationData {
   name: string;
+  email: string;
+  phone: string;
   category: string;
   experience: string;
   location: string;
   hourlyRate: string;
-  phone: string;
-  transactionId: string;
+  specialties: string[];
+  serviceAreas: string[];
   packageType: string;
+  transactionId: string;
 }
 
-class WhatsAppService {
-  private adminPhone = import.meta.env.VITE_ADMIN_WHATSAPP || '+905551234567';
-  private apiUrl = import.meta.env.VITE_WHATSAPP_API_URL || 'https://api.whatsapp.com';
+export const whatsappService = {
+  // Send notification to admin about new usta registration
+  async sendUstaRegistrationNotification(data: UstaRegistrationData) {
+    const adminEmail = 'info@ynadijital.com';
+    
+    const messageContent = `
+🎉 YENİ USTA KAYDI BİLDİRİMİ 🎉
 
-  async sendUstaRegistrationNotification(ustaData: WhatsAppNotificationData): Promise<boolean> {
-    try {
-      // Development mode - console log
-      if (import.meta.env.DEV) {
-        console.log('📱 WHATSAPP BİLDİRİMİ:', {
-          timestamp: new Date().toISOString(),
-          message: this.generateWhatsAppMessage(ustaData)
-        });
-        return true;
-      }
+📋 Usta Bilgileri:
+👤 Ad Soyad: ${data.name}
+📧 E-posta: ${data.email}
+📱 Telefon: ${data.phone}
+🏷️ Kategori: ${data.category}
+⏰ Deneyim: ${data.experience} yıl
+📍 Lokasyon: ${data.location}
+💰 Saatlik Ücret: ${data.hourlyRate} ₺
 
-      // Production mode - WhatsApp Business API
-      const message = this.generateWhatsAppMessage(ustaData);
-      
-      const response = await fetch(`${this.apiUrl}/send-message`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_WHATSAPP_API_KEY}`
-        },
-        body: JSON.stringify({
-          phone: this.adminPhone,
-          message: message,
-          type: 'text'
-        })
-      });
+🔧 Uzmanlık Alanları:
+${data.specialties.map(s => `• ${s}`).join('\n')}
 
-      return response.ok;
-    } catch (error) {
-      console.error('WhatsApp notification error:', error);
-      return false;
-    }
-  }
+🌍 Hizmet Bölgeleri:
+${data.serviceAreas.map(area => `• ${area}`).join('\n')}
 
-  private generateWhatsAppMessage(ustaData: WhatsAppNotificationData): string {
-    return `🎉 *YENİ USTA KAYDI*
+📦 Paket: ${data.packageType}
+🆔 İşlem ID: ${data.transactionId}
 
-👤 *Kişisel Bilgiler:*
-• Ad Soyad: ${ustaData.name}
-• Telefon: ${ustaData.phone}
-• Kategori: ${ustaData.category}
-• Deneyim: ${ustaData.experience} yıl
-• Lokasyon: ${ustaData.location}
-• Saatlik Ücret: ${ustaData.hourlyRate} ₺
-
-💳 *Ödeme Bilgileri:*
-• Paket: ${ustaData.packageType}
-• İşlem ID: ${ustaData.transactionId}
-• Tarih: ${new Date().toLocaleString('tr-TR')}
-
-📊 *İstatistikler:*
-• Toplam Usta: +1
-• Bu Ay: +1
-• Bu Hafta: +1
-
-🔗 Admin Panel: https://ankaraustabul.com/admin/ustalar
+📅 Kayıt Tarihi: ${new Date().toLocaleString('tr-TR')}
 
 ---
-Ankara Usta Bul - Otomatik Bildirim`;
-  }
+Bu bildirim Ankara Usta Bul platformundan otomatik olarak gönderilmiştir.
+    `;
 
-  async sendUstaWelcomeMessage(ustaData: WhatsAppNotificationData): Promise<boolean> {
-    try {
-      const message = `🎉 *Hoş Geldiniz!*
+    // In development, log to console
+    if (import.meta.env.DEV) {
+      console.log('📱 WHATSAPP BİLDİRİMİ:', {
+        to: adminEmail,
+        subject: '🎉 Yeni Usta Kaydı - Ankara Usta Bul',
+        content: messageContent
+      });
+    }
 
-Merhaba ${ustaData.name}! Ankara Usta Bul platformuna hoş geldiniz.
+    // WhatsApp is disabled for now
+    if (import.meta.env.PROD) {
+      try {
+        console.log('📱 WhatsApp bildirimi devre dışı - E-posta kullanılıyor');
+        return { success: true, message: 'WhatsApp devre dışı - E-posta kullanılıyor' };
+      } catch (error) {
+        console.error('❌ WhatsApp bildirimi gönderilemedi:', error);
+        return { success: false, message: 'WhatsApp bildirimi gönderilemedi' };
+      }
+    }
 
-📋 *Kayıt Bilgileriniz:*
-• Kategori: ${ustaData.category}
-• Deneyim: ${ustaData.experience} yıl
-• Saatlik Ücret: ${ustaData.hourlyRate} ₺
-• Paket: ${ustaData.packageType}
+    return { success: true, message: 'Development modunda console\'a loglandı' };
+  },
 
-🚀 *Sonraki Adımlar:*
+  // Send welcome message to usta
+  async sendUstaWelcomeMessage(data: UstaRegistrationData) {
+    const welcomeMessageContent = `
+🎉 HOŞ GELDİNİZ! 🎉
+
+Merhaba ${data.name},
+
+Ankara Usta Bul platformuna başarıyla kayıt oldunuz! 🎊
+
+📋 Kayıt Bilgileriniz:
+🏷️ Kategori: ${data.category}
+📍 Lokasyon: ${data.location}
+💰 Saatlik Ücret: ${data.hourlyRate} ₺
+📦 Paket: ${data.packageType}
+
+🔧 Uzmanlık Alanlarınız:
+${data.specialties.map(s => `• ${s}`).join('\n')}
+
+🌍 Hizmet Bölgeleriniz:
+${data.serviceAreas.map(area => `• ${area}`).join('\n')}
+
+📱 İletişim Bilgileriniz:
+📧 E-posta: ${data.email}
+📞 Telefon: ${data.phone}
+
+🎯 Sonraki Adımlar:
 1. Profilinizi tamamlayın
-2. Müşteri taleplerini takip edin
-3. Değerlendirmelerinizi yönetin
+2. Müşteri değerlendirmelerinizi ekleyin
+3. Hizmet alanlarınızı genişletin
+4. Müşterilerle iletişime geçin
 
-📞 *Destek:* +905551234567
-🌐 *Web:* https://ankaraustabul.com
+📞 Destek için: info@ynadijital.com
+🌐 Web: https://ankaraustabul.com
 
-Başarılar dileriz! 🎯
+Başarılar dileriz! 🚀
+Ankara Usta Bul Ekibi
+    `;
 
----
-Ankara Usta Bul`;
-
-      if (import.meta.env.DEV) {
-        console.log('📱 USTA HOŞ GELDİN MESAJI:', {
-          to: ustaData.phone,
-          message: message
-        });
-        return true;
-      }
-
-      const response = await fetch(`${this.apiUrl}/send-message`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_WHATSAPP_API_KEY}`
-        },
-        body: JSON.stringify({
-          phone: ustaData.phone,
-          message: message,
-          type: 'text'
-        })
+    // In development, log to console
+    if (import.meta.env.DEV) {
+      console.log('📱 USTA HOŞ GELDİN MESAJI:', {
+        to: data.phone,
+        subject: '🎉 Ankara Usta Bul\'a Hoş Geldiniz!',
+        content: welcomeMessageContent
       });
-
-      return response.ok;
-    } catch (error) {
-      console.error('Welcome WhatsApp error:', error);
-      return false;
     }
-  }
-}
 
-const whatsappService = new WhatsAppService();
-export default whatsappService; 
+    // WhatsApp is disabled for now
+    if (import.meta.env.PROD) {
+      try {
+        console.log('📱 WhatsApp hoş geldin mesajı devre dışı - E-posta kullanılıyor');
+        return { success: true, message: 'WhatsApp devre dışı - E-posta kullanılıyor' };
+      } catch (error) {
+        console.error('❌ WhatsApp hoş geldin mesajı gönderilemedi:', error);
+        return { success: false, message: 'WhatsApp hoş geldin mesajı gönderilemedi' };
+      }
+    }
+
+    return { success: true, message: 'Development modunda console\'a loglandı' };
+  }
+}; 
