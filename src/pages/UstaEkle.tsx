@@ -219,71 +219,49 @@ function UstaEkle() {
 
   // Payment handlers
   const handlePaymentSuccess = async (transactionId: string) => {
-    setTransactionId(transactionId);
-    setStep(STEP_SUCCESS);
-    
-    // Send notifications to admin
     try {
-      // Email notification to admin
-      await emailService.sendUstaRegistrationNotification({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        category: form.category,
-        experience: form.experience,
-        location: form.location,
-        hourlyRate: form.hourlyRate,
-        specialties: form.specialties,
-        serviceAreas: form.serviceAreas,
+      console.log('💳 Ödeme başarılı! Transaction ID:', transactionId);
+      
+      // E-posta bildirimi gönder
+      await emailService.sendRegistrationNotification({
+        ustaName: form.name,
+        ustaEmail: form.email,
+        ustaPhone: form.phone,
+        ustaCategory: form.category,
         packageType: form.selectedPlan,
-        transactionId: transactionId
+        transactionId: transactionId,
+        amount: PRICING_PLANS[form.selectedPlan].price
       });
 
-      // WhatsApp notification to admin
-      await whatsappService.sendUstaRegistrationNotification({
-        name: form.name,
-        category: form.category,
-        experience: form.experience,
-        location: form.location,
-        hourlyRate: form.hourlyRate,
-        phone: form.phone,
-        transactionId: transactionId,
+      // Usta'ya hoş geldin e-postası gönder
+      await emailService.sendWelcomeEmail({
+        ustaName: form.name,
+        ustaEmail: form.email,
         packageType: form.selectedPlan
       });
 
-      // Welcome email to usta
-      await emailService.sendUstaWelcomeEmail({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        category: form.category,
-        experience: form.experience,
-        location: form.location,
-        hourlyRate: form.hourlyRate,
-        specialties: form.specialties,
-        serviceAreas: form.serviceAreas,
-        packageType: form.selectedPlan,
-        transactionId: transactionId
+      // Başarı sayfasına yönlendir
+      navigate('/payment-success', {
+        state: {
+          transactionId,
+          ustaName: form.name,
+          packageType: form.selectedPlan,
+          amount: PRICING_PLANS[form.selectedPlan].price
+        }
       });
 
-      // Welcome WhatsApp message to usta
-      await whatsappService.sendUstaWelcomeMessage({
-        name: form.name,
-        category: form.category,
-        experience: form.experience,
-        location: form.location,
-        hourlyRate: form.hourlyRate,
-        phone: form.phone,
-        transactionId: transactionId,
-        packageType: form.selectedPlan
-      });
-
-      console.log('✅ Tüm bildirimler başarıyla gönderildi');
     } catch (error) {
-      console.error('❌ Bildirim gönderilirken hata:', error);
+      console.error('❌ Ödeme sonrası işlem hatası:', error);
+      // Hata olsa bile başarı sayfasına yönlendir
+      navigate('/payment-success', {
+        state: {
+          transactionId,
+          ustaName: form.name,
+          packageType: form.selectedPlan,
+          amount: PRICING_PLANS[form.selectedPlan].price
+        }
+      });
     }
-    
-    setTimeout(() => navigate('/'), 5000);
   };
 
   const handlePaymentError = (err: string) => {
