@@ -2,171 +2,50 @@
 <html lang="tr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- Primary Meta Tags -->
-    <title>Ankara Usta Bul - Güvenilir Usta Arama Platformu</title>
-    <meta name="title" content="Ankara Usta Bul - Güvenilir Usta Arama Platformu" />
-    <meta name="description" content="Ankara'da evinizdeki her iş için güvenilir, kaliteli ve profesyonel ustalar bulun. Elektrik, su tesisatı, boya, temizlik ve daha fazlası için uzman ustalar." />
-    <meta name="keywords" content="ankara usta, elektrik ustası, su tesisatı, boya ustası, temizlik, ev tamiratı, güvenilir usta, ankara hizmet" />
+    <meta name="description" content="Ankara'da güvenilir usta arama platformu. Elektrik, su tesisatı, temizlik ve diğer hizmetler için ustalar bulun." />
+    <meta name="keywords" content="ankara usta, elektrik ustası, su tesisatı, temizlik, mobilya, ankara hizmet" />
     <meta name="author" content="Ankara Usta Bul" />
     <meta name="robots" content="index, follow" />
-    <meta name="language" content="Turkish" />
-    <meta name="revisit-after" content="7 days" />
     
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://ankaraustabul.com/" />
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Ankara Usta Bul" />
+    
+    <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Ankara Usta Bul - Güvenilir Usta Arama Platformu" />
-    <meta property="og:description" content="Ankara'da evinizdeki her iş için güvenilir, kaliteli ve profesyonel ustalar bulun. Elektrik, su tesisatı, boya, temizlik ve daha fazlası için uzman ustalar." />
-    <meta property="og:image" content="https://ankaraustabul.com/og-image.jpg" />
+    <meta property="og:description" content="Ankara'da elektrik, su tesisatı, temizlik ve diğer hizmetler için güvenilir ustalar bulun" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ankaraustabul.com" />
+    <meta property="og:image" content="/og-image.jpg" />
     <meta property="og:site_name" content="Ankara Usta Bul" />
     <meta property="og:locale" content="tr_TR" />
     
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://ankaraustabul.com/" />
-    <meta property="twitter:title" content="Ankara Usta Bul - Güvenilir Usta Arama Platformu" />
-    <meta property="twitter:description" content="Ankara'da evinizdeki her iş için güvenilir, kaliteli ve profesyonel ustalar bulun." />
-    <meta property="twitter:image" content="https://ankaraustabul.com/twitter-image.jpg" />
-    
-    <!-- Additional SEO Meta Tags -->
-    <meta name="theme-color" content="#2563eb" />
-    <meta name="msapplication-TileColor" content="#2563eb" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Ankara Usta Bul" />
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ankara Usta Bul - Güvenilir Usta Arama Platformu" />
+    <meta name="twitter:description" content="Ankara'da elektrik, su tesisatı, temizlik ve diğer hizmetler için güvenilir ustalar bulun" />
+    <meta name="twitter:image" content="/twitter-image.jpg" />
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://ankaraustabul.com/" />
+    <link rel="canonical" href="https://ankaraustabul.com" />
     
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <!-- DNS Prefetch -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-    
-    <!-- Preload critical fonts -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" /></noscript>
-    
-    <!-- Critical CSS -->
-    <style>
-      /* Critical CSS for Above-the-Fold Content */
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      html { scroll-behavior: smooth; font-size: 16px; line-height: 1.6; }
-      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; color: #1f2937; background-color: #f9fafb; overflow-x: hidden; }
-      .min-h-screen { min-height: 100vh; }
-      .container-responsive { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
-      .nav-fixed { position: fixed; top: 0; left: 0; right: 0; z-index: 50; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); border-bottom: 1px solid #e5e7eb; transition: all 0.3s ease; }
-      .nav-container { display: flex; align-items: center; justify-content: space-between; height: 4rem; padding: 0 1rem; }
-      .nav-logo { display: flex; align-items: center; gap: 0.5rem; font-weight: bold; font-size: 1.25rem; color: #1f2937; text-decoration: none; }
-      .nav-menu { display: none; }
-      @media (min-width: 1024px) { .nav-menu { display: flex; align-items: center; gap: 2rem; } }
-      .nav-link { padding: 0.5rem 1rem; color: #374151; text-decoration: none; border-radius: 0.5rem; transition: all 0.3s ease; }
-      .nav-link:hover { color: #2563eb; background-color: #f3f4f6; }
-      .nav-link.active { color: #2563eb; background-color: #eff6ff; }
-      .hero-section { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; text-align: center; padding: 2rem 1rem; }
-      .hero-content { max-width: 800px; margin: 0 auto; }
-      .hero-title { font-size: clamp(2rem, 5vw, 4rem); font-weight: bold; margin-bottom: 1rem; line-height: 1.2; }
-      .hero-subtitle { font-size: clamp(1rem, 2.5vw, 1.5rem); margin-bottom: 2rem; opacity: 0.9; }
-      .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-      .btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background-color: white; color: #2563eb; text-decoration: none; border-radius: 0.5rem; font-weight: 600; transition: all 0.3s ease; }
-      .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); }
-      .btn-secondary { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background-color: transparent; color: white; text-decoration: none; border: 2px solid white; border-radius: 0.5rem; font-weight: 600; transition: all 0.3s ease; }
-      .btn-secondary:hover { background-color: white; color: #2563eb; }
-      .grid-responsive { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-      .card { background: white; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; }
-      .card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15); }
-      .text-responsive { font-size: clamp(1rem, 2.5vw, 1.125rem); }
-      .text-responsive-lg { font-size: clamp(1.125rem, 3vw, 1.25rem); }
-      .text-responsive-xl { font-size: clamp(1.25rem, 4vw, 1.5rem); }
-      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-      @keyframes slideInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-      .animate-fade-in { animation: fadeIn 0.6s ease-out; }
-      .animate-slide-in-up { animation: slideInUp 0.8s ease-out; }
-      .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: loading 1.5s infinite; }
-      @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-      .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-      .mobile-menu { position: fixed; top: 4rem; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; transform: translateY(-100%); transition: transform 0.3s ease; }
-      .mobile-menu.open { transform: translateY(0); }
-      .mobile-menu-item { display: block; padding: 1rem; color: #374151; text-decoration: none; border-bottom: 1px solid #f3f4f6; }
-      .mobile-menu-item:hover { background-color: #f9fafb; color: #2563eb; }
-      .content-visibility-auto { content-visibility: auto; contain-intrinsic-size: 0 500px; }
-    </style>
-    
-    <!-- PWA Support -->
+    <!-- Manifest -->
     <link rel="manifest" href="/manifest.json" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Ankara Usta Bul" />
-    <link rel="apple-touch-icon" href="/icon-192x192.png" />
     
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Ankara Usta Bul",
-      "description": "Ankara'da güvenilir usta arama platformu",
-      "url": "https://ankaraustabul.com",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://ankaraustabul.com/ustalar?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     
-    <!-- Local Business Schema -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      "name": "Ankara Usta Bul",
-      "description": "Ankara'da güvenilir usta arama ve hizmet platformu",
-      "url": "https://ankaraustabul.com",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Ankara",
-        "addressCountry": "TR"
-      },
-      "serviceArea": {
-        "@type": "City",
-        "name": "Ankara"
-      },
-      "hasOfferCatalog": {
-        "@type": "OfferCatalog",
-        "name": "Usta Hizmetleri",
-        "itemListElement": [
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Elektrik Ustası"
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Su Tesisatı Ustası"
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Boya Ustası"
-            }
-          }
-        ]
-      }
-    }
-    </script>
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="/src/styles/critical.css" as="style" />
+    <link rel="preload" href="/favicon.ico" as="image" type="image/x-icon" />
+    
+    <title>Ankara Usta Bul - Güvenilir Usta Arama Platformu</title>
   </head>
   <body>
     <div id="root"></div>
