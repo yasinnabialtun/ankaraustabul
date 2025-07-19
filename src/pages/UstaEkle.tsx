@@ -19,73 +19,44 @@ const STEP_SUCCESS = 7;
 // Enhanced Pricing Plans with better UI
 const PRICING_PLANS = {
   BASIC: {
-    name: 'Temel Paket',
-    price: 177,
-    originalPrice: 297,
-    discount: 40,
+    name: 'Temel Usta Kayıt',
+    price: 99,
+    originalPrice: 119,
+    discount: 17,
     features: [
       'Temel profil oluşturma',
-      'Müşteri değerlendirmeleri',
-      'Temel SEO optimizasyonu',
-      '7/24 destek',
-      'Temel istatistikler',
-      'E-posta bildirimleri'
+      'Standart liste görünümü',
+      'Temel istatistikler'
     ],
     icon: <Users className="w-8 h-8" />,
     color: 'from-blue-500 to-blue-600',
     bgColor: 'bg-blue-50',
     borderColor: 'border-blue-200',
     popular: false,
-    duration: '1 yıl',
-    badge: 'Başlangıç'
+    duration: '1 ay',
+    badge: 'Temel'
   },
   PREMIUM: {
-    name: 'Premium Paket',
-    price: 297,
-    originalPrice: 497,
-    discount: 40,
+    name: 'Öne Çıkan Usta Kayıt',
+    price: 299,
+    originalPrice: 359,
+    discount: 17,
     features: [
       'Öncelikli liste görünümü',
-      'Detaylı profil sayfası',
-      'Gelişmiş SEO optimizasyonu',
+      'WhatsApp yönlendirme',
       'Özel rozet ve işaretler',
+      'Gelişmiş SEO optimizasyonu',
       'Öncelikli müşteri desteği',
-      'İstatistik ve analitik',
       'Özel kampanya fırsatları',
-      'Gelişmiş bildirimler'
+      'Site içi reklamlar'
     ],
     icon: <Star className="w-8 h-8" />,
     color: 'from-yellow-500 to-orange-500',
     bgColor: 'bg-gradient-to-br from-yellow-50 to-orange-50',
     borderColor: 'border-yellow-300',
     popular: true,
-    duration: '1 yıl',
-    badge: 'En Popüler'
-  },
-  VIP: {
-    name: 'VIP Paket',
-    price: 497,
-    originalPrice: 797,
-    discount: 38,
-    features: [
-      'En üst sırada görünüm',
-      'Özel VIP rozeti',
-      'Öncelikli müşteri eşleştirme',
-      'Özel pazarlama desteği',
-      '7/24 özel destek hattı',
-      'Detaylı iş analitikleri',
-      'Özel kampanya fırsatları',
-      'Özel reklam alanları',
-      'Öncelikli müşteri eşleştirme',
-      'Özel pazarlama danışmanlığı'
-    ],
-    icon: <Crown className="w-8 h-8" />,
-    color: 'from-purple-500 to-pink-500',
-    bgColor: 'bg-gradient-to-br from-purple-50 to-pink-50',
-    borderColor: 'border-purple-300',
-    popular: false,
-    duration: '1 yıl',
-    badge: 'VIP'
+    duration: '1 ay',
+    badge: 'Öne Çıkan'
   }
 };
 
