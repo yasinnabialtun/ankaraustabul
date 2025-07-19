@@ -142,8 +142,6 @@ function TestPayment() {
                 <ShopierPayment
                   amount={177}
                   description="Shopier API Test Ödemesi"
-                  customerEmail="test@example.com"
-                  customerPhone="0555 123 45 67"
                   onSuccess={handlePaymentSuccess}
                   onError={handlePaymentError}
                 />

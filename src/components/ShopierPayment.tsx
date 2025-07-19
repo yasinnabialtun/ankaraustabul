@@ -15,20 +15,29 @@ interface PaymentFormData {
 interface ShopierPaymentProps {
   amount: number;
   description: string;
-  customerName?: string;
-  customerEmail?: string;
-  customerPhone?: string;
   onSuccess: (transactionId: string) => void;
   onError: (error: string) => void;
+  ustaData?: {
+    name: string;
+    category: string;
+    experience: string;
+    location: string;
+    hourlyRate: string;
+    specialties: string[];
+    serviceAreas: string[];
+    email?: string;
+    phone?: string;
+  };
+  packageType?: string;
 }
 
 function ShopierPayment({ 
   amount, 
   description, 
-  customerEmail = 'musteri@email.com',
-  customerPhone = '',
   onSuccess, 
-  onError 
+  onError,
+  ustaData,
+  packageType
 }: ShopierPaymentProps) {
   const [formData, setFormData] = useState<PaymentFormData>({
     cardNumber: '',
@@ -123,15 +132,23 @@ function ShopierPayment({
     setIsProcessing(true);
 
     try {
-      // Call Shopier API
-      const paymentResponse = await shopierService.initiatePayment({
-        amount: parseFloat(formData.amount),
-        currency: 'TRY',
-        description: formData.description,
-        customerName: formData.cardHolder,
-        customerEmail: customerEmail,
-        customerPhone: customerPhone
-      });
+      // Call Shopier API with enhanced data
+      const paymentResponse = await shopierService.initiateUstaPayment(
+        parseFloat(formData.amount),
+        formData.description,
+        ustaData || {
+          name: formData.cardHolder,
+          category: '',
+          experience: '0',
+          location: '',
+          hourlyRate: '0',
+          specialties: [],
+          serviceAreas: [],
+          email: 'customer@example.com',
+          phone: '+905551234567'
+        },
+        packageType || 'BASIC'
+      );
 
       if (paymentResponse.success && paymentResponse.transactionId) {
         setIsSuccess(true);

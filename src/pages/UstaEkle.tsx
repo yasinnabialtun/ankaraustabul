@@ -1,694 +1,1008 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { kategoriler } from '../data';
-import { 
-  User, 
-  Phone, 
-  MapPin, 
-  Clock, 
-  FileText, 
-  Upload, 
-  CheckCircle, 
-  AlertCircle,
-  ArrowRight,
-  ArrowLeft,
-  Star,
-  Briefcase,
-  CreditCard
-} from 'lucide-react';
+import ShopierPayment from '../components/ShopierPayment';
+import StepProgress from '../components/StepProgress';
+import emailService from '../services/emailService';
+import whatsappService from '../services/whatsappService';
+import { CheckCircle, AlertCircle, ArrowLeft, ArrowRight, CreditCard, Star, Users, Shield, Zap, Crown, MapPin, User, Briefcase, Award } from 'lucide-react';
 
-interface FormData {
-  name: string;
-  category: string;
-  phone: string;
-  location: string;
-  experience: string;
-  description: string;
-  email: string;
-  hourlyRate: string;
-  workingHours: string;
-  services: string[];
-  certifications: string[];
-}
+// Form Steps
+const STEP_BASIC_INFO = 1;
+const STEP_CATEGORY_SELECTION = 2;
+const STEP_EXPERIENCE_DETAILS = 3;
+const STEP_LOCATION_SERVICES = 4;
+const STEP_PRICING_PLANS = 5;
+const STEP_PAYMENT = 6;
+const STEP_SUCCESS = 7;
+
+// Enhanced Pricing Plans with better UI
+const PRICING_PLANS = {
+  BASIC: {
+    name: 'Temel Paket',
+    price: 177,
+    originalPrice: 297,
+    discount: 40,
+    features: [
+      'Temel profil oluşturma',
+      'Müşteri değerlendirmeleri',
+      'Temel SEO optimizasyonu',
+      '7/24 destek',
+      'Temel istatistikler',
+      'E-posta bildirimleri'
+    ],
+    icon: <Users className="w-8 h-8" />,
+    color: 'from-blue-500 to-blue-600',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-200',
+    popular: false,
+    duration: '1 yıl',
+    badge: 'Başlangıç'
+  },
+  PREMIUM: {
+    name: 'Premium Paket',
+    price: 297,
+    originalPrice: 497,
+    discount: 40,
+    features: [
+      'Öncelikli liste görünümü',
+      'Detaylı profil sayfası',
+      'Gelişmiş SEO optimizasyonu',
+      'Özel rozet ve işaretler',
+      'Öncelikli müşteri desteği',
+      'İstatistik ve analitik',
+      'Özel kampanya fırsatları',
+      'Gelişmiş bildirimler'
+    ],
+    icon: <Star className="w-8 h-8" />,
+    color: 'from-yellow-500 to-orange-500',
+    bgColor: 'bg-gradient-to-br from-yellow-50 to-orange-50',
+    borderColor: 'border-yellow-300',
+    popular: true,
+    duration: '1 yıl',
+    badge: 'En Popüler'
+  },
+  VIP: {
+    name: 'VIP Paket',
+    price: 497,
+    originalPrice: 797,
+    discount: 38,
+    features: [
+      'En üst sırada görünüm',
+      'Özel VIP rozeti',
+      'Öncelikli müşteri eşleştirme',
+      'Özel pazarlama desteği',
+      '7/24 özel destek hattı',
+      'Detaylı iş analitikleri',
+      'Özel kampanya fırsatları',
+      'Özel reklam alanları',
+      'Öncelikli müşteri eşleştirme',
+      'Özel pazarlama danışmanlığı'
+    ],
+    icon: <Crown className="w-8 h-8" />,
+    color: 'from-purple-500 to-pink-500',
+    bgColor: 'bg-gradient-to-br from-purple-50 to-pink-50',
+    borderColor: 'border-purple-300',
+    popular: false,
+    duration: '1 yıl',
+    badge: 'VIP'
+  }
+};
+
+const initialForm = {
+  // Basic Info
+  name: '',
+  phone: '',
+  email: '',
+  
+  // Category & Experience
+  category: '',
+  experience: '',
+  specialties: [] as string[],
+  
+  // Location & Services
+  location: '',
+  serviceAreas: [] as string[],
+  description: '',
+  
+  // Pricing
+  hourlyRate: '',
+  selectedPlan: 'BASIC' as keyof typeof PRICING_PLANS,
+  
+  // Additional Info
+  availability: '',
+  languages: [] as string[],
+  certifications: [] as string[]
+};
+
+const categories = [
+  { id: 'elektrik', name: 'Elektrik', icon: '⚡', color: 'bg-yellow-100 text-yellow-800' },
+  { id: 'su-tesisati', name: 'Su Tesisatı', icon: '🚰', color: 'bg-blue-100 text-blue-800' },
+  { id: 'temizlik', name: 'Temizlik', icon: '🧹', color: 'bg-green-100 text-green-800' },
+  { id: 'mobilya', name: 'Mobilya', icon: '🪑', color: 'bg-brown-100 text-brown-800' },
+  { id: 'boya-badana', name: 'Boya & Badana', icon: '🎨', color: 'bg-purple-100 text-purple-800' },
+  { id: 'insaat-tadilat', name: 'İnşaat & Tadilat', icon: '🏗️', color: 'bg-gray-100 text-gray-800' },
+  { id: 'bahce-peyzaj', name: 'Bahçe & Peyzaj', icon: '🌿', color: 'bg-emerald-100 text-emerald-800' },
+  { id: 'klima-havalandirma', name: 'Klima & Havalandırma', icon: '❄️', color: 'bg-cyan-100 text-cyan-800' },
+  { id: 'cam-pencere', name: 'Cam & Pencere', icon: '🪟', color: 'bg-slate-100 text-slate-800' },
+  { id: 'hali-perde', name: 'Halı & Perde', icon: '🪟', color: 'bg-pink-100 text-pink-800' },
+  { id: 'guvenlik-sistemleri', name: 'Güvenlik Sistemleri', icon: '🔒', color: 'bg-red-100 text-red-800' },
+  { id: 'asansor-yuruyen-merdiven', name: 'Asansör & Yürüyen Merdiven', icon: '🛗', color: 'bg-indigo-100 text-indigo-800' }
+];
+
+const serviceAreas = [
+  'Çankaya', 'Keçiören', 'Mamak', 'Yenimahalle', 'Etimesgut',
+  'Sincan', 'Polatlı', 'Gölbaşı', 'Kazan', 'Akyurt',
+  'Haymana', 'Beypazarı', 'Nallıhan', 'Kızılcahamam', 'Çamlıdere'
+];
+
+// const languages = ['Türkçe', 'İngilizce', 'Almanca', 'Arapça', 'Rusça'];
 
 function UstaEkle() {
+  const [step, setStep] = useState(STEP_BASIC_INFO);
+  const [form, setForm] = useState(initialForm);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [transactionId, setTransactionId] = useState('');
+  const [paymentError, setPaymentError] = useState('');
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    category: '',
-    phone: '',
-    location: '',
-    experience: '',
-    description: '',
-    email: '',
-    hourlyRate: '',
-    workingHours: '',
-    services: [],
-    certifications: []
-  });
-  const [errors, setErrors] = useState<Partial<FormData>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [showPayment, setShowPayment] = useState(false);
 
-  const totalSteps = 4;
+  // Enhanced step configuration
+  const stepConfig = [
+    { title: 'Kişisel Bilgiler', description: 'Ad, telefon, e-posta', icon: <User className="w-5 h-5" /> },
+    { title: 'Kategori Seçimi', description: 'Hizmet alanınız', icon: <Briefcase className="w-5 h-5" /> },
+    { title: 'Deneyim Detayları', description: 'Uzmanlık alanları', icon: <Award className="w-5 h-5" /> },
+    { title: 'Lokasyon & Hizmetler', description: 'Çalışma bölgeleri', icon: <MapPin className="w-5 h-5" /> },
+    { title: 'Paket Seçimi', description: 'Fiyatlandırma', icon: <CreditCard className="w-5 h-5" /> },
+    { title: 'Ödeme', description: 'Güvenli ödeme', icon: <Shield className="w-5 h-5" /> }
+  ];
 
-  const validateStep = (step: number) => {
-    const newErrors: Partial<FormData> = {};
-
-    switch (step) {
-      case 1:
-        if (!formData.name.trim()) newErrors.name = 'Ad soyad gereklidir';
-        if (!formData.category) newErrors.category = 'Kategori seçimi gereklidir';
-        if (!formData.phone.trim()) newErrors.phone = 'Telefon numarası gereklidir';
+  // Form validation for each step
+  const validateStep = (currentStep: number) => {
+    const newErrors: Record<string, string> = {};
+    
+    switch (currentStep) {
+      case STEP_BASIC_INFO:
+        if (!form.name.trim()) newErrors.name = 'Ad Soyad gerekli';
+        if (!form.phone.trim()) newErrors.phone = 'Telefon gerekli';
+        if (!form.email.trim()) newErrors.email = 'E-posta gerekli';
+        else if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = 'Geçerli e-posta adresi girin';
         break;
-      case 2:
-        if (!formData.location.trim()) newErrors.location = 'Konum gereklidir';
-        if (!formData.experience) newErrors.experience = 'Deneyim yılı gereklidir';
-        if (!formData.description.trim()) newErrors.description = 'Açıklama gereklidir';
+        
+      case STEP_CATEGORY_SELECTION:
+        if (!form.category) newErrors.category = 'Kategori seçin';
         break;
-      case 3:
-        if (!formData.email.trim()) newErrors.email = 'E-posta gereklidir';
-        if (!formData.hourlyRate) newErrors.hourlyRate = 'Saatlik ücret gereklidir';
+        
+      case STEP_EXPERIENCE_DETAILS:
+        if (!form.experience.trim() || isNaN(Number(form.experience))) newErrors.experience = 'Deneyim yılı geçersiz';
+        if (form.specialties.length === 0) newErrors.specialties = 'En az bir uzmanlık alanı seçin';
+        break;
+        
+      case STEP_LOCATION_SERVICES:
+        if (!form.location.trim()) newErrors.location = 'Lokasyon gerekli';
+        if (form.serviceAreas.length === 0) newErrors.serviceAreas = 'En az bir hizmet bölgesi seçin';
+        if (!form.description.trim()) newErrors.description = 'Açıklama gerekli';
+        break;
+        
+      case STEP_PRICING_PLANS:
+        if (!form.hourlyRate.trim() || isNaN(Number(form.hourlyRate))) newErrors.hourlyRate = 'Saatlik ücret geçersiz';
         break;
     }
-
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
-    if (validateStep(currentStep)) {
-      setCurrentStep(Math.min(currentStep + 1, totalSteps));
+  const nextStep = () => {
+    if (validateStep(step)) {
+      setStep(step + 1);
     }
   };
 
-  const handlePrev = () => {
-    setCurrentStep(Math.max(currentStep - 1, 1));
+  const prevStep = () => {
+    setStep(step - 1);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name as keyof FormData]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
+  const handleInputChange = (field: string, value: any) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev: any) => ({ ...prev, [field]: undefined }));
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateStep(currentStep)) return;
-
-    setIsSubmitting(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsSubmitting(false);
-    setIsSuccess(true);
-  };
-
-  const handleServiceToggle = (service: string) => {
-    setFormData(prev => ({
+  const handleArrayChange = (field: string, value: string, checked: boolean) => {
+    setForm(prev => ({
       ...prev,
-      services: prev.services.includes(service)
-        ? prev.services.filter(s => s !== service)
-        : [...prev.services, service]
+      [field]: checked 
+        ? [...prev[field as keyof typeof prev] as string[], value]
+        : (prev[field as keyof typeof prev] as string[]).filter(item => item !== value)
     }));
   };
 
-  const handleCertificationToggle = (cert: string) => {
-    setFormData(prev => ({
-      ...prev,
-      certifications: prev.certifications.includes(cert)
-        ? prev.certifications.filter(c => c !== cert)
-        : [...prev.certifications, cert]
-    }));
+  // Payment handlers
+  const handlePaymentSuccess = async (transactionId: string) => {
+    setTransactionId(transactionId);
+    setStep(STEP_SUCCESS);
+    
+    // Send notifications to admin
+    try {
+      // Email notification to admin
+      await emailService.sendUstaRegistrationNotification({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        category: form.category,
+        experience: form.experience,
+        location: form.location,
+        hourlyRate: form.hourlyRate,
+        specialties: form.specialties,
+        serviceAreas: form.serviceAreas,
+        packageType: form.selectedPlan,
+        transactionId: transactionId
+      });
+
+      // WhatsApp notification to admin
+      await whatsappService.sendUstaRegistrationNotification({
+        name: form.name,
+        category: form.category,
+        experience: form.experience,
+        location: form.location,
+        hourlyRate: form.hourlyRate,
+        phone: form.phone,
+        transactionId: transactionId,
+        packageType: form.selectedPlan
+      });
+
+      // Welcome email to usta
+      await emailService.sendUstaWelcomeEmail({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        category: form.category,
+        experience: form.experience,
+        location: form.location,
+        hourlyRate: form.hourlyRate,
+        specialties: form.specialties,
+        serviceAreas: form.serviceAreas,
+        packageType: form.selectedPlan,
+        transactionId: transactionId
+      });
+
+      // Welcome WhatsApp message to usta
+      await whatsappService.sendUstaWelcomeMessage({
+        name: form.name,
+        category: form.category,
+        experience: form.experience,
+        location: form.location,
+        hourlyRate: form.hourlyRate,
+        phone: form.phone,
+        transactionId: transactionId,
+        packageType: form.selectedPlan
+      });
+
+      console.log('✅ Tüm bildirimler başarıyla gönderildi');
+    } catch (error) {
+      console.error('❌ Bildirim gönderilirken hata:', error);
+    }
+    
+    setTimeout(() => navigate('/'), 5000);
   };
 
-  const handlePaymentSuccess = () => {
-    // Başarılı ödeme sonrası ana sayfaya yönlendir
-    navigate('/', { 
-      state: { 
-        message: 'Usta kaydınız ve ödeme işleminiz başarıyla tamamlandı! En kısa sürede size dönüş yapacağız.' 
-      } 
-    });
+  const handlePaymentError = (err: string) => {
+    setPaymentError(err);
   };
 
-  if (isSuccess && showPayment) {
+  // Enhanced Success Step with better UI
+  if (step === STEP_SUCCESS) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-16">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-              <div className="text-center mb-8">
-                <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Başvurunuz Alındı!</h2>
-                <p className="text-gray-600 mb-6">
-                  Usta başvurunuz başarıyla alındı. Şimdi kayıt ücretini ödeyerek işlemi tamamlayabilirsiniz.
-                </p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-50 px-4">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center animate-fade-in">
+          <div className="relative">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
+              <CheckCircle className="w-12 h-12 text-green-600" />
+            </div>
+            <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-white" />
+            </div>
+          </div>
+          
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">🎉 Kayıt Başarılı!</h2>
+          <p className="text-gray-600 mb-6 leading-relaxed">
+            Usta kaydınız ve ödemeniz başarıyla tamamlandı.<br />
+            <span className="font-semibold text-green-600">Profiliniz 24 saat içinde aktif olacaktır.</span>
+          </p>
+          
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 mb-6 border border-green-200">
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">İşlem ID:</span>
+                <span className="font-mono font-semibold text-green-700">{transactionId}</span>
               </div>
-
-              <div className="bg-blue-50 rounded-xl p-6 mb-8">
-                <h3 className="text-lg font-semibold text-blue-800 mb-4">Kayıt Ücreti Detayları</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                  <div className="bg-white rounded-lg p-4">
-                    <div className="text-2xl font-bold text-blue-600">₺99</div>
-                    <div className="text-sm text-gray-600">Kayıt Ücreti</div>
-                  </div>
-                  <div className="bg-white rounded-lg p-4">
-                    <div className="text-2xl font-bold text-green-600">₺49</div>
-                    <div className="text-sm text-gray-600">Doğrulama</div>
-                  </div>
-                  <div className="bg-white rounded-lg p-4">
-                    <div className="text-2xl font-bold text-purple-600">₺29</div>
-                    <div className="text-sm text-gray-600">Platform</div>
-                  </div>
-                </div>
-                <div className="text-center mt-4">
-                  <div className="text-3xl font-bold text-gray-800">Toplam: ₺177</div>
-                  <p className="text-sm text-gray-600 mt-2">Tek seferlik ödeme</p>
-                </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Seçilen Paket:</span>
+                <span className="font-semibold text-green-700">{PRICING_PLANS[form.selectedPlan].name}</span>
               </div>
-
-              <div className="flex justify-center space-x-4">
-                <button
-                  onClick={() => {
-                    setIsSuccess(false);
-                    setShowPayment(false);
-                    setCurrentStep(1);
-                    setFormData({
-                      name: '',
-                      category: '',
-                      phone: '',
-                      location: '',
-                      experience: '',
-                      description: '',
-                      email: '',
-                      hourlyRate: '',
-                      workingHours: '',
-                      services: [],
-                      certifications: []
-                    });
-                  }}
-                  className="px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
-                >
-                  Geri Dön
-                </button>
-                <button
-                  onClick={() => setShowPayment(true)}
-                  className="flex items-center bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors"
-                >
-                  <CreditCard className="w-4 h-4 mr-2" />
-                  Ödeme Yap
-                </button>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Ödenen Tutar:</span>
+                <span className="font-bold text-green-700 text-lg">{PRICING_PLANS[form.selectedPlan].price} ₺</span>
               </div>
             </div>
+          </div>
+          
+          <div className="bg-blue-50 rounded-2xl p-4 mb-6">
+            <h4 className="font-semibold text-blue-800 mb-2">📧 Sonraki Adımlar</h4>
+            <ul className="text-sm text-blue-700 space-y-1">
+              <li>• E-posta adresinize onay mesajı gönderildi</li>
+              <li>• Profil bilgilerinizi tamamlayabilirsiniz</li>
+              <li>• Müşteri talepleri almaya başlayabilirsiniz</li>
+            </ul>
+          </div>
+          
+          <button
+            onClick={() => navigate('/')}
+            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-2xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 font-semibold shadow-lg"
+          >
+            Ana Sayfaya Dön
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-            {/* Payment Component */}
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              <h3 className="text-2xl font-bold text-gray-800 mb-6">Güvenli Ödeme</h3>
-              <div className="bg-gray-50 rounded-xl p-6 mb-6">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Kayıt Ücreti:</span>
-                  <span className="text-2xl font-bold text-gray-800">₺177</span>
+  // Enhanced Payment Step with better UI
+  if (step === STEP_PAYMENT) {
+    const selectedPlan = PRICING_PLANS[form.selectedPlan];
+    
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 px-4 py-8">
+        <div className="max-w-6xl w-full">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 animate-fade-in">
+            <div className="mb-8 text-center">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-bounce">
+                <CreditCard className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl font-bold text-gray-800 mb-3">💳 Güvenli Ödeme</h2>
+              <p className="text-gray-600 text-lg">Seçtiğiniz paket için güvenli ödeme yapın</p>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Enhanced Order Summary */}
+              <div className="space-y-6">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-6 border border-blue-200">
+                  <h3 className="font-bold text-gray-800 mb-6 flex items-center text-lg">
+                    <CheckCircle className="w-6 h-6 mr-3 text-blue-600" />
+                    📋 Sipariş Özeti
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center p-3 bg-white rounded-xl">
+                      <span className="text-gray-600 font-medium">Paket:</span>
+                      <span className="font-bold text-gray-800">{selectedPlan.name}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-white rounded-xl">
+                      <span className="text-gray-600 font-medium">Süre:</span>
+                      <span className="font-bold text-gray-800">{selectedPlan.duration}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-white rounded-xl">
+                      <span className="text-gray-600 font-medium">Saatlik Ücret:</span>
+                      <span className="font-bold text-gray-800">{form.hourlyRate} ₺/saat</span>
+                    </div>
+                    <hr className="border-gray-200" />
+                    <div className="flex justify-between items-center p-3 bg-green-50 rounded-xl">
+                      <span className="text-gray-600 font-medium">İndirim:</span>
+                      <span className="font-bold text-green-600">%{selectedPlan.discount}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-white">
+                      <span className="font-bold text-lg">Toplam:</span>
+                      <span className="font-bold text-2xl">{selectedPlan.price} ₺</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Enhanced Package Features */}
+                <div className="bg-gradient-to-br from-gray-50 to-slate-50 rounded-3xl p-6 border border-gray-200">
+                  <h4 className="font-bold text-gray-800 mb-4 text-lg">✨ Paket Özellikleri</h4>
+                  <ul className="space-y-3">
+                    {selectedPlan.features.map((feature, index) => (
+                      <li key={index} className="flex items-start text-sm text-gray-700 p-2 bg-white rounded-lg">
+                        <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
+                        <span className="leading-relaxed">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                {/* Enhanced Security Info */}
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-6 border border-green-200">
+                  <h4 className="font-bold text-green-800 mb-4 flex items-center text-lg">
+                    <Shield className="w-6 h-6 mr-3" />
+                    🔒 Güvenlik
+                  </h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center p-2 bg-white rounded-lg">
+                      <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                      <span className="text-sm text-green-700 font-medium">SSL şifreli güvenli ödeme</span>
+                    </div>
+                    <div className="flex items-center p-2 bg-white rounded-lg">
+                      <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                      <span className="text-sm text-green-700 font-medium">Kişisel bilgileriniz korunur</span>
+                    </div>
+                    <div className="flex items-center p-2 bg-white rounded-lg">
+                      <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
+                      <span className="text-sm text-green-700 font-medium">30 gün para iade garantisi</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               
-              {/* Payment Form */}
+              {/* Enhanced Payment Form */}
               <div className="space-y-6">
-                <div>
-                  <label className="block text-gray-700 text-sm font-bold mb-2">
-                    <CreditCard className="w-4 h-4 inline mr-2" />
-                    Kart Numarası
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="1234 5678 9012 3456"
-                    maxLength={19}
+                <div className="bg-white border-2 border-gray-100 rounded-3xl p-6 shadow-lg">
+                  <h4 className="font-bold text-gray-800 mb-6 text-lg flex items-center">
+                    <CreditCard className="w-6 h-6 mr-3 text-blue-600" />
+                    💳 Ödeme Bilgileri
+                  </h4>
+                  
+                  <ShopierPayment
+                    amount={selectedPlan.price}
+                    description={`${selectedPlan.name} - ${form.name} - ${form.category}`}
+                    onSuccess={handlePaymentSuccess}
+                    onError={handlePaymentError}
+                    ustaData={{
+                      name: form.name,
+                      category: form.category,
+                      experience: form.experience,
+                      location: form.location,
+                      hourlyRate: form.hourlyRate,
+                      specialties: form.specialties,
+                      serviceAreas: form.serviceAreas,
+                      email: form.email,
+                      phone: form.phone
+                    }}
+                    packageType={form.selectedPlan}
                   />
                 </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">Son Kullanma</label>
-                    <input
-                      type="text"
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="MM/YY"
-                      maxLength={5}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">CVV</label>
-                    <input
-                      type="text"
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="123"
-                      maxLength={4}
-                    />
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => handlePaymentSuccess()}
-                  className="w-full bg-green-600 text-white py-4 rounded-xl hover:bg-green-700 transition-colors font-semibold"
-                >
-                  ₺177 Öde
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (isSuccess) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
-          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Başvurunuz Alındı!</h2>
-          <p className="text-gray-600 mb-6">
-            Usta başvurunuz başarıyla alındı. Şimdi kayıt ücretini ödeyerek işlemi tamamlayabilirsiniz.
-          </p>
-          <div className="space-y-4">
-            <button
-              onClick={() => setShowPayment(true)}
-              className="w-full bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors"
-            >
-              <CreditCard className="w-4 h-4 inline mr-2" />
-              Kayıt Ücretini Öde (₺177)
-            </button>
-            <button
-              onClick={() => {
-                setIsSuccess(false);
-                setCurrentStep(1);
-                setFormData({
-                  name: '',
-                  category: '',
-                  phone: '',
-                  location: '',
-                  experience: '',
-                  description: '',
-                  email: '',
-                  hourlyRate: '',
-                  workingHours: '',
-                  services: [],
-                  certifications: []
-                });
-              }}
-              className="w-full bg-gray-100 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-200 transition-colors"
-            >
-              Daha Sonra
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Usta <span className="text-yellow-300">Olun</span>
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed">
-            Sitemize katılın ve müşterilerinizle buluşun.
-            <br />Binlerce potansiyel müşteri sizi bekliyor!
-          </p>
-        </div>
-      </section>
-
-      {/* Form Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            {/* Progress Bar */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  Adım {currentStep} / {totalSteps}
-                </h2>
-                <div className="text-sm text-gray-600">
-                  %{Math.round((currentStep / totalSteps) * 100)} Tamamlandı
-                </div>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(currentStep / totalSteps) * 100}%` }}
-                ></div>
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-8">
-              {/* Step 1: Basic Information */}
-              {currentStep === 1 && (
-                <div className="space-y-6">
-                  <h3 className="text-xl font-semibold mb-6 text-gray-800">Temel Bilgiler</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        <User className="w-4 h-4 inline mr-2" />
-                        Ad Soyad
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.name ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                        placeholder="Adınız ve soyadınız"
-                      />
-                      {errors.name && (
-                        <p className="text-red-500 text-sm mt-1 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1" />
-                          {errors.name}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        <Phone className="w-4 h-4 inline mr-2" />
-                        Telefon
-                      </label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.phone ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                        placeholder="0532 123 45 67"
-                      />
-                      {errors.phone && (
-                        <p className="text-red-500 text-sm mt-1 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1" />
-                          {errors.phone}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        <Briefcase className="w-4 h-4 inline mr-2" />
-                        Kategori
-                      </label>
-                      <select
-                        name="category"
-                        value={formData.category}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.category ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                      >
-                        <option value="">Kategori Seçin</option>
-                        {kategoriler.map((kategori) => (
-                          <option key={kategori.id} value={kategori.name}>
-                            {kategori.name}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.category && (
-                        <p className="text-red-500 text-sm mt-1 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1" />
-                          {errors.category}
-                        </p>
-                      )}
+                
+                {paymentError && (
+                  <div className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-3xl p-6 animate-shake">
+                    <div className="flex items-center">
+                      <AlertCircle className="w-6 h-6 text-red-500 mr-3" />
+                      <span className="text-red-700 font-medium">{paymentError}</span>
                     </div>
                   </div>
-                </div>
-              )}
-
-              {/* Step 2: Experience & Location */}
-              {currentStep === 2 && (
-                <div className="space-y-6">
-                  <h3 className="text-xl font-semibold mb-6 text-gray-800">Deneyim ve Konum</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        <MapPin className="w-4 h-4 inline mr-2" />
-                        Konum
-                      </label>
-                      <input
-                        type="text"
-                        name="location"
-                        value={formData.location}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.location ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                        placeholder="Çankaya, Ankara"
-                      />
-                      {errors.location && (
-                        <p className="text-red-500 text-sm mt-1 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1" />
-                          {errors.location}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        <Clock className="w-4 h-4 inline mr-2" />
-                        Deneyim (Yıl)
-                      </label>
-                      <input
-                        type="number"
-                        name="experience"
-                        value={formData.experience}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.experience ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                        placeholder="5"
-                        min="0"
-                        max="50"
-                      />
-                      {errors.experience && (
-                        <p className="text-red-500 text-sm mt-1 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1" />
-                          {errors.experience}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        <FileText className="w-4 h-4 inline mr-2" />
-                        Açıklama
-                      </label>
-                      <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        rows={4}
-                        className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.description ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                        placeholder="Hizmet alanlarınız, uzmanlıklarınız ve deneyimleriniz hakkında bilgi verin..."
-                      />
-                      {errors.description && (
-                        <p className="text-red-500 text-sm mt-1 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1" />
-                          {errors.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 3: Contact & Pricing */}
-              {currentStep === 3 && (
-                <div className="space-y-6">
-                  <h3 className="text-xl font-semibold mb-6 text-gray-800">İletişim ve Fiyatlandırma</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        E-posta
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.email ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                        placeholder="usta@email.com"
-                      />
-                      {errors.email && (
-                        <p className="text-red-500 text-sm mt-1 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1" />
-                          {errors.email}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        <Star className="w-4 h-4 inline mr-2" />
-                        Saatlik Ücret (₺)
-                      </label>
-                      <input
-                        type="number"
-                        name="hourlyRate"
-                        value={formData.hourlyRate}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.hourlyRate ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                        placeholder="150"
-                        min="0"
-                      />
-                      {errors.hourlyRate && (
-                        <p className="text-red-500 text-sm mt-1 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1" />
-                          {errors.hourlyRate}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        <Clock className="w-4 h-4 inline mr-2" />
-                        Çalışma Saatleri
-                      </label>
-                      <input
-                        type="text"
-                        name="workingHours"
-                        value={formData.workingHours}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Pazartesi - Cumartesi: 08:00 - 18:00"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 4: Services & Certifications */}
-              {currentStep === 4 && (
-                <div className="space-y-6">
-                  <h3 className="text-xl font-semibold mb-6 text-gray-800">Hizmetler ve Sertifikalar</h3>
-                  
-                  <div className="space-y-6">
-                    <div>
-                      <label className="block text-gray-700 text-sm font-bold mb-4">
-                        Hizmet Alanları
-                      </label>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {['Elektrik Tesisatı', 'Su Tesisatı', 'Boya', 'Temizlik', 'İnşaat', 'Tadilat', 'Kombi Servisi', 'Cam Balkon', 'Asansör Bakımı'].map((service) => (
-                          <label key={service} className="flex items-center space-x-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={formData.services.includes(service)}
-                              onChange={() => handleServiceToggle(service)}
-                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span className="text-sm text-gray-700">{service}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-700 text-sm font-bold mb-4">
-                        Sertifikalar ve Belgeler
-                      </label>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {['Elektrik Ustası Belgesi', 'Su Tesisatı Sertifikası', 'İSG Belgesi', 'Meslek Lisesi Diploması', 'Teknik Servis Belgesi', 'Kalite Belgesi'].map((cert) => (
-                          <label key={cert} className="flex items-center space-x-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={formData.certifications.includes(cert)}
-                              onChange={() => handleCertificationToggle(cert)}
-                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span className="text-sm text-gray-700">{cert}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        <Upload className="w-4 h-4 inline mr-2" />
-                        Sertifika Dosyaları
-                      </label>
-                      <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center">
-                        <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-gray-600">Dosyaları buraya sürükleyin veya tıklayın</p>
-                        <p className="text-sm text-gray-500 mt-1">PDF, JPG, PNG (Max 5MB)</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Navigation Buttons */}
-              <div className="flex justify-between mt-8 pt-6 border-t">
-                {currentStep > 1 && (
-                  <button
-                    type="button"
-                    onClick={handlePrev}
-                    className="flex items-center px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Önceki
-                  </button>
                 )}
                 
-                <div className="ml-auto">
-                  {currentStep < totalSteps ? (
-                    <button
-                      type="button"
-                      onClick={handleNext}
-                      className="flex items-center bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors"
-                    >
-                      Sonraki
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="flex items-center bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition-colors disabled:opacity-50"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Gönderiliyor...
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle className="w-4 h-4 mr-2" />
-                          Başvuruyu Gönder
-                        </>
-                      )}
-                    </button>
-                  )}
+                <div className="text-center">
+                  <button
+                    onClick={() => setStep(STEP_PRICING_PLANS)}
+                    className="text-blue-600 hover:text-blue-700 hover:underline flex items-center justify-center mx-auto font-medium transition-colors"
+                  >
+                    <ArrowLeft className="w-5 h-5 mr-2" /> Paket Seçimine Geri Dön
+                  </button>
                 </div>
               </div>
-            </form>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+    );
+  }
+
+  // Enhanced Pricing Plans Step with better UI
+  if (step === STEP_PRICING_PLANS) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 px-4 py-8">
+        <div className="max-w-7xl w-full">
+          <div className="text-center mb-12">
+            <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-6 animate-bounce">
+              <CreditCard className="w-10 h-10 text-white" />
+            </div>
+            <h2 className="text-4xl font-bold text-gray-800 mb-4">💎 Paket Seçimi</h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">İhtiyacınıza en uygun paketi seçin ve fiyatlandırmanızı belirleyin</p>
+          </div>
+          
+          {/* Enhanced Pricing Plans */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {Object.entries(PRICING_PLANS).map(([key, plan]) => (
+              <div
+                key={key}
+                className={`relative bg-white rounded-3xl shadow-xl p-8 border-2 transition-all duration-500 cursor-pointer hover:shadow-2xl transform hover:-translate-y-2 ${
+                  form.selectedPlan === key 
+                    ? 'border-blue-500 shadow-blue-100 scale-105 ring-4 ring-blue-100' 
+                    : 'border-gray-200 hover:border-blue-300'
+                }`}
+                onClick={() => handleInputChange('selectedPlan', key)}
+              >
+                {/* Popular Badge */}
+                {plan.popular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg animate-pulse">
+                    ⭐ {plan.badge}
+                  </div>
+                )}
+                
+                {/* Discount Badge */}
+                <div className="absolute -top-3 -right-3 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                  %{plan.discount} İndirim
+                </div>
+                
+                <div className="text-center mb-8">
+                  <div className={`w-20 h-20 rounded-3xl bg-gradient-to-r ${plan.color} flex items-center justify-center mx-auto mb-6 shadow-lg`}>
+                    <div className="text-white">{plan.icon}</div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-800 mb-4">{plan.name}</h3>
+                  
+                  {/* Enhanced Price Display */}
+                  <div className="mb-6">
+                    <div className="flex items-center justify-center gap-3 mb-2">
+                      <span className="text-4xl font-bold text-blue-600">{plan.price} ₺</span>
+                      <span className="text-xl text-gray-400 line-through">{plan.originalPrice} ₺</span>
+                    </div>
+                    <div className="text-sm text-gray-500 bg-gray-50 rounded-full px-4 py-2 inline-block">
+                      {plan.duration}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Enhanced Features */}
+                <ul className="space-y-4 mb-8">
+                  {plan.features.map((feature, index) => (
+                    <li key={index} className="flex items-start text-sm text-gray-700">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0 mt-0.5">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                      </div>
+                      <span className="leading-relaxed">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                
+                {/* Enhanced Selection Button */}
+                <button
+                  className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 transform hover:scale-105 ${
+                    form.selectedPlan === key
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {form.selectedPlan === key ? '✓ Seçildi' : 'Seç'}
+                </button>
+              </div>
+            ))}
+          </div>
+          
+          {/* Enhanced Pricing Information */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-8 mb-8 border border-blue-200">
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-blue-800 mb-6">🛡️ Güvenlik ve Garanti</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-blue-700">
+                <div className="flex items-center justify-center p-4 bg-white rounded-2xl shadow-sm">
+                  <Shield className="w-6 h-6 mr-3 text-blue-600" />
+                  <span className="font-semibold">Güvenli Ödeme</span>
+                </div>
+                <div className="flex items-center justify-center p-4 bg-white rounded-2xl shadow-sm">
+                  <Zap className="w-6 h-6 mr-3 text-blue-600" />
+                  <span className="font-semibold">Anında Aktivasyon</span>
+                </div>
+                <div className="flex items-center justify-center p-4 bg-white rounded-2xl shadow-sm">
+                  <CheckCircle className="w-6 h-6 mr-3 text-blue-600" />
+                  <span className="font-semibold">30 Gün Garanti</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Enhanced Hourly Rate Section */}
+          <div className="bg-white rounded-3xl shadow-xl p-8 mb-8">
+            <h3 className="font-bold text-gray-800 mb-6 flex items-center text-2xl">
+              <CreditCard className="w-7 h-7 mr-3 text-blue-600" />
+              💰 Saatlik Ücret Belirleme
+            </h3>
+            <p className="text-gray-600 mb-6 text-lg">Müşterilerinize sunacağınız saatlik ücreti belirleyin</p>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div>
+                <label className="block text-gray-700 text-lg font-bold mb-4">Saatlik Ücret (₺)</label>
+                <div className="flex items-center space-x-4">
+                  <input
+                    type="number"
+                    value={form.hourlyRate}
+                    onChange={(e) => handleInputChange('hourlyRate', e.target.value)}
+                    className={`flex-1 px-6 py-4 rounded-2xl border-2 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:border-blue-500 text-lg font-semibold ${
+                      errors.hourlyRate ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="Örn: 150"
+                  />
+                  <span className="text-gray-600 font-bold text-lg">₺/saat</span>
+                </div>
+                {errors.hourlyRate && (
+                  <p className="text-red-500 text-sm mt-2 flex items-center">
+                    <AlertCircle className="w-5 h-5 mr-2" />
+                    {errors.hourlyRate}
+                  </p>
+                )}
+              </div>
+              
+              <div>
+                <label className="block text-gray-700 text-lg font-bold mb-4">💡 Önerilen Fiyat Aralığı</label>
+                <div className="bg-gradient-to-br from-gray-50 to-slate-50 rounded-2xl p-6 border border-gray-200">
+                  <div className="text-sm text-gray-700 space-y-3">
+                    <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                      <span>🧹 Temizlik:</span>
+                      <span className="font-semibold text-green-600">80-120 ₺/saat</span>
+                    </div>
+                    <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                      <span>⚡ Elektrik:</span>
+                      <span className="font-semibold text-green-600">150-250 ₺/saat</span>
+                    </div>
+                    <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                      <span>🚰 Su Tesisatı:</span>
+                      <span className="font-semibold text-green-600">120-200 ₺/saat</span>
+                    </div>
+                    <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                      <span>🪑 Mobilya:</span>
+                      <span className="font-semibold text-green-600">100-180 ₺/saat</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Enhanced Selected Plan Summary */}
+          {form.selectedPlan && (
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl p-8 mb-8 border border-green-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-bold text-green-800 mb-2 text-xl">✅ Seçilen Paket</h4>
+                  <p className="text-green-700 text-lg">{PRICING_PLANS[form.selectedPlan as keyof typeof PRICING_PLANS].name}</p>
+                </div>
+                <div className="text-right">
+                  <div className="text-3xl font-bold text-green-800">
+                    {PRICING_PLANS[form.selectedPlan as keyof typeof PRICING_PLANS].price} ₺
+                  </div>
+                  <div className="text-sm text-green-600">Bir kerelik ödeme</div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <div className="flex gap-6">
+            <button
+              onClick={prevStep}
+              className="flex-1 bg-gray-100 text-gray-700 px-8 py-4 rounded-2xl hover:bg-gray-200 transition-all duration-300 font-semibold text-lg"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2 inline" /> Geri
+            </button>
+            <button
+              onClick={nextStep}
+              disabled={!form.selectedPlan || !form.hourlyRate}
+              className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-2xl hover:from-blue-700 hover:to-blue-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-300 font-bold text-lg shadow-lg transform hover:scale-105"
+            >
+              Devam Et <ArrowRight className="w-5 h-5 ml-2 inline" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Location & Services Step
+  if (step === STEP_LOCATION_SERVICES) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
+        <div className="max-w-2xl w-full">
+          <div className="bg-white rounded-2xl shadow-lg p-8 animate-fade-in">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Lokasyon ve Hizmetler</h2>
+            
+            <div className="space-y-6">
+              <div>
+                <label className="block text-gray-700 text-sm font-bold mb-2">Ana Lokasyon</label>
+                <input
+                  type="text"
+                  value={form.location}
+                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.location ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="Örn: Çankaya, Ankara"
+                />
+                {errors.location && (
+                  <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.location}
+                  </p>
+                )}
+              </div>
+              
+              <div>
+                <label className="block text-gray-700 text-sm font-bold mb-2">Hizmet Verdiğiniz Bölgeler</label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {serviceAreas.map(area => (
+                    <label key={area} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={form.serviceAreas.includes(area)}
+                        onChange={(e) => handleArrayChange('serviceAreas', area, e.target.checked)}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700">{area}</span>
+                    </label>
+                  ))}
+                </div>
+                {errors.serviceAreas && (
+                  <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.serviceAreas}
+                  </p>
+                )}
+              </div>
+              
+              <div>
+                <label className="block text-gray-700 text-sm font-bold mb-2">Hakkınızda</label>
+                <textarea
+                  value={form.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  rows={4}
+                  className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.description ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="Deneyimleriniz, uzmanlık alanlarınız ve hizmet kaliteniz hakkında bilgi verin..."
+                />
+                {errors.description && (
+                  <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.description}
+                  </p>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex gap-4 mt-8">
+              <button
+                onClick={prevStep}
+                className="flex-1 bg-gray-100 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-200 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1 inline" /> Geri
+              </button>
+              <button
+                onClick={nextStep}
+                className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors font-semibold"
+              >
+                Devam Et <ArrowRight className="w-4 h-4 ml-1 inline" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Experience Details Step
+  if (step === STEP_EXPERIENCE_DETAILS) {
+    const categorySpecialties = {
+      'Elektrik': ['Elektrik Tesisatı', 'Aydınlatma', 'Güvenlik Sistemleri', 'Solar Panel', 'Arıza Giderme'],
+      'Su Tesisatı': ['Su Tesisatı', 'Kanalizasyon', 'Kombi Servisi', 'Su Kaçağı', 'Isıtma Sistemleri'],
+      'Temizlik': ['Ev Temizliği', 'Ofis Temizliği', 'Derin Temizlik', 'Cam Temizliği', 'Halı Yıkama'],
+      'Mobilya': ['Mobilya Montajı', 'Mobilya Tamiri', 'Dolap Kurulumu', 'Özel Tasarım', 'Restorasyon'],
+      'Boya & Badana': ['İç Cephe Boya', 'Dış Cephe Boya', 'Dekoratif Boya', 'Sıva İşleri', 'Alçı İşleri'],
+      'İnşaat & Tadilat': ['Tadilat', 'Duvar Örme', 'Sıva İşleri', 'Yıkım', 'Küçük İnşaat'],
+      'Bahçe & Peyzaj': ['Bahçe Düzenleme', 'Çim Ekleme', 'Ağaç Budama', 'Sulama Sistemi', 'Peyzaj Tasarımı'],
+      'Klima & Havalandırma': ['Klima Montajı', 'Klima Bakımı', 'Klima Onarımı', 'Havalandırma Sistemi', 'Klima Temizliği'],
+      'Cam & Pencere': ['Cam Değişimi', 'Pencere Tamiri', 'Cam Montajı', 'Cam Temizliği', 'Çift Cam Montajı'],
+      'Halı & Perde': ['Halı Yıkama', 'Perde Montajı', 'Stor Perde', 'Tül Perde', 'Halı Tamiri'],
+      'Güvenlik Sistemleri': ['Kamera Sistemi', 'Alarm Sistemi', 'İnterkom', 'Güvenlik Kapısı', 'Kartlı Geçiş'],
+      'Asansör & Yürüyen Merdiven': ['Asansör Bakımı', 'Yürüyen Merdiven', 'Asansör Modernizasyonu', 'Asansör Tamiri', 'Asansör Kontrol']
+    };
+
+    const currentSpecialties = categorySpecialties[form.category as keyof typeof categorySpecialties] || [];
+
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
+        <div className="max-w-2xl w-full">
+          <div className="bg-white rounded-2xl shadow-lg p-8 animate-fade-in">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Deneyim ve Uzmanlık</h2>
+            
+            <div className="space-y-6">
+              <div>
+                <label className="block text-gray-700 text-sm font-bold mb-2">Deneyim Yılı</label>
+                <input
+                  type="number"
+                  value={form.experience}
+                  onChange={(e) => handleInputChange('experience', e.target.value)}
+                  className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    errors.experience ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="Kaç yıllık deneyiminiz var?"
+                />
+                {errors.experience && (
+                  <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.experience}
+                  </p>
+                )}
+              </div>
+              
+              <div>
+                <label className="block text-gray-700 text-sm font-bold mb-2">Uzmanlık Alanları</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {currentSpecialties.map(specialty => (
+                    <label key={specialty} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={form.specialties.includes(specialty)}
+                        onChange={(e) => handleArrayChange('specialties', specialty, e.target.checked)}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700">{specialty}</span>
+                    </label>
+                  ))}
+                </div>
+                {errors.specialties && (
+                  <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    {errors.specialties}
+                  </p>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex gap-4 mt-8">
+              <button
+                onClick={prevStep}
+                className="flex-1 bg-gray-100 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-200 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1 inline" /> Geri
+              </button>
+              <button
+                onClick={nextStep}
+                className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors font-semibold"
+              >
+                Devam Et <ArrowRight className="w-4 h-4 ml-1 inline" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Category Selection Step
+  if (step === STEP_CATEGORY_SELECTION) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
+        <div className="max-w-4xl w-full">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">Kategori Seçimi</h2>
+            <p className="text-gray-600">Hangi alanda hizmet veriyorsunuz?</p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {categories.map(category => (
+              <div
+                key={category.id}
+                className={`bg-white rounded-2xl shadow-lg p-6 cursor-pointer transition-all duration-300 hover:shadow-xl border-2 ${
+                  form.category === category.name 
+                    ? 'border-blue-500 shadow-blue-100' 
+                    : 'border-gray-200 hover:border-blue-300'
+                }`}
+                onClick={() => handleInputChange('category', category.name)}
+              >
+                <div className="text-center">
+                  <div className="text-3xl mb-3">{category.icon}</div>
+                  <h3 className="font-semibold text-gray-800">{category.name}</h3>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {errors.category && (
+            <div className="mt-4 text-center">
+              <p className="text-red-500 text-sm flex items-center justify-center">
+                <AlertCircle className="w-4 h-4 mr-1" />
+                {errors.category}
+              </p>
+            </div>
+          )}
+          
+          <div className="flex gap-4 mt-8">
+            <button
+              onClick={prevStep}
+              className="flex-1 bg-gray-100 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-200 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1 inline" /> Geri
+            </button>
+            <button
+              onClick={nextStep}
+              className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors font-semibold"
+            >
+              Devam Et <ArrowRight className="w-4 h-4 ml-1 inline" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Basic Info Step
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
+      <div className="max-w-lg w-full">
+        <div className="bg-white rounded-2xl shadow-lg p-8 animate-fade-in">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">Usta Kaydı</h2>
+            <p className="text-gray-600">Güvenilir ustalar ailesine katılın</p>
+          </div>
+          
+          <StepProgress
+            currentStep={step}
+            totalSteps={6}
+            steps={stepConfig}
+          />
+          
+          <form onSubmit={(e) => { e.preventDefault(); nextStep(); }} className="space-y-6">
+            <div>
+              <label className="block text-gray-700 text-sm font-bold mb-2">Ad Soyad</label>
+              <input
+                type="text"
+                value={form.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+                className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.name ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Adınızı ve soyadınızı girin"
+              />
+              {errors.name && (
+                <p className="text-red-500 text-sm mt-1 flex items-center">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {errors.name}
+                </p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-gray-700 text-sm font-bold mb-2">Telefon</label>
+              <input
+                type="tel"
+                value={form.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.phone ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="05xx xxx xx xx"
+              />
+              {errors.phone && (
+                <p className="text-red-500 text-sm mt-1 flex items-center">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {errors.phone}
+                </p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-gray-700 text-sm font-bold mb-2">E-posta</label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.email ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="ornek@email.com"
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1 flex items-center">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {errors.email}
+                </p>
+              )}
+            </div>
+            
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors font-semibold"
+            >
+              Devam Et <ArrowRight className="w-4 h-4 ml-1 inline" />
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

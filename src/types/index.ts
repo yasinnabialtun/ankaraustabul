@@ -7,9 +7,12 @@ export interface Usta {
   location: string;
   phone: string;
   description: string;
-  image?: string;
+  image: string;
   hourlyRate: number;
   reviews: number;
+  specialties?: string[];
+  availability?: string;
+  verified?: boolean;
 }
 
 export interface Kategori {
@@ -18,6 +21,8 @@ export interface Kategori {
   description: string;
   icon: string;
   ustalar: Usta[];
+  image?: string;
+  popularServices?: string[];
 }
 
 export interface BlogPost {
@@ -26,6 +31,7 @@ export interface BlogPost {
   content: string;
   author: string;
   date: string;
+  category: string;
+  readTime: number;
   image?: string;
-  slug: string;
 } 

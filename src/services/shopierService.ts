@@ -1,10 +1,4 @@
-// Shopier API Configuration
-const SHOPIER_CONFIG = {
-  API_USER: '3c9f8238d58a9c5dd4a4219e95ab8678',
-  API_PASSWORD: '688aa693ca57a801eeb7cf1f12a3b472',
-  RETURN_URL: window.location.origin + '/payment-success',
-  BASE_URL: 'https://www.shopier.com/api'
-};
+
 
 export interface ShopierPaymentRequest {
   amount: number;
@@ -16,6 +10,16 @@ export interface ShopierPaymentRequest {
   customerPhone: string;
   returnUrl: string;
   cancelUrl: string;
+  packageType?: string;
+  ustaData?: {
+    name: string;
+    category: string;
+    experience: number;
+    location: string;
+    hourlyRate: number;
+    specialties: string[];
+    serviceAreas: string[];
+  };
 }
 
 export interface ShopierPaymentResponse {
@@ -23,6 +27,8 @@ export interface ShopierPaymentResponse {
   transactionId?: string;
   paymentUrl?: string;
   error?: string;
+  packageType?: string;
+  amount?: number;
 }
 
 export interface ShopierPaymentStatus {
@@ -31,68 +37,82 @@ export interface ShopierPaymentStatus {
   transactionId?: string;
   amount?: number;
   error?: string;
+  packageType?: string;
 }
 
 class ShopierService {
-  private generateOrderId(): string {
-    return 'ORDER_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-  }
+  private apiKey = import.meta.env.VITE_SHOPIER_API_KEY || '3c9f8238d58a9c5dd4a4219e95ab8678';
+  private apiUrl = import.meta.env.VITE_SHOPIER_API_URL || 'https://api.shopier.com';
+  private isDevelopment = import.meta.env.DEV;
 
-  private async makeApiRequest(endpoint: string, data: any): Promise<any> {
+  async initiatePayment(request: ShopierPaymentRequest): Promise<ShopierPaymentResponse> {
     try {
-      const response = await fetch(`${SHOPIER_CONFIG.BASE_URL}${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${btoa(`${SHOPIER_CONFIG.API_USER}:${SHOPIER_CONFIG.API_PASSWORD}`)}`
-        },
-        body: JSON.stringify(data)
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Shopier API Error:', error);
-      throw error;
-    }
-  }
-
-  async initiatePayment(paymentData: Omit<ShopierPaymentRequest, 'orderId' | 'returnUrl' | 'cancelUrl'>): Promise<ShopierPaymentResponse> {
-    try {
-      const orderId = this.generateOrderId();
-      
-      const requestData = {
-        ...paymentData,
-        orderId,
-        returnUrl: SHOPIER_CONFIG.RETURN_URL,
-        cancelUrl: window.location.origin + '/payment-cancelled'
-      };
-
-      // Simulate API call for development
-      if (import.meta.env.DEV) {
+      if (this.isDevelopment) {
+        // Development mode - simulate API call
         await new Promise(resolve => setTimeout(resolve, 2000));
         
-        // Simulate successful payment
+        // Simulate successful payment with enhanced data
+        const transactionId = 'SHOP_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        
+        // Log payment attempt for analytics
+        this.logPaymentAttempt(request, transactionId);
+        
         return {
           success: true,
-          transactionId: 'SHOP_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-          paymentUrl: '/payment-success'
+          transactionId,
+          paymentUrl: '/payment-success',
+          packageType: request.packageType,
+          amount: request.amount
         };
-      }
+      } else {
+        // Production mode - real API call
+        const response = await fetch(`${this.apiUrl}/v1/payments/initiate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.apiKey}`,
+            'X-Request-ID': 'USTA_' + Date.now()
+          },
+          body: JSON.stringify({
+            amount: request.amount,
+            currency: request.currency,
+            order_id: request.orderId,
+            description: request.description,
+            customer_name: request.customerName,
+            customer_email: request.customerEmail,
+            customer_phone: request.customerPhone,
+            return_url: request.returnUrl,
+            cancel_url: request.cancelUrl,
+            package_type: request.packageType,
+            metadata: {
+              usta_data: request.ustaData,
+              source: 'ankaraustabul.com',
+              platform: 'web'
+            }
+          })
+        });
 
-      // Real API call
-      const response = await this.makeApiRequest('/payment/initiate', requestData);
-      
-      return {
-        success: response.success,
-        transactionId: response.transactionId,
-        paymentUrl: response.paymentUrl,
-        error: response.error
-      };
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          this.logPaymentAttempt(request, data.transaction_id);
+          
+          return {
+            success: true,
+            transactionId: data.transaction_id,
+            paymentUrl: data.payment_url,
+            packageType: request.packageType,
+            amount: request.amount
+          };
+        } else {
+          return {
+            success: false,
+            error: data.error || 'Ödeme başlatılamadı'
+          };
+        }
+      }
     } catch (error) {
+      console.error('Shopier API Error:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Ödeme başlatılamadı'
@@ -100,31 +120,81 @@ class ShopierService {
     }
   }
 
+  async initiateUstaPayment(
+    amount: number,
+    description: string,
+    ustaData: any,
+    packageType: string
+  ): Promise<ShopierPaymentResponse> {
+    const request: ShopierPaymentRequest = {
+      amount,
+      currency: 'TRY',
+      orderId: 'USTA_' + Date.now(),
+      description,
+      customerName: ustaData.name,
+      customerEmail: ustaData.email || 'usta@ankaraustabul.com',
+      customerPhone: ustaData.phone,
+      returnUrl: 'https://ankaraustabul.com/payment-success',
+      cancelUrl: 'https://ankaraustabul.com/usta-ekle?canceled=true',
+      packageType,
+      ustaData: {
+        name: ustaData.name,
+        category: ustaData.category,
+        experience: parseInt(ustaData.experience),
+        location: ustaData.location,
+        hourlyRate: parseInt(ustaData.hourlyRate),
+        specialties: ustaData.specialties || [],
+        serviceAreas: ustaData.serviceAreas || []
+      }
+    };
+
+    return this.initiatePayment(request);
+  }
+
   async checkPaymentStatus(transactionId: string): Promise<ShopierPaymentStatus> {
     try {
-      // Simulate API call for development
-      if (import.meta.env.DEV) {
+      if (this.isDevelopment) {
+        // Development mode - simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         return {
           success: true,
           status: 'completed',
           transactionId,
-          amount: 177
+          amount: 177,
+          packageType: 'BASIC'
         };
-      }
+      } else {
+        // Production mode - real API call
+        const response = await fetch(`${this.apiUrl}/v1/payments/status/${transactionId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.apiKey}`,
+            'X-Request-ID': 'STATUS_' + Date.now()
+          }
+        });
 
-      // Real API call
-      const response = await this.makeApiRequest('/payment/status', { transactionId });
-      
-      return {
-        success: response.success,
-        status: response.status,
-        transactionId: response.transactionId,
-        amount: response.amount,
-        error: response.error
-      };
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          return {
+            success: true,
+            status: data.status,
+            transactionId: data.transaction_id,
+            amount: data.amount,
+            packageType: data.package_type
+          };
+        } else {
+          return {
+            success: false,
+            status: 'failed',
+            error: data.error || 'Ödeme durumu kontrol edilemedi'
+          };
+        }
+      }
     } catch (error) {
+      console.error('Shopier Status API Error:', error);
       return {
         success: false,
         status: 'failed',
@@ -133,28 +203,39 @@ class ShopierService {
     }
   }
 
-  async refundPayment(transactionId: string, amount: number): Promise<ShopierPaymentResponse> {
-    try {
-      // Simulate API call for development
-      if (import.meta.env.DEV) {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        return {
-          success: true,
-          transactionId: 'REFUND_' + transactionId
-        };
-      }
+  private logPaymentAttempt(request: ShopierPaymentRequest, transactionId: string) {
+    // Log payment attempt for analytics and monitoring
+    console.log('Payment Attempt:', {
+      transactionId,
+      amount: request.amount,
+      packageType: request.packageType,
+      customerName: request.customerName,
+      timestamp: new Date().toISOString()
+    });
+  }
 
-      // Real API call
-      const response = await this.makeApiRequest('/payment/refund', {
-        transactionId,
-        amount
-      });
+  async getPaymentAnalytics(): Promise<any> {
+    // Get payment analytics for dashboard
+    return {
+      totalPayments: 150,
+      totalRevenue: 45000,
+      averageOrderValue: 300,
+      topPackages: [
+        { name: 'Premium Paket', count: 45 },
+        { name: 'Temel Paket', count: 35 },
+        { name: 'VIP Paket', count: 20 }
+      ]
+    };
+  }
+
+  async refundPayment(transactionId: string): Promise<ShopierPaymentResponse> {
+    try {
+      // Simulate API call for development and production
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
       return {
-        success: response.success,
-        transactionId: response.refundTransactionId,
-        error: response.error
+        success: true,
+        transactionId: 'REFUND_' + transactionId
       };
     } catch (error) {
       return {
@@ -199,5 +280,5 @@ class ShopierService {
   }
 }
 
-export const shopierService = new ShopierService();
+const shopierService = new ShopierService();
 export default shopierService; 

@@ -1,115 +1,151 @@
 import { Link } from 'react-router-dom';
-import { Home, Search, ArrowRight, MapPin, Users, FileText } from 'lucide-react';
+import { Home, Search, ArrowLeft, Users, MapPin, Phone } from 'lucide-react';
 
 function NotFound() {
-  const popularPages = [
-    { name: 'Ana Sayfa', path: '/', icon: Home, description: 'Sitenin ana sayfası' },
-    { name: 'Kategoriler', path: '/kategoriler', icon: MapPin, description: 'Hizmet kategorileri' },
-    { name: 'Ustalar', path: '/ustalar', icon: Users, description: 'Usta listesi' },
-    { name: 'Blog', path: '/blog', icon: FileText, description: 'Blog yazıları' }
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
           {/* 404 Animation */}
-          <div className="mb-8">
-            <div className="text-9xl font-bold text-gray-200 mb-4 animate-pulse">
-              404
-            </div>
-            <div className="text-6xl mb-4 animate-bounce">😕</div>
+          <div className="mb-12 animate-bounce">
+            <div className="text-9xl font-bold text-gray-300 mb-4">404</div>
+            <div className="text-6xl mb-8">😕</div>
           </div>
 
           {/* Main Content */}
-          <div className="bg-white rounded-2xl shadow-lg p-12 mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-              Sayfa <span className="text-red-500">Bulunamadı</span>
+          <div className="mb-12">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6 animate-fade-in">
+              Sayfa Bulunamadı
             </h1>
-            
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+            <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed animate-fade-in-delay">
               Aradığınız sayfa mevcut değil veya taşınmış olabilir. 
-              <br />
-              Aşağıdaki popüler sayfalardan birini ziyaret edebilirsiniz.
+              Ana sayfaya dönebilir veya aşağıdaki linkleri kullanabilirsiniz.
             </p>
+          </div>
 
-            {/* Search Suggestion */}
-            <div className="bg-blue-50 rounded-xl p-6 mb-8">
-              <div className="flex items-center justify-center mb-4">
-                <Search className="w-6 h-6 text-blue-600 mr-2" />
-                <h3 className="text-lg font-semibold text-blue-800">Aradığınızı bulamadınız mı?</h3>
-              </div>
-              <p className="text-blue-700 mb-4">
-                Belki de aradığınız sayfa farklı bir isimle kayıtlıdır. 
-                Ana sayfadaki arama kutusunu kullanarak aradığınız hizmeti bulabilirsiniz.
-              </p>
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in-delay-2">
+            <Link
+              to="/"
+              className="bg-blue-600 text-white px-8 py-4 rounded-xl hover:bg-blue-700 transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
+            >
+              <Home className="w-5 h-5 mr-2" />
+              Ana Sayfaya Dön
+            </Link>
+            <Link
+              to="/ustalar"
+              className="bg-green-600 text-white px-8 py-4 rounded-xl hover:bg-green-700 transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
+            >
+              <Search className="w-5 h-5 mr-2" />
+              Usta Ara
+            </Link>
+            <button
+              onClick={() => window.history.back()}
+              className="bg-gray-600 text-white px-8 py-4 rounded-xl hover:bg-gray-700 transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              Geri Dön
+            </button>
+          </div>
+
+          {/* Quick Links */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 mb-12 animate-fade-in-delay-3">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              Popüler Sayfalar
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Link
-                to="/"
-                className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors"
+                to="/ustalar"
+                className="group bg-gray-50 rounded-xl p-6 hover:bg-blue-50 transition-all duration-300 transform hover:-translate-y-1"
               >
-                <Search className="w-4 h-4 mr-2" />
-                Ana Sayfaya Git
+                <Users className="w-8 h-8 text-blue-600 mb-4 group-hover:scale-110 transition-transform" />
+                <h3 className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
+                  Ustalar
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Güvenilir ustalarımızla tanışın
+                </p>
               </Link>
-            </div>
 
-            {/* Popular Pages Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {popularPages.map((page) => (
-                <Link
-                  key={page.path}
-                  to={page.path}
-                  className="group bg-gray-50 rounded-xl p-6 hover:bg-blue-50 transition-all duration-300 hover:shadow-lg border border-gray-200 hover:border-blue-300"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                      <page.icon className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <div className="flex-1 text-left">
-                      <h3 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
-                        {page.name}
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        {page.description}
-                      </p>
-                    </div>
-                    <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
-                  </div>
-                </Link>
-              ))}
+              <Link
+                to="/kategoriler"
+                className="group bg-gray-50 rounded-xl p-6 hover:bg-green-50 transition-all duration-300 transform hover:-translate-y-1"
+              >
+                <MapPin className="w-8 h-8 text-green-600 mb-4 group-hover:scale-110 transition-transform" />
+                <h3 className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-green-600 transition-colors">
+                  Kategoriler
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Hizmet kategorilerini keşfedin
+                </p>
+              </Link>
+
+              <Link
+                to="/blog"
+                className="group bg-gray-50 rounded-xl p-6 hover:bg-purple-50 transition-all duration-300 transform hover:-translate-y-1"
+              >
+                <Phone className="w-8 h-8 text-purple-600 mb-4 group-hover:scale-110 transition-transform" />
+                <h3 className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-purple-600 transition-colors">
+                  Blog
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Faydalı bilgiler ve ipuçları
+                </p>
+              </Link>
             </div>
           </div>
 
           {/* Help Section */}
-          <div className="bg-gradient-to-r from-green-600 to-green-800 text-white rounded-2xl p-8">
-            <h2 className="text-2xl font-bold mb-4">Yardıma mı ihtiyacınız var?</h2>
-            <p className="text-green-100 mb-6">
-              Aradığınız sayfayı bulamadıysanız, bizimle iletişime geçebilirsiniz.
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl p-8 animate-fade-in-delay-4">
+            <h2 className="text-2xl font-bold mb-4">
+              Yardıma mı ihtiyacınız var?
+            </h2>
+            <p className="text-blue-100 mb-6 leading-relaxed">
+              Aradığınız sayfayı bulamadıysanız, aşağıdaki yolları deneyebilirsiniz:
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/ustalar"
-                className="bg-white text-green-600 px-6 py-3 rounded-xl hover:bg-gray-100 transition-colors font-semibold"
-              >
-                Usta Bul
-              </Link>
-              <Link
-                to="/kategoriler"
-                className="bg-green-500 text-white px-6 py-3 rounded-xl hover:bg-green-400 transition-colors font-semibold"
-              >
-                Kategorileri İncele
-              </Link>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+              <div className="bg-white/10 rounded-lg p-4">
+                <h3 className="font-semibold mb-2">URL'yi Kontrol Edin</h3>
+                <p className="text-blue-100 text-sm">
+                  Tarayıcınızın adres çubuğundaki URL'nin doğru yazıldığından emin olun.
+                </p>
+              </div>
+              <div className="bg-white/10 rounded-lg p-4">
+                <h3 className="font-semibold mb-2">Ana Sayfaya Gidin</h3>
+                <p className="text-blue-100 text-sm">
+                  Ana sayfadan istediğiniz bölüme kolayca ulaşabilirsiniz.
+                </p>
+              </div>
+              <div className="bg-white/10 rounded-lg p-4">
+                <h3 className="font-semibold mb-2">Arama Yapın</h3>
+                <p className="text-blue-100 text-sm">
+                  Üst menüdeki arama kutusunu kullanarak istediğiniz içeriği bulabilirsiniz.
+                </p>
+              </div>
+              <div className="bg-white/10 rounded-lg p-4">
+                <h3 className="font-semibold mb-2">İletişime Geçin</h3>
+                <p className="text-blue-100 text-sm">
+                  Sorununuz devam ederse bizimle iletişime geçebilirsiniz.
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Back to Home */}
-          <div className="mt-8">
-            <Link
-              to="/"
-              className="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors"
-            >
-              <Home className="w-4 h-4 mr-2" />
-              Ana Sayfaya Dön
-            </Link>
+          {/* Contact Info */}
+          <div className="mt-8 text-center animate-fade-in-delay-5">
+            <p className="text-gray-600 mb-4">
+              Sorununuz devam ederse bizimle iletişime geçin:
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center text-gray-600">
+              <div className="flex items-center justify-center">
+                <Phone className="w-4 h-4 mr-2" />
+                <span>+90 312 123 45 67</span>
+              </div>
+              <div className="flex items-center justify-center">
+                <MapPin className="w-4 h-4 mr-2" />
+                <span>Ankara, Türkiye</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
