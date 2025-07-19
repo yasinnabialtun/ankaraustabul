@@ -1,26 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, TrendingUp, DollarSign, Star, Clock, MapPin, Phone, Mail, Package, Calendar, LogOut, Shield } from 'lucide-react';
-
-interface UstaRegistration {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  category: string;
-  experience: string;
-  location: string;
-  hourlyRate: string;
-  specialties: string[];
-  serviceAreas: string[];
-  packageType: string;
-  transactionId: string;
-  registrationDate: string;
-  status: 'pending' | 'approved' | 'rejected';
-}
+import { Users, TrendingUp, DollarSign, Star, Clock, MapPin, Phone, Mail, Package, Calendar, LogOut, Shield, CheckCircle, XCircle } from 'lucide-react';
+import { ustaService, UstaData } from '../services/ustaService';
 
 function AdminDashboard() {
-  const [ustalar, setUstalar] = useState<UstaRegistration[]>([]);
+  const [ustalar, setUstalar] = useState<UstaData[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     total: 0,
@@ -28,7 +12,8 @@ function AdminDashboard() {
     approved: 0,
     rejected: 0,
     thisMonth: 0,
-    thisWeek: 0
+    thisWeek: 0,
+    totalRevenue: 0
   });
   const navigate = useNavigate();
 
@@ -46,65 +31,89 @@ function AdminDashboard() {
     navigate('/admin-login');
   };
 
+  // Load real data from localStorage
   useEffect(() => {
-    // Simulate loading usta data
-    setTimeout(() => {
-      const mockData: UstaRegistration[] = [
-        {
-          id: '1',
-          name: 'Ahmet Yılmaz',
-          email: 'ahmet@example.com',
-          phone: '+905551234567',
-          category: 'Elektrik',
-          experience: '5',
-          location: 'Çankaya',
-          hourlyRate: '150',
-          specialties: ['Elektrik Tesisatı', 'Aydınlatma'],
-          serviceAreas: ['Çankaya', 'Keçiören'],
-          packageType: 'Premium Paket',
-          transactionId: 'TXN_123456',
-          registrationDate: '2024-01-15T10:30:00Z',
-          status: 'pending'
-        },
-        {
-          id: '2',
-          name: 'Mehmet Demir',
-          email: 'mehmet@example.com',
-          phone: '+905551234568',
-          category: 'Su Tesisatı',
-          experience: '8',
-          location: 'Keçiören',
-          hourlyRate: '200',
-          specialties: ['Su Tesisatı', 'Kanal Açma'],
-          serviceAreas: ['Keçiören', 'Mamak'],
-          packageType: 'VIP Paket',
-          transactionId: 'TXN_123457',
-          registrationDate: '2024-01-14T14:20:00Z',
-          status: 'approved'
-        }
-      ];
+    const loadData = () => {
+      try {
+        const allUstalar = ustaService.getAllUstalar();
+        const statistics = ustaService.getStatistics();
+        
+        setUstalar(allUstalar);
+        setStats(statistics);
+        setLoading(false);
+        
+        console.log('📊 Dashboard verileri yüklendi:', {
+          ustalar: allUstalar.length,
+          statistics
+        });
+      } catch (error) {
+        console.error('❌ Dashboard verileri yüklenemedi:', error);
+        setLoading(false);
+      }
+    };
 
-      setUstalar(mockData);
-      setStats({
-        total: mockData.length,
-        pending: mockData.filter(u => u.status === 'pending').length,
-        approved: mockData.filter(u => u.status === 'approved').length,
-        rejected: mockData.filter(u => u.status === 'rejected').length,
-        thisMonth: mockData.length,
-        thisWeek: mockData.length
-      });
-      setLoading(false);
-    }, 1000);
+    loadData();
+    
+    // Refresh data every 30 seconds
+    const interval = setInterval(loadData, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleStatusChange = (ustaId: string, newStatus: 'approved' | 'rejected') => {
-    setUstalar(prev => prev.map(usta => 
-      usta.id === ustaId ? { ...usta, status: newStatus } : usta
-    ));
+    const updatedUsta = ustaService.updateUstaStatus(ustaId, newStatus);
+    if (updatedUsta) {
+      setUstalar(prev => prev.map(usta => 
+        usta.id === ustaId ? updatedUsta : usta
+      ));
+      
+      // Update statistics
+      const newStats = ustaService.getStatistics();
+      setStats(newStats);
+      
+      console.log(`✅ Usta durumu güncellendi: ${ustaId} -> ${newStatus}`);
+    }
+  };
+
+  const handleDeleteUsta = (ustaId: string) => {
+    if (window.confirm('Bu ustayı silmek istediğinizden emin misiniz?')) {
+      const success = ustaService.deleteUsta(ustaId);
+      if (success) {
+        setUstalar(prev => prev.filter(usta => usta.id !== ustaId));
+        
+        // Update statistics
+        const newStats = ustaService.getStatistics();
+        setStats(newStats);
+        
+        console.log(`✅ Usta silindi: ${ustaId}`);
+      }
+    }
   };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString('tr-TR');
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('tr-TR', {
+      style: 'currency',
+      currency: 'TRY'
+    }).format(amount);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'approved': return 'text-green-600 bg-green-100';
+      case 'rejected': return 'text-red-600 bg-red-100';
+      default: return 'text-yellow-600 bg-yellow-100';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'approved': return <CheckCircle className="w-4 h-4" />;
+      case 'rejected': return <XCircle className="w-4 h-4" />;
+      default: return <Clock className="w-4 h-4" />;
+    }
   };
 
   if (loading) {
@@ -188,115 +197,106 @@ function AdminDashboard() {
           <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm">Bu Ay</p>
-                <p className="text-3xl font-bold text-purple-600">{stats.thisMonth}</p>
+                <p className="text-gray-600 text-sm">Toplam Gelir</p>
+                <p className="text-3xl font-bold text-purple-600">{formatCurrency(stats.totalRevenue)}</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-purple-600" />
+                <DollarSign className="w-6 h-6 text-purple-600" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Usta List */}
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-          <div className="p-6 border-b border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-800">📋 Usta Kayıtları</h2>
-            <p className="text-gray-600 mt-1">Son kayıt olan ustaları görüntüleyin ve yönetin</p>
+        <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">Usta Kayıtları</h2>
+            <div className="text-sm text-gray-600">
+              Toplam: {ustalar.length} usta
+            </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Usta</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Kategori</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Paket</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Durum</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Kayıt Tarihi</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">İşlemler</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {ustalar.map((usta) => (
-                  <tr key={usta.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                          {usta.name.charAt(0)}
+          {ustalar.length === 0 ? (
+            <div className="text-center py-12">
+              <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">Henüz Usta Kaydı Yok</h3>
+              <p className="text-gray-500">Yeni usta kayıtları burada görünecek</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {ustalar.map((usta) => (
+                <div key={usta.id} className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-4 mb-3">
+                        <h3 className="text-xl font-semibold text-gray-800">{usta.name}</h3>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(usta.status)}`}>
+                          {getStatusIcon(usta.status)}
+                          {usta.status === 'pending' ? 'Beklemede' : usta.status === 'approved' ? 'Onaylandı' : 'Reddedildi'}
+                        </span>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4 text-gray-400" />
+                          <span className="text-gray-600">{usta.email}</span>
                         </div>
-                        <div className="ml-4">
-                          <p className="font-semibold text-gray-800">{usta.name}</p>
-                          <div className="flex items-center text-sm text-gray-500">
-                            <Mail className="w-4 h-4 mr-1" />
-                            {usta.email}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-500">
-                            <Phone className="w-4 h-4 mr-1" />
-                            {usta.phone}
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-4 h-4 text-gray-400" />
+                          <span className="text-gray-600">{usta.phone}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-gray-400" />
+                          <span className="text-gray-600">{usta.location}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Package className="w-4 h-4 text-gray-400" />
+                          <span className="text-gray-600">{usta.packageType}</span>
                         </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="font-medium text-gray-800">{usta.category}</p>
-                        <p className="text-sm text-gray-500">{usta.experience} yıl deneyim</p>
-                        <p className="text-sm text-gray-500">{usta.hourlyRate} ₺/saat</p>
+                      
+                      <div className="mt-3 text-sm text-gray-500">
+                        <span>Kategori: {usta.category}</span>
+                        <span className="mx-2">•</span>
+                        <span>Deneyim: {usta.experience} yıl</span>
+                        <span className="mx-2">•</span>
+                        <span>Saatlik: {usta.hourlyRate} ₺</span>
+                        <span className="mx-2">•</span>
+                        <span>Kayıt: {formatDate(usta.registrationDate)}</span>
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        <Package className="w-4 h-4 mr-2 text-blue-600" />
-                        <span className="text-sm font-medium text-gray-800">{usta.packageType}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                        usta.status === 'approved' 
-                          ? 'bg-green-100 text-green-800' 
-                          : usta.status === 'rejected'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {usta.status === 'approved' ? 'Onaylandı' : 
-                         usta.status === 'rejected' ? 'Reddedildi' : 'Bekliyor'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Calendar className="w-4 h-4 mr-2" />
-                        {formatDate(usta.registrationDate)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex space-x-2">
-                        {usta.status === 'pending' && (
-                          <>
-                            <button
-                              onClick={() => handleStatusChange(usta.id, 'approved')}
-                              className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm font-medium transition-colors"
-                            >
-                              Onayla
-                            </button>
-                            <button
-                              onClick={() => handleStatusChange(usta.id, 'rejected')}
-                              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm font-medium transition-colors"
-                            >
-                              Reddet
-                            </button>
-                          </>
-                        )}
-                        <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-medium transition-colors">
-                          Detay
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                    
+                    <div className="flex flex-col gap-2 ml-4">
+                      {usta.status === 'pending' && (
+                        <>
+                          <button
+                            onClick={() => handleStatusChange(usta.id, 'approved')}
+                            className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm flex items-center gap-1 transition-colors"
+                          >
+                            <CheckCircle className="w-4 h-4" />
+                            Onayla
+                          </button>
+                          <button
+                            onClick={() => handleStatusChange(usta.id, 'rejected')}
+                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm flex items-center gap-1 transition-colors"
+                          >
+                            <XCircle className="w-4 h-4" />
+                            Reddet
+                          </button>
+                        </>
+                      )}
+                      <button
+                        onClick={() => handleDeleteUsta(usta.id)}
+                        className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded-lg text-sm transition-colors"
+                      >
+                        Sil
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

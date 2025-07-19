@@ -5,6 +5,7 @@ import StepProgress from '../components/StepProgress';
 import { emailService } from '../services/emailService';
 import { whatsappService } from '../services/whatsappService';
 import { CheckCircle, AlertCircle, ArrowLeft, ArrowRight, CreditCard, Star, Users, Shield, Zap, Crown, MapPin, User, Phone, Mail, Wrench, Clock, DollarSign, Calendar, Package, Check, X, Briefcase, Award } from 'lucide-react';
+import { ustaService } from '../services/ustaService';
 
 // Form Steps
 const STEP_BASIC_INFO = 1;
@@ -221,6 +222,26 @@ function UstaEkle() {
   const handlePaymentSuccess = async (transactionId: string) => {
     try {
       console.log('💳 Ödeme başarılı! Transaction ID:', transactionId);
+      
+      // Usta verilerini localStorage'a kaydet
+      const ustaData = {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        category: form.category,
+        experience: form.experience,
+        location: form.location,
+        hourlyRate: form.hourlyRate,
+        specialties: form.specialties,
+        serviceAreas: form.serviceAreas,
+        packageType: form.selectedPlan,
+        transactionId: transactionId,
+        amount: PRICING_PLANS[form.selectedPlan].price
+      };
+
+      // ustaService ile kaydet
+      const savedUsta = ustaService.addUsta(ustaData);
+      console.log('✅ Usta kaydedildi:', savedUsta);
       
       // E-posta bildirimi gönder
       await emailService.sendRegistrationNotification({
