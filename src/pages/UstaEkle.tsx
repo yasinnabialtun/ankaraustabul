@@ -4,7 +4,7 @@ import ShopierPayment from '../components/ShopierPayment';
 import StepProgress from '../components/StepProgress';
 import { emailService } from '../services/emailService';
 import { whatsappService } from '../services/whatsappService';
-import { CheckCircle, AlertCircle, ArrowLeft, ArrowRight, CreditCard, Star, Users, Shield, Zap, Crown, MapPin, User, Phone, Mail, Wrench, Clock, DollarSign, Calendar, Package, Check, X } from 'lucide-react';
+import { CheckCircle, AlertCircle, ArrowLeft, ArrowRight, CreditCard, Star, Users, Shield, Zap, Crown, MapPin, User, Phone, Mail, Wrench, Clock, DollarSign, Calendar, Package, Check, X, Briefcase, Award } from 'lucide-react';
 
 // Form Steps
 const STEP_BASIC_INFO = 1;
@@ -161,29 +161,29 @@ function UstaEkle() {
     
     switch (currentStep) {
       case STEP_BASIC_INFO:
-        if (!form.name.trim()) newErrors.name = 'Ad Soyad gerekli';
-        if (!form.phone.trim()) newErrors.phone = 'Telefon gerekli';
+    if (!form.name.trim()) newErrors.name = 'Ad Soyad gerekli';
+    if (!form.phone.trim()) newErrors.phone = 'Telefon gerekli';
         if (!form.email.trim()) newErrors.email = 'E-posta gerekli';
         else if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = 'Geçerli e-posta adresi girin';
         break;
         
       case STEP_CATEGORY_SELECTION:
-        if (!form.category) newErrors.category = 'Kategori seçin';
+    if (!form.category) newErrors.category = 'Kategori seçin';
         break;
         
       case STEP_EXPERIENCE_DETAILS:
-        if (!form.experience.trim() || isNaN(Number(form.experience))) newErrors.experience = 'Deneyim yılı geçersiz';
+    if (!form.experience.trim() || isNaN(Number(form.experience))) newErrors.experience = 'Deneyim yılı geçersiz';
         if (form.specialties.length === 0) newErrors.specialties = 'En az bir uzmanlık alanı seçin';
         break;
         
       case STEP_LOCATION_SERVICES:
-        if (!form.location.trim()) newErrors.location = 'Lokasyon gerekli';
+    if (!form.location.trim()) newErrors.location = 'Lokasyon gerekli';
         if (form.serviceAreas.length === 0) newErrors.serviceAreas = 'En az bir hizmet bölgesi seçin';
-        if (!form.description.trim()) newErrors.description = 'Açıklama gerekli';
+    if (!form.description.trim()) newErrors.description = 'Açıklama gerekli';
         break;
         
       case STEP_PRICING_PLANS:
-        if (!form.hourlyRate.trim() || isNaN(Number(form.hourlyRate))) newErrors.hourlyRate = 'Saatlik ücret geçersiz';
+    if (!form.hourlyRate.trim() || isNaN(Number(form.hourlyRate))) newErrors.hourlyRate = 'Saatlik ücret geçersiz';
         break;
     }
     
@@ -441,11 +441,11 @@ function UstaEkle() {
                     💳 Ödeme Bilgileri
                   </h4>
                   
-                  <ShopierPayment
+            <ShopierPayment
                     amount={selectedPlan.price}
                     description={`${selectedPlan.name} - ${form.name} - ${form.category}`}
-                    onSuccess={handlePaymentSuccess}
-                    onError={handlePaymentError}
+              onSuccess={handlePaymentSuccess}
+              onError={handlePaymentError}
                     ustaData={{
                       name: form.name,
                       category: form.category,
@@ -461,9 +461,9 @@ function UstaEkle() {
                   />
                 </div>
                 
-                {paymentError && (
+            {paymentError && (
                   <div className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-3xl p-6 animate-shake">
-                    <div className="flex items-center">
+                <div className="flex items-center">
                       <AlertCircle className="w-6 h-6 text-red-500 mr-3" />
                       <span className="text-red-700 font-medium">{paymentError}</span>
                     </div>
@@ -833,7 +833,7 @@ function UstaEkle() {
                       <span className="text-sm text-gray-700">{specialty}</span>
                     </label>
                   ))}
-                </div>
+              </div>
                 {errors.specialties && (
                   <p className="text-red-500 text-sm mt-1 flex items-center">
                     <AlertCircle className="w-4 h-4 mr-1" />
