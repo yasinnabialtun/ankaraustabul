@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Users, Award, Shield, Heart, Target, Zap, Star, CheckCircle, MapPin, Phone, Mail, Clock, TrendingUp, Sparkles, ArrowRight } from 'lucide-react';
 import analyticsService from '../services/analyticsService';
 import SEO from '../components/SEO';

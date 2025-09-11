@@ -350,194 +350,244 @@ body {
   }
 }
 
-/* ===== YAZI OKUNABİLİRLİK - GÜÇLÜ KURALLAR ===== */
+/* ===== GELİŞMİŞ YAZI OKUNABİLİRLİK SİSTEMİ ===== */
 
-/* 1. Tüm HTML elementleri için varsayılan renkler */
-h1, h2, h3, h4, h5, h6, p, span, div, a, label, button, input, textarea, select {
-  color: var(--gray-800) !important;
+/* 1. Temel metin renkleri - Tüm elementler için */
+* {
+  color: #1e293b !important;
 }
 
-/* 2. Material-UI Typography bileşenleri için özel kurallar */
-.MuiTypography-root {
-  color: var(--gray-800) !important;
-}
-
-.MuiTypography-h1, .MuiTypography-h2, .MuiTypography-h3, 
-.MuiTypography-h4, .MuiTypography-h5, .MuiTypography-h6 {
-  color: var(--gray-800) !important;
+/* 2. Başlıklar için güçlü kontrastlar */
+h1, h2, h3, h4, h5, h6 {
+  color: #0f172a !important;
   font-weight: 600 !important;
+  text-shadow: none !important;
 }
 
-.MuiTypography-body1, .MuiTypography-body2 {
-  color: var(--gray-700) !important;
+/* 3. Paragraf ve genel metin */
+p, span, div, label, li {
+  color: #334155 !important;
+  text-shadow: none !important;
 }
 
-.MuiTypography-caption {
-  color: var(--gray-500) !important;
+/* 4. Link renkleri */
+a {
+  color: #2563eb !important;
+  text-decoration: underline;
 }
 
-/* 3. Glassmorphism efektlerinde yazı renkleri */
+a:hover {
+  color: #1d4ed8 !important;
+}
+
+/* 5. Buton metinleri */
+button {
+  color: #1e293b !important;
+}
+
+button.MuiButton-contained,
+button[class*="bg-blue"],
+button[class*="bg-primary"],
+.gradient-bg button {
+  color: #ffffff !important;
+}
+
+/* 6. Input ve form elementleri */
+input, textarea, select {
+  color: #1e293b !important;
+  background: #ffffff !important;
+  border: 2px solid #e2e8f0 !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* 7. Card ve container'lar */
+.MuiCard-root, .card, [class*="bg-white"] {
+  background: #ffffff !important;
+  color: #1e293b !important;
+}
+
+/* 8. Glassmorphism efektleri için özel kurallar */
 .glassmorphism,
-[class*="glassmorphism"],
-[style*="backdrop-filter"],
-[style*="backdrop-filter: blur"] {
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+[style*="backdrop-filter"] {
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(203, 213, 225, 0.3) !important;
 }
 
 .glassmorphism *,
-[class*="glassmorphism"] *,
 [style*="backdrop-filter"] * {
-  color: var(--gray-800) !important;
+  color: #1e293b !important;
+  text-shadow: none !important;
 }
 
-.glassmorphism h1, .glassmorphism h2, .glassmorphism h3, 
-.glassmorphism h4, .glassmorphism h5, .glassmorphism h6,
-[class*="glassmorphism"] h1, [class*="glassmorphism"] h2, [class*="glassmorphism"] h3,
-[class*="glassmorphism"] h4, [class*="glassmorphism"] h5, [class*="glassmorphism"] h6 {
-  color: var(--gray-800) !important;
-  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9) !important;
-}
-
-.glassmorphism p, .glassmorphism span, .glassmorphism div,
-[class*="glassmorphism"] p, [class*="glassmorphism"] span, [class*="glassmorphism"] div {
-  color: var(--gray-600) !important;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6) !important;
-}
-
-/* 4. Gradient arka planlarda beyaz yazı */
-.gradient-bg,
+/* 9. Gradient arka planlar için beyaz metin */
 [class*="gradient"],
 [style*="linear-gradient"],
-[style*="radial-gradient"] {
-  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%) !important;
+[style*="background: linear-gradient"],
+.bg-gradient-to-br,
+.bg-gradient-to-r {
+  color: #ffffff !important;
 }
 
-.gradient-bg *,
 [class*="gradient"] *,
 [style*="linear-gradient"] *,
-[style*="radial-gradient"] * {
+[style*="background: linear-gradient"] *,
+.bg-gradient-to-br *,
+.bg-gradient-to-r * {
   color: #ffffff !important;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* 5. Koyu arka planlarda beyaz yazı */
-[style*="background: #1e293b"],
-[style*="background: #0f172a"],
-[style*="background: #334155"] {
+/* 10. Koyu arka planlar */
+[class*="bg-gray-800"],
+[class*="bg-gray-900"],
+[class*="bg-slate-800"],
+[class*="bg-slate-900"] {
   color: #ffffff !important;
 }
 
-[style*="background: #1e293b"] *,
-[style*="background: #0f172a"] *,
-[style*="background: #334155"] * {
+[class*="bg-gray-800"] *,
+[class*="bg-gray-900"] *,
+[class*="bg-slate-800"] *,
+[class*="bg-slate-900"] * {
   color: #ffffff !important;
 }
 
-/* 6. Şeffaf arka planlarda koyu yazı */
-[style*="background: transparent"] {
-  color: var(--gray-800) !important;
+/* 11. Material-UI bileşenleri */
+.MuiTypography-root {
+  color: #1e293b !important;
 }
 
-[style*="background: transparent"] * {
-  color: var(--gray-800) !important;
+.MuiTypography-h1, .MuiTypography-h2, .MuiTypography-h3,
+.MuiTypography-h4, .MuiTypography-h5, .MuiTypography-h6 {
+  color: #0f172a !important;
+  font-weight: 600 !important;
 }
 
-/* 7. Beyaz arka planlarda koyu yazı */
-[style*="background: white"],
-[style*="background: #ffffff"] {
-  color: var(--gray-800) !important;
+.MuiTypography-body1, .MuiTypography-body2 {
+  color: #334155 !important;
 }
 
-[style*="background: white"] *,
-[style*="background: #ffffff"] * {
-  color: var(--gray-800) !important;
-}
-
-/* 8. Material-UI Bileşenleri için Özel Kurallar */
 .MuiButton-root {
-  color: var(--gray-800) !important;
+  color: #1e293b !important;
 }
 
 .MuiButton-contained {
-  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%) !important;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
   color: #ffffff !important;
-}
-
-.MuiButton-outlined {
-  border-color: var(--primary-500) !important;
-  color: var(--primary-500) !important;
-}
-
-.MuiButton-text {
-  color: var(--primary-500) !important;
 }
 
 .MuiTextField-root .MuiOutlinedInput-root {
-  color: var(--gray-800) !important;
+  background: #ffffff !important;
+  color: #1e293b !important;
 }
 
 .MuiTextField-root .MuiInputLabel-root {
-  color: var(--gray-500) !important;
+  color: #64748b !important;
 }
 
-.MuiTextField-root .MuiFormHelperText-root {
-  color: var(--gray-500) !important;
+/* 12. Hero sections ve özel durumlar */
+.hero-section,
+[class*="hero"] {
+  background: linear-gradient(135deg, #1e40af 0%, #3730a3 50%, #7c3aed 100%) !important;
+  color: #ffffff !important;
 }
 
-.MuiCard-root {
-  background: #ffffff !important;
-  color: var(--gray-800) !important;
+.hero-section *,
+[class*="hero"] * {
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
 }
 
-.MuiPaper-root {
-  background: #ffffff !important;
-  color: var(--gray-800) !important;
+/* 13. Badge ve etiketler */
+.MuiChip-root, .badge, [class*="badge"] {
+  background: #e2e8f0 !important;
+  color: #1e293b !important;
+  border: 1px solid #cbd5e1 !important;
 }
 
-.MuiAppBar-root {
+.MuiChip-filled {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+/* 14. Navigation elementleri */
+nav, .MuiAppBar-root {
   background: rgba(255, 255, 255, 0.98) !important;
-  color: var(--gray-800) !important;
+  color: #1e293b !important;
+  backdrop-filter: blur(20px) !important;
 }
 
-.MuiDrawer-paper {
+nav *, .MuiAppBar-root * {
+  color: #1e293b !important;
+}
+
+/* 15. Modal ve dialog'lar */
+.MuiDialog-paper, .MuiModal-root {
   background: #ffffff !important;
-  color: var(--gray-800) !important;
+  color: #1e293b !important;
 }
 
-.MuiDialog-paper {
+.MuiDialog-paper *, .MuiModal-root * {
+  color: #1e293b !important;
+}
+
+/* 16. Accessibility iyileştirmeleri */
+@media (prefers-contrast: high) {
+  * {
+    color: #000000 !important;
+  }
+  
+  .glassmorphism {
+    background: #ffffff !important;
+    border: 2px solid #000000 !important;
+  }
+  
+  [class*="gradient"] *,
+  [style*="linear-gradient"] * {
+    color: #ffffff !important;
+    text-shadow: 0 0 3px #000000 !important;
+  }
+}
+
+/* 17. Focus states */
+*:focus {
+  outline: 3px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+}
+
+/* 18. Selection */
+::selection {
+  background: #dbeafe !important;
+  color: #1e40af !important;
+}
+
+/* 19. Özel sınıflar */
+.text-readable {
+  color: #1e293b !important;
+  text-shadow: none !important;
+}
+
+.text-readable-light {
+  color: #64748b !important;
+  text-shadow: none !important;
+}
+
+.text-readable-white {
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+.bg-readable {
   background: #ffffff !important;
-  color: var(--gray-800) !important;
+  color: #1e293b !important;
 }
 
-.MuiTooltip-tooltip {
-  background: rgba(0, 0, 0, 0.87) !important;
-  color: #ffffff !important;
-}
-
-.MuiSnackbarContent-root {
-  background: #ffffff !important;
-  color: var(--gray-800) !important;
-}
-
-.MuiChip-root {
-  background: rgba(59, 130, 246, 0.1) !important;
-  color: var(--primary-500) !important;
-}
-
-.MuiChip-filled.MuiChip-colorPrimary {
-  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%) !important;
-  color: #ffffff !important;
-}
-
-.MuiBadge-badge {
-  background: var(--error-500) !important;
-  color: #ffffff !important;
-}
-
-.MuiAvatar-root {
-  background: var(--primary-500) !important;
+.bg-readable-dark {
+  background: #1e293b !important;
   color: #ffffff !important;
 }
 
