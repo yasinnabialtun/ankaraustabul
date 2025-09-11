@@ -176,11 +176,6 @@ function UstaEkle() {
     setShowPayment(false);
   };
 
-  const handlePaymentSuccess = () => {
-    // Ödeme başarılı olduğunda formu gönder
-    handleSubmit();
-  };
-
   if (submitSuccess) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">

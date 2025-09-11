@@ -39,15 +39,15 @@ function Toast({ toast }: { toast: ToastProps }) {
       exit={{ opacity: 0, y: -50 }}
       className={`flex items-center gap-3 p-4 rounded-lg shadow-lg border max-w-md ${toastStyles[toast.type]}`}
     >
-      <Icon className=\"h-5 w-5\" />
-      <p className=\"flex-1 text-sm font-medium\">{toast.message}</p>
+      <Icon className="h-5 w-5" />
+      <p className="flex-1 text-sm font-medium">{toast.message}</p>
       {toast.action && (
-        <button onClick={toast.action.onClick} className=\"text-sm underline\">
+        <button onClick={toast.action.onClick} className="text-sm underline">
           {toast.action.label}
         </button>
       )}
       <button onClick={() => removeToast(toast.id)}>
-        <X className=\"h-4 w-4\" />
+        <X className="h-4 w-4" />
       </button>
     </motion.div>
   );
@@ -59,7 +59,7 @@ function ToastContainer() {
   if (typeof window === 'undefined') return null;
 
   return createPortal(
-    <div className=\"fixed top-4 right-4 z-50 space-y-4\">
+    <div className="fixed top-4 right-4 z-50 space-y-4">
       <AnimatePresence>
         {toasts.map((toast) => (
           <Toast key={toast.id} toast={toast} />

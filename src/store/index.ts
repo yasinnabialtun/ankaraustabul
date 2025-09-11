@@ -122,7 +122,7 @@ const initialState: AppState = {
   sortOrder: 'desc',
 };
 
-export const useAppStore = create<Store>()()
+export const useAppStore = create<Store>()(
   devtools(
     (set, get) => ({
       ...initialState,
