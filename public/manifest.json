@@ -1,26 +1,92 @@
 {
-  "name": "Ankara Usta Bul",
-  "short_name": "Ankara Usta",
-  "description": "Ankara'da güvenilir usta arama platformu",
+  "name": "Ankara Usta Bul - Güvenilir Usta Arama Platformu",
+  "short_name": "AnkaraUstaBul",
+  "description": "Ankara'da elektrik, su tesisatı, temizlik, mobilya ve tadilat hizmetleri için güvenilir usta bulma platformu. 7/24 hizmet, kalite garantisi.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#2563eb",
-  "orientation": "portrait-primary",
+  "theme_color": "#667eea",
+  "orientation": "portrait",
+  "scope": "/",
   "icons": [
     {
-      "src": "/favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "/images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/vite.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any"
     }
   ],
-  "categories": ["business", "productivity", "utilities"],
+  "categories": ["business", "utilities", "home", "lifestyle"],
   "lang": "tr",
-  "dir": "ltr"
-} 
+  "dir": "ltr",
+  "screenshots": [
+    {
+      "src": "/images/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/images/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Usta Ara",
+      "short_name": "Ara",
+      "description": "Hızlı usta arama",
+      "url": "/ustalar",
+      "icons": [
+        {
+          "src": "/images/icons/search.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Kategoriler",
+      "short_name": "Kategoriler",
+      "description": "Hizmet kategorileri",
+      "url": "/kategoriler",
+      "icons": [
+        {
+          "src": "/images/icons/categories.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Usta Ol",
+      "short_name": "Usta Ol",
+      "description": "Usta olarak kayıt ol",
+      "url": "/usta-ekle",
+      "icons": [
+        {
+          "src": "/images/icons/register.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}

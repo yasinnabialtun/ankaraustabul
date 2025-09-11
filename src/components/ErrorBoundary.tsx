@@ -1,112 +1,197 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
+import React from 'react';
+import { motion } from 'framer-motion';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Paper,
+  Alert,
+  AlertTitle,
+} from '@mui/material';
+import {
+  Error as ErrorIcon,
+  Refresh as RefreshIcon,
+  Home as HomeIcon,
+} from '@mui/icons-material';
 
-interface Props {
-  children: ReactNode;
+interface ErrorFallbackProps {
+  error: Error;
+  resetErrorBoundary: () => void;
 }
 
-interface State {
-  hasError: boolean;
-  error: Error | null;
-  errorInfo: ErrorInfo | null;
-}
+const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error }) => {
+  const handleRefresh = () => {
+    window.location.reload();
+  };
 
-class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = { 
-      hasError: false, 
-      error: null, 
-      errorInfo: null 
-    };
-  }
+  const handleGoHome = () => {
+    window.location.href = '/';
+  };
 
-  static getDerivedStateFromError(error: Error): State {
-    return { 
-      hasError: true, 
-      error, 
-      errorInfo: null 
-    };
-  }
+  return (
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'grey.50',
+        p: 2,
+      }}
+    >
+      <Container maxWidth="md">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <Paper
+            elevation={3}
+            sx={{
+              p: { xs: 3, md: 6 },
+              textAlign: 'center',
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 80,
+                height: 80,
+                borderRadius: '50%',
+                backgroundColor: 'error.50',
+                color: 'error.main',
+                mx: 'auto',
+                mb: 3,
+              }}
+            >
+              <ErrorIcon sx={{ fontSize: 40 }} />
+            </Box>
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
-    this.setState({
-      error,
-      errorInfo
-    });
+            <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 700,
+                mb: 2,
+                color: 'text.primary',
+              }}
+            >
+              Bir Hata Oluştu
+            </Typography>
 
-    // Log error details for debugging
-    console.group('Error Details');
-    console.error('Error:', error);
-    console.error('Error Stack:', error.stack);
-    console.error('Error Info:', errorInfo);
-    console.error('Component Stack:', errorInfo.componentStack);
-    console.groupEnd();
-  }
+            <Typography
+              variant="h6"
+              sx={{
+                color: 'text.secondary',
+                mb: 4,
+                lineHeight: 1.6,
+              }}
+            >
+              Üzgünüz, beklenmeyen bir hata oluştu. Lütfen tekrar deneyin veya ana sayfaya dönün.
+            </Typography>
 
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-          <div className="max-w-2xl w-full bg-white rounded-xl shadow-lg p-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-              </div>
-              
-              <h1 className="text-2xl font-bold text-gray-900 mb-4">
-                Beklenmeyen Bir Hata Oluştu
-              </h1>
-              
-              <p className="text-gray-600 mb-6">
-                Sayfa yüklenirken bir sorun oluştu. Lütfen sayfayı yenileyin veya daha sonra tekrar deneyin.
-              </p>
+            <Alert
+              severity="error"
+              sx={{
+                mb: 4,
+                textAlign: 'left',
+                '& .MuiAlert-message': {
+                  width: '100%',
+                },
+              }}
+            >
+              <AlertTitle>Hata Detayları</AlertTitle>
+              <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+                {error.message}
+              </Typography>
+            </Alert>
 
-              {this.state.error && (
-                <div className="bg-gray-100 rounded-lg p-4 mb-6 text-left">
-                  <h3 className="font-semibold text-gray-900 mb-2">Hata Detayları:</h3>
-                  <p className="text-sm text-gray-700 mb-2">
-                    <strong>Hata:</strong> {this.state.error.message}
-                  </p>
-                  {this.state.errorInfo && (
-                    <details className="text-sm text-gray-600">
-                      <summary className="cursor-pointer hover:text-gray-800">
-                        Component Stack Trace
-                      </summary>
-                      <pre className="mt-2 text-xs bg-gray-200 p-2 rounded overflow-auto">
-                        {this.state.errorInfo.componentStack}
-                      </pre>
-                    </details>
-                  )}
-                </div>
-              )}
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                gap: 2,
+                justifyContent: 'center',
+              }}
+            >
+              <Button
+                variant="contained"
+                size="large"
+                startIcon={<RefreshIcon />}
+                onClick={handleRefresh}
+                sx={{
+                  px: 4,
+                  py: 1.5,
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                Sayfayı Yenile
+              </Button>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button
-                  onClick={() => window.location.reload()}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              <Button
+                variant="outlined"
+                size="large"
+                startIcon={<HomeIcon />}
+                onClick={handleGoHome}
+                sx={{
+                  px: 4,
+                  py: 1.5,
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  borderWidth: 2,
+                  '&:hover': {
+                    borderWidth: 2,
+                    transform: 'translateY(-2px)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                Ana Sayfaya Dön
+              </Button>
+            </Box>
+
+            <Box sx={{ mt: 4 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                  fontSize: '0.875rem',
+                }}
+              >
+                Sorun devam ederse lütfen{' '}
+                <Button
+                  component="a"
+                  href="/iletisim"
+                  sx={{
+                    color: 'primary.main',
+                    textDecoration: 'none',
+                    p: 0,
+                    minWidth: 'auto',
+                    fontSize: 'inherit',
+                    fontWeight: 600,
+                    '&:hover': {
+                      textDecoration: 'underline',
+                    },
+                  }}
                 >
-                  Sayfayı Yenile
-                </button>
-                
-                <button
-                  onClick={() => window.history.back()}
-                  className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-medium"
-                >
-                  Geri Git
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    }
+                  bizimle iletişime geçin
+                </Button>
+              </Typography>
+            </Box>
+          </Paper>
+        </motion.div>
+      </Container>
+    </Box>
+  );
+};
 
-    return this.props.children;
-  }
-}
-
-export default ErrorBoundary; 
+export default ErrorFallback; 

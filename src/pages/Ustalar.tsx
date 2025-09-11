@@ -1,218 +1,676 @@
-import { useState } from 'react';
-import { Search, MapPin, Star, Filter } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { 
+  Search, 
+  Filter, 
+  MapPin, 
+  Phone, 
+  Mail, 
+  User, 
+  Shield, 
+  Heart, 
+  TrendingUp,
+  Star,
+  Clock,
+  Award,
+  CheckCircle,
+  ArrowRight,
+  X,
+  SlidersHorizontal
+} from 'lucide-react';
+import { ustaService } from '../services/ustaService';
+import type { Usta } from '../types';
+import { CATEGORIES, DISTRICTS } from '../data/constants';
+import analyticsService from '../services/analyticsService';
+import SEO from '../components/SEO';
+import { motion } from 'framer-motion';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
+  Avatar,
+  Chip,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Divider,
+  Badge as MuiBadge,
+  useTheme,
+  useMediaQuery,
+  Fade,
+  Slide,
+} from '@mui/material';
+import CardComponent from '../components/ui/Card';
+import BadgeComponent from '../components/ui/Badge';
+import ButtonComponent from '../components/ui/Button';
+import SectionComponent from '../components/ui/Section';
+import InputComponent from '../components/ui/Input';
 
 function Ustalar() {
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [ustalar, setUstalar] = useState<Usta[]>([]);
+  const [filteredUstalar, setFilteredUstalar] = useState<Usta[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [sortBy, setSortBy] = useState('rating');
+  const [favorites, setFavorites] = useState<Set<number>>(new Set());
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
-  const categories = [
-    { id: '', name: 'Tümü' },
-    { id: 'elektrik', name: 'Elektrik' },
-    { id: 'su-tesisati', name: 'Su Tesisatı' },
-    { id: 'temizlik', name: 'Temizlik' },
-    { id: 'mobilya', name: 'Mobilya' },
-    { id: 'boya-badana', name: 'Boya & Badana' },
-    { id: 'insaat-tadilat', name: 'İnşaat & Tadilat' },
-  ];
+  useEffect(() => {
+    analyticsService.trackPageView('ustalar');
+    loadUstalar();
+  }, []);
 
-  const ustalar = [
-    {
-      id: '1',
-      name: 'Ahmet Yılmaz',
-      category: 'Elektrik',
-      location: 'Çankaya, Ankara',
-      rating: 4.8,
-      experience: '8 yıl',
-      hourlyRate: '150 TL',
-      description: 'Elektrik tesisatı, aydınlatma, priz montajı ve tüm elektrik işleri',
-      specialties: ['Elektrik Tesisatı', 'Aydınlatma', 'Priz Montajı']
-    },
-    {
-      id: '2',
-      name: 'Mehmet Demir',
-      category: 'Su Tesisatı',
-      location: 'Keçiören, Ankara',
-      rating: 4.9,
-      experience: '12 yıl',
-      hourlyRate: '180 TL',
-      description: 'Su tesisatı, kanal açma, tesisat tamiri ve bakım işleri',
-      specialties: ['Su Tesisatı', 'Kanal Açma', 'Tesisat Tamiri']
-    },
-    {
-      id: '3',
-      name: 'Ali Kaya',
-      category: 'Temizlik',
-      location: 'Mamak, Ankara',
-      rating: 4.7,
-      experience: '5 yıl',
-      hourlyRate: '120 TL',
-      description: 'Ev temizliği, ofis temizliği, derinlemesine temizlik hizmetleri',
-      specialties: ['Ev Temizliği', 'Ofis Temizliği', 'Derinlemesine Temizlik']
-    },
-    {
-      id: '4',
-      name: 'Fatma Özkan',
-      category: 'Mobilya',
-      location: 'Yenimahalle, Ankara',
-      rating: 4.6,
-      experience: '6 yıl',
-      hourlyRate: '140 TL',
-      description: 'Mobilya montajı, tamiri, bakımı ve özel mobilya yapımı',
-      specialties: ['Mobilya Montajı', 'Mobilya Tamiri', 'Özel Mobilya']
-    },
-    {
-      id: '5',
-      name: 'Hasan Yıldız',
-      category: 'Boya & Badana',
-      location: 'Etimesgut, Ankara',
-      rating: 4.8,
-      experience: '10 yıl',
-      hourlyRate: '160 TL',
-      description: 'İç ve dış cephe boya, dekoratif boya, badana işleri',
-      specialties: ['İç Cephe Boya', 'Dış Cephe Boya', 'Dekoratif Boya']
-    },
-    {
-      id: '6',
-      name: 'Mustafa Çelik',
-      category: 'İnşaat & Tadilat',
-      location: 'Sincan, Ankara',
-      rating: 4.9,
-      experience: '15 yıl',
-      hourlyRate: '200 TL',
-      description: 'Tadilat, inşaat, yıkım ve tüm yapı işleri',
-      specialties: ['Tadilat', 'İnşaat', 'Yıkım']
-    },
-  ];
+  useEffect(() => {
+    filterUstalar();
+  }, [ustalar, searchTerm, selectedCategory, selectedDistrict, sortBy]);
 
-  const filteredUstalar = ustalar.filter(usta => {
-    const matchesSearch = usta.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         usta.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !selectedCategory || usta.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const loadUstalar = async () => {
+    try {
+      setLoading(true);
+      const data = await ustaService.getAllUstalar();
+      setUstalar(data);
+      setFilteredUstalar(data);
+    } catch (error) {
+      console.error('Ustalar yüklenirken hata:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterUstalar = () => {
+    let filtered = [...ustalar];
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(usta =>
+        usta.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        usta.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        usta.district.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Category filter
+    if (selectedCategory) {
+      filtered = filtered.filter(usta => usta.category === selectedCategory);
+    }
+
+    // District filter
+    if (selectedDistrict) {
+      filtered = filtered.filter(usta => usta.district === selectedDistrict);
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'rating':
+          return b.rating - a.rating;
+        case 'experience':
+          return b.experience - a.experience;
+        case 'price':
+          return a.price - b.price;
+        case 'name':
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredUstalar(filtered);
+  };
+
+  const toggleFavorite = (ustaId: number) => {
+    const newFavorites = new Set(favorites);
+    if (newFavorites.has(ustaId)) {
+      newFavorites.delete(ustaId);
+    } else {
+      newFavorites.add(ustaId);
+    }
+    setFavorites(newFavorites);
+  };
+
+  const handleUstaClick = (usta: Usta) => {
+    navigate(`/usta/${usta.id}`);
+  };
+
+  const handleCall = (usta: Usta) => {
+    window.open(`tel:${usta.phone}`);
+    analyticsService.trackSimpleEvent('usta_call');
+  };
+
+  const handleWhatsApp = (usta: Usta) => {
+    const message = `Merhaba ${usta.name}, hizmetiniz hakkında bilgi almak istiyorum.`;
+    const whatsappUrl = `https://wa.me/${usta.phone.replace(/\s/g, '')}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl);
+    analyticsService.trackSimpleEvent('usta_whatsapp');
+  };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('');
+    setSelectedDistrict('');
+    setSortBy('rating');
+  };
+
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        size={16}
+        fill={i < rating ? '#fbbf24' : '#e5e7eb'}
+        color={i < rating ? '#fbbf24' : '#e5e7eb'}
+      />
+    ));
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Ustalar
-          </h1>
-          <p className="text-gray-600">
-            Ankara'da güvenilir ustalarımızla tanışın
-          </p>
-        </div>
+    <>
+      <SEO 
+        title="Ankara Ustalar - Güvenilir Usta Arama"
+        description="Ankara'da elektrik, su tesisatı, temizlik, mobilya montajı ve tadilat hizmetleri için güvenilir ustalar."
+        keywords="ankara usta, elektrik ustası, su tesisatı, temizlik, mobilya montajı, tadilat"
+      />
+      
+      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%)' }}>
+        {/* Hero Section */}
+        <SectionComponent
+          background="gradient"
+          padding="xl"
+          animated
+          sx={{
+            position: 'relative',
+            overflow: 'hidden',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              opacity: 0.1,
+              zIndex: 0,
+            },
+          }}
+        >
+          <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1 }}>
+            <Box sx={{ textAlign: 'center' }}>
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <BadgeComponent
+                  variant="glassmorphism"
+                  size="lg"
+                  icon={<User />}
+                  sx={{ mb: 3 }}
+                >
+                  Ankara Ustaları
+                </BadgeComponent>
+                
+                <Typography
+                  variant="h1"
+                  sx={{
+                    fontWeight: 700,
+                    mb: 3,
+                    fontSize: { xs: '2.5rem', md: '4rem' },
+                    lineHeight: 1.2,
+                    color: 'white',
+                  }}
+                >
+                  Ankara'da
+                  <Box
+                    component="span"
+                    sx={{
+                      display: 'block',
+                      background: 'linear-gradient(135deg, #93c5fd 0%, #22d3ee 50%, #93c5fd 100%)',
+                      backgroundClip: 'text',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    }}
+                  >
+                    Güvenilir Ustalar
+                  </Box>
+                  Bulun
+                </Typography>
+                
+                <Typography
+                  variant="h5"
+                  sx={{
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    maxWidth: '800px',
+                    mx: 'auto',
+                    mb: 4,
+                    lineHeight: 1.6,
+                    fontWeight: 400,
+                  }}
+                >
+                  Elektrik, su tesisatı, temizlik, mobilya montajı ve tadilat hizmetleri için 
+                  profesyonel ve güvenilir ustalarla tanışın.
+                </Typography>
+                
+                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center' }}>
+                  <ButtonComponent
+                    variant="white"
+                    size="large"
+                    icon={<Search />}
+                    onClick={() => document.getElementById('search-section')?.scrollIntoView({ behavior: 'smooth' })}
+                    glow
+                  >
+                    Usta Ara
+                  </ButtonComponent>
+                  <ButtonComponent
+                    variant="glassmorphism"
+                    size="large"
+                    icon={<TrendingUp />}
+                    onClick={() => navigate('/kategoriler')}
+                  >
+                    Kategoriler
+                  </ButtonComponent>
+                </Box>
+              </motion.div>
+            </Box>
+          </Container>
+        </SectionComponent>
 
-        {/* Search and Filters */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Usta ara..."
+        {/* Search & Filter Section */}
+        <SectionComponent
+          id="search-section"
+          background="white"
+          padding="lg"
+          container
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <Box sx={{ textAlign: 'center', mb: 6 }}>
+              <Typography
+                variant="h2"
+                sx={{
+                  fontWeight: 600,
+                  mb: 2,
+                  fontSize: { xs: '2rem', md: '2.5rem' },
+                }}
+              >
+                Usta Ara
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  color: 'text.secondary',
+                  maxWidth: '600px',
+                  mx: 'auto',
+                }}
+              >
+                İhtiyacınıza uygun ustayı bulun ve hemen iletişime geçin
+              </Typography>
+            </Box>
+
+            {/* Search Bar */}
+            <Box sx={{ mb: 4 }}>
+              <InputComponent
+                fullWidth
+                placeholder="Usta adı, kategori veya semt ara..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                icon={<Search />}
+                size="large"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 3,
+                    fontSize: '1.1rem',
+                    py: 1,
+                  },
+                }}
               />
-            </div>
+            </Box>
 
-            {/* Category Filter */}
-            <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            {/* Filters */}
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, mb: 4 }}>
+              <FormControl fullWidth sx={{ minWidth: 200 }}>
+                <InputLabel>Kategori</InputLabel>
+                <Select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  label="Kategori"
+                >
+                  <MenuItem value="">Tüm Kategoriler</MenuItem>
+                  {CATEGORIES.map((category) => (
+                    <MenuItem key={category.id} value={category.name}>
+                      {category.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl fullWidth sx={{ minWidth: 200 }}>
+                <InputLabel>Semt</InputLabel>
+                <Select
+                  value={selectedDistrict}
+                  onChange={(e) => setSelectedDistrict(e.target.value)}
+                  label="Semt"
+                >
+                  <MenuItem value="">Tüm Semtler</MenuItem>
+                  {DISTRICTS.map((district) => (
+                    <MenuItem key={district} value={district}>
+                      {district}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl fullWidth sx={{ minWidth: 200 }}>
+                <InputLabel>Sıralama</InputLabel>
+                <Select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  label="Sıralama"
+                >
+                  <MenuItem value="rating">Puana Göre</MenuItem>
+                  <MenuItem value="experience">Deneyime Göre</MenuItem>
+                  <MenuItem value="price">Fiyata Göre</MenuItem>
+                  <MenuItem value="name">İsme Göre</MenuItem>
+                </Select>
+              </FormControl>
+
+              <ButtonComponent
+                variant="outlined"
+                onClick={clearFilters}
+                icon={<X />}
+                sx={{ minWidth: 'fit-content' }}
               >
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+                Temizle
+              </ButtonComponent>
+
+              {isMobile && (
+                <ButtonComponent
+                  variant="contained"
+                  onClick={() => setFilterDrawerOpen(true)}
+                  icon={<SlidersHorizontal />}
+                >
+                  Filtreler
+                </ButtonComponent>
+              )}
+            </Box>
 
             {/* Results Count */}
-            <div className="flex items-center justify-center md:justify-end">
-              <span className="text-gray-600">
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="body1" sx={{ color: 'text.secondary' }}>
                 {filteredUstalar.length} usta bulundu
-              </span>
-            </div>
-          </div>
-        </div>
+              </Typography>
+            </Box>
+          </motion.div>
+        </SectionComponent>
 
         {/* Ustalar Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredUstalar.map((usta) => (
-            <div key={usta.id} className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow">
-              <div className="flex items-center space-x-4 mb-4">
-                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                  <span className="text-gray-600 font-semibold">
-                    {usta.name.split(' ').map(n => n[0]).join('')}
-                  </span>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">{usta.name}</h3>
-                  <p className="text-sm text-gray-600">{usta.category}</p>
-                </div>
-              </div>
-              
-              <p className="text-gray-600 text-sm mb-4">
-                {usta.description}
-              </p>
-              
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <MapPin className="w-4 h-4" />
-                  <span>{usta.location}</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <Star className="w-4 h-4 text-yellow-400" />
-                  <span>{usta.rating} ({usta.experience} deneyim)</span>
-                </div>
-                <div className="text-sm text-gray-600">
-                  Saatlik: {usta.hourlyRate}
-                </div>
-              </div>
-
-              {/* Specialties */}
-              <div className="mb-4">
-                <div className="flex flex-wrap gap-2">
-                  {usta.specialties.map((specialty, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+        <SectionComponent
+          background="gray"
+          padding="lg"
+          container
+        >
+          {loading ? (
+            <Box sx={{ textAlign: 'center', py: 8 }}>
+              <Typography variant="h6" sx={{ color: 'text.secondary' }}>
+                Ustalar yükleniyor...
+              </Typography>
+            </Box>
+          ) : (
+            <Grid container spacing={3}>
+              {filteredUstalar.map((usta, index) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={usta.id}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                  >
+                    <CardComponent
+                      hover
+                      glassmorphism
+                      sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
                     >
-                      {specialty}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              
-              <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
-                Detayları Gör
-              </button>
-            </div>
-          ))}
-        </div>
+                      <Box sx={{ position: 'relative' }}>
+                        <CardMedia
+                          component="img"
+                          height="200"
+                          image={usta.image || '/images/default-usta.jpg'}
+                          alt={usta.name}
+                          sx={{ objectFit: 'cover' }}
+                        />
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            top: 12,
+                            right: 12,
+                            display: 'flex',
+                            gap: 1,
+                          }}
+                        >
+                          <IconButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFavorite(usta.id);
+                            }}
+                            sx={{
+                              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                              backdropFilter: 'blur(10px)',
+                              '&:hover': {
+                                backgroundColor: 'rgba(255, 255, 255, 1)',
+                              },
+                            }}
+                          >
+                            <Heart
+                              size={20}
+                              fill={favorites.has(usta.id) ? '#ef4444' : 'none'}
+                              color={favorites.has(usta.id) ? '#ef4444' : '#6b7280'}
+                            />
+                          </IconButton>
+                        </Box>
+                      </Box>
 
-        {filteredUstalar.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 text-6xl mb-4">🔍</div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Usta Bulunamadı
-            </h3>
-            <p className="text-gray-600">
-              Arama kriterlerinize uygun usta bulunamadı. Lütfen farklı kriterler deneyin.
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
+                      <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                          <Avatar
+                            src={usta.avatar}
+                            sx={{ width: 48, height: 48, mr: 2 }}
+                          >
+                            {usta.name.charAt(0)}
+                          </Avatar>
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                              {usta.name}
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                              {usta.category}
+                            </Typography>
+                          </Box>
+                        </Box>
+
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                          <Box sx={{ display: 'flex', mr: 1 }}>
+                            {renderStars(usta.rating)}
+                          </Box>
+                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                            {usta.rating} ({usta.reviewCount} değerlendirme)
+                          </Typography>
+                        </Box>
+
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
+                          <Chip
+                            icon={<MapPin size={16} />}
+                            label={usta.district}
+                            size="small"
+                            variant="outlined"
+                          />
+                          <Chip
+                            icon={<Clock size={16} />}
+                            label={`${usta.experience} yıl`}
+                            size="small"
+                            variant="outlined"
+                          />
+                        </Box>
+
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                          <Typography variant="h6" sx={{ color: 'primary.main', fontWeight: 600 }}>
+                            ₺{usta.price}
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: 'text.secondary', ml: 1 }}>
+                            / saat
+                          </Typography>
+                        </Box>
+
+                        <Box sx={{ mt: 'auto', display: 'flex', gap: 1 }}>
+                          <ButtonComponent
+                            variant="contained"
+                            fullWidth
+                            onClick={() => handleUstaClick(usta)}
+                            icon={<ArrowRight />}
+                            iconPosition="right"
+                          >
+                            Detaylar
+                          </ButtonComponent>
+                          <IconButton
+                            onClick={() => handleCall(usta)}
+                            sx={{
+                              backgroundColor: 'success.main',
+                              color: 'white',
+                              '&:hover': {
+                                backgroundColor: 'success.dark',
+                              },
+                            }}
+                          >
+                            <Phone size={20} />
+                          </IconButton>
+                        </Box>
+                      </CardContent>
+                    </CardComponent>
+                  </motion.div>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+
+          {!loading && filteredUstalar.length === 0 && (
+            <Box sx={{ textAlign: 'center', py: 8 }}>
+              <Typography variant="h6" sx={{ color: 'text.secondary', mb: 2 }}>
+                Arama kriterlerinize uygun usta bulunamadı
+              </Typography>
+              <ButtonComponent
+                variant="outlined"
+                onClick={clearFilters}
+              >
+                Filtreleri Temizle
+              </ButtonComponent>
+            </Box>
+          )}
+        </SectionComponent>
+
+        {/* Mobile Filter Drawer */}
+        <Drawer
+          anchor="right"
+          open={filterDrawerOpen}
+          onClose={() => setFilterDrawerOpen(false)}
+          sx={{
+            '& .MuiDrawer-paper': {
+              width: 320,
+              p: 3,
+            },
+          }}
+        >
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+              Filtreler
+            </Typography>
+            <Divider />
+          </Box>
+
+          <List>
+            <ListItem>
+              <FormControl fullWidth>
+                <InputLabel>Kategori</InputLabel>
+                <Select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  label="Kategori"
+                >
+                  <MenuItem value="">Tüm Kategoriler</MenuItem>
+                  {CATEGORIES.map((category) => (
+                    <MenuItem key={category.id} value={category.name}>
+                      {category.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </ListItem>
+
+            <ListItem>
+              <FormControl fullWidth>
+                <InputLabel>Semt</InputLabel>
+                <Select
+                  value={selectedDistrict}
+                  onChange={(e) => setSelectedDistrict(e.target.value)}
+                  label="Semt"
+                >
+                  <MenuItem value="">Tüm Semtler</MenuItem>
+                  {DISTRICTS.map((district) => (
+                    <MenuItem key={district} value={district}>
+                      {district}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </ListItem>
+
+            <ListItem>
+              <FormControl fullWidth>
+                <InputLabel>Sıralama</InputLabel>
+                <Select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  label="Sıralama"
+                >
+                  <MenuItem value="rating">Puana Göre</MenuItem>
+                  <MenuItem value="experience">Deneyime Göre</MenuItem>
+                  <MenuItem value="price">Fiyata Göre</MenuItem>
+                  <MenuItem value="name">İsme Göre</MenuItem>
+                </Select>
+              </FormControl>
+            </ListItem>
+          </List>
+
+          <Box sx={{ mt: 'auto', pt: 2 }}>
+            <ButtonComponent
+              variant="contained"
+              fullWidth
+              onClick={() => setFilterDrawerOpen(false)}
+            >
+              Filtreleri Uygula
+            </ButtonComponent>
+          </Box>
+        </Drawer>
+      </Box>
+    </>
   );
 }
 
-export default Ustalar; 
+export default Ustalar;
