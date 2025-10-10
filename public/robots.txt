@@ -1,8 +1,67 @@
 # www.robotstxt.org/
+# SEO Optimized Robots.txt for Ankara Usta Bul
 # Allow crawling of all content
 User-agent: *
-Disallow: /admin
-Disallow: /admin/*
+Allow: /
 
-# Sitemap location
+# Disallow private/admin areas
+Disallow: /admin/
+Disallow: /admin/*
+Disallow: /api/
+Disallow: /_next/
+Disallow: /private/
+Disallow: /test/
+Disallow: /debug/
+
+# Payment pages - allow but noindex
+Allow: /odeme/
+Allow: /odeme-basarili/
+Allow: /odeme-iptal/
+
+# Allow important pages for SEO
+Allow: /ustalar/
+Allow: /ustalar/*
+Allow: /blog/
+Allow: /blog/*
+Allow: /haberler/
+Allow: /haberler/*
+Allow: /iletisim/
+Allow: /usta-ekle/
+Allow: /one-cikan-ustalar/
+Allow: /one-cikan-ustalar/*
+Allow: /usta/
+Allow: /usta/*
+Allow: /ilceler/
+Allow: /ilceler/*
+Allow: /kategoriler/
+Allow: /kategoriler/*
+
+# Special directives for search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2
+
+User-agent: Yandex
+Allow: /
+Crawl-delay: 2
+
+# Allow images and assets
+Allow: /images/
+Allow: /images/*
+Allow: /public/
+Allow: /public/*
+
+# Crawl delay for better server performance
+Crawl-delay: 1
+
+# Sitemap locations
 Sitemap: https://ankaraustabul.com/sitemap.xml
+Sitemap: https://ankaraustabul.com/sitemap-images.xml
+Sitemap: https://ankaraustabul.com/sitemap-news.xml
+
+# Host directive
+Host: https://ankaraustabul.com

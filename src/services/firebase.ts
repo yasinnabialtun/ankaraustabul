@@ -25,35 +25,45 @@ import {
 } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
-import type { Usta, User, FirebaseConfig } from '../types';
-
-// Firebase konfigürasyonu - Environment variables kullanarak
-const firebaseConfig: FirebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
-};
+import type { Usta, User } from '../types';
+import { FIREBASE_CONFIG, isFirebaseConfigured } from '../utils/env';
+import { logger } from '../utils';
 
 // Validate Firebase configuration
-if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-  throw new Error('Firebase configuration is incomplete. Please check your environment variables.');
+const isFirebaseConfigValid = () => {
+  return isFirebaseConfigured();
+};
+
+// Firebase'i başlat (sadece gerekli değerler varsa ve client-side ise)
+const app = typeof window !== 'undefined' && isFirebaseConfigValid() ? 
+  initializeApp(FIREBASE_CONFIG) : null;
+
+// Conditional exports for server-side rendering safety
+export const db = app ? getFirestore(app) : null;
+export const auth = app ? getAuth(app) : null;
+export const storage = app ? getStorage(app) : null;
+
+// Analytics (sadece client-side ve production'da)
+let analytics: any = null;
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production' && app && FIREBASE_CONFIG.measurementId) {
+  try {
+    analytics = getAnalytics(app);
+  } catch (error) {
+    console.warn('Analytics initialization failed:', error);
+  }
 }
 
-// Firebase'i başlat
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
-export const storage = getStorage(app);
-
-// Analytics (sadece production'da)
-let analytics = null;
-if (import.meta.env.PROD && firebaseConfig.measurementId) {
-  analytics = getAnalytics(app);
-}
+// Analytics'i güvenli şekilde al
+export const getAnalyticsInstance = () => {
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production' && app && FIREBASE_CONFIG.measurementId && !analytics) {
+    try {
+      analytics = getAnalytics(app);
+    } catch (error) {
+      console.warn('Analytics instance creation failed:', error);
+    }
+  }
+  return analytics;
+};
 
 // Firestore koleksiyonları
 export const COLLECTIONS = {
@@ -65,18 +75,30 @@ export const COLLECTIONS = {
   SETTINGS: 'settings'
 } as const;
 
-// Paginated query interface
-interface PaginatedQuery {
-  data: Usta[];
-  lastDoc: QueryDocumentSnapshot<DocumentData> | null;
-  hasMore: boolean;
-}
-
 // Usta verilerini Firestore'dan al (pagination ile)
 export const getUstalarFromFirestore = async (
   limitCount: number = 10,
   lastDoc?: QueryDocumentSnapshot<DocumentData>
-): Promise<PaginatedQuery> => {
+) => {
+  // Server-side rendering safety check
+  if (typeof window === 'undefined') {
+    console.warn('Firestore operations should not be called during SSR');
+    return {
+      data: [],
+      lastDoc: null,
+      hasMore: false
+    };
+  }
+  
+  if (!db) {
+    console.warn('Firebase not initialized');
+    return {
+      data: [],
+      lastDoc: null,
+      hasMore: false
+    };
+  }
+  
   try {
     let q = query(
       collection(db, COLLECTIONS.USTALAR),
@@ -110,7 +132,7 @@ export const getUstalarFromFirestore = async (
       hasMore
     };
   } catch (error) {
-    console.error('Ustalar getirilemedi:', error);
+    logger.error('Ustalar getirilemedi', { limitCount, hasLastDoc: !!lastDoc });
     return {
       data: [],
       lastDoc: null,
@@ -121,6 +143,17 @@ export const getUstalarFromFirestore = async (
 
 // Tek usta getir
 export const getUstaById = async (ustaId: string): Promise<Usta | null> => {
+  // Server-side rendering safety check
+  if (typeof window === 'undefined') {
+    console.warn('Firestore operations should not be called during SSR');
+    return null;
+  }
+  
+  if (!db) {
+    console.warn('Firebase not initialized');
+    return null;
+  }
+  
   try {
     const docRef = doc(db, COLLECTIONS.USTALAR, ustaId);
     const docSnap = await getDoc(docRef);
@@ -134,7 +167,7 @@ export const getUstaById = async (ustaId: string): Promise<Usta | null> => {
     
     return null;
   } catch (error) {
-    console.error('Usta getirilemedi:', error);
+    logger.error('Usta getirilemedi', { ustaId });
     return null;
   }
 };
@@ -143,249 +176,338 @@ export const getUstaById = async (ustaId: string): Promise<Usta | null> => {
 export const addUstaToFirestore = async (
   ustaData: Omit<Usta, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<string> => {
+  // Server-side rendering safety check
+  if (typeof window === 'undefined') {
+    console.warn('Firestore operations should not be called during SSR');
+    throw new Error('Firestore operations not available during SSR');
+  }
+  
+  if (!db) {
+    throw new Error('Firebase not initialized');
+  }
+  
   try {
-    console.log('Firebase\'e ekleniyor:', ustaData);
     const docRef = await addDoc(collection(db, COLLECTIONS.USTALAR), {
       ...ustaData,
-      status: 'pending', // Yeni ustalar onay bekler
+      status: 'pending',
       createdAt: new Date(),
       updatedAt: new Date(),
-      viewCount: 0,
-      contactCount: 0,
-      rating: 0,
-      reviewCount: 0
     });
-    console.log('Firebase\'de oluşturulan ID:', docRef.id);
+    
     return docRef.id;
   } catch (error) {
-    console.error('Usta Firebase\'e eklenemedi:', error);
+    logger.error('Usta eklenemedi', { ustaData });
     throw error;
   }
 };
 
 // Usta güncelle
 export const updateUstaInFirestore = async (
-  ustaId: string, 
-  updateData: Partial<Usta>
-): Promise<boolean> => {
+  ustaId: string,
+  ustaData: Partial<Usta>
+): Promise<void> => {
+  // Server-side rendering safety check
+  if (typeof window === 'undefined') {
+    console.warn('Firestore operations should not be called during SSR');
+    throw new Error('Firestore operations not available during SSR');
+  }
+  
+  if (!db) {
+    throw new Error('Firebase not initialized');
+  }
+  
   try {
-    const ustaRef = doc(db, COLLECTIONS.USTALAR, ustaId);
-    await updateDoc(ustaRef, {
-      ...updateData,
+    const docRef = doc(db, COLLECTIONS.USTALAR, ustaId);
+    await updateDoc(docRef, {
+      ...ustaData,
       updatedAt: new Date(),
     });
-    return true;
   } catch (error) {
-    console.error('Usta güncellenemedi:', error);
+    logger.error('Usta güncellenemedi', { ustaId, ustaData });
     throw error;
   }
 };
 
 // Usta sil
-export const deleteUstaFromFirestore = async (ustaId: string): Promise<boolean> => {
+export const deleteUstaFromFirestore = async (ustaId: string): Promise<void> => {
+  // Server-side rendering safety check
+  if (typeof window === 'undefined') {
+    console.warn('Firestore operations should not be called during SSR');
+    throw new Error('Firestore operations not available during SSR');
+  }
+  
+  if (!db) {
+    throw new Error('Firebase not initialized');
+  }
+  
   try {
-    await deleteDoc(doc(db, COLLECTIONS.USTALAR, ustaId));
-    return true;
+    const docRef = doc(db, COLLECTIONS.USTALAR, ustaId);
+    await deleteDoc(docRef);
   } catch (error) {
-    console.error('Usta silinemedi:', error);
+    logger.error('Usta silinemedi', { ustaId });
     throw error;
   }
 };
 
 // Kategoriye göre ustaları getir
-export const getUstalarByCategory = async (
-  categoryId: string,
-  limitCount: number = 20
-): Promise<Usta[]> => {
+export const getUstalarByCategory = async (categorySlug: string, limitCount: number = 10): Promise<Usta[]> => {
+  // Server-side rendering safety check
+  if (typeof window === 'undefined') {
+    console.warn('Firestore operations should not be called during SSR');
+    return [];
+  }
+  
+  if (!db) {
+    console.warn('Firebase not initialized');
+    return [];
+  }
+  
   try {
     const q = query(
       collection(db, COLLECTIONS.USTALAR),
-      where('categoryId', '==', categoryId),
+      where('sectorSlug', '==', categorySlug),
       where('status', '==', 'approved'),
-      orderBy('isPremium', 'desc'),
       orderBy('rating', 'desc'),
       firestoreLimit(limitCount)
     );
+    
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     })) as Usta[];
   } catch (error) {
-    console.error('Kategori ustaları getirilemedi:', error);
+    logger.error('Kategori ustaları getirilemedi', { categorySlug, limitCount });
     return [];
   }
 };
 
 // İlçeye göre ustaları getir
-export const getUstalarByDistrict = async (
-  districtId: string,
-  limitCount: number = 20
-): Promise<Usta[]> => {
+export const getUstalarByDistrict = async (districtSlug: string, limitCount: number = 10): Promise<Usta[]> => {
+  // Server-side rendering safety check
+  if (typeof window === 'undefined') {
+    console.warn('Firestore operations should not be called during SSR');
+    return [];
+  }
+  
+  if (!db) {
+    console.warn('Firebase not initialized');
+    return [];
+  }
+  
   try {
     const q = query(
       collection(db, COLLECTIONS.USTALAR),
-      where('districtId', '==', districtId),
+      where('districtSlug', '==', districtSlug),
       where('status', '==', 'approved'),
-      orderBy('isPremium', 'desc'),
       orderBy('rating', 'desc'),
       firestoreLimit(limitCount)
     );
+    
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     })) as Usta[];
   } catch (error) {
-    console.error('İlçe ustaları getirilemedi:', error);
+    logger.error('İlçe ustaları getirilemedi', { districtSlug, limitCount });
     return [];
   }
 };
 
 // Premium ustaları getir
 export const getPremiumUstalar = async (limitCount: number = 10): Promise<Usta[]> => {
+  // Server-side rendering safety check
+  if (typeof window === 'undefined') {
+    console.warn('Firestore operations should not be called during SSR');
+    return [];
+  }
+  
+  if (!db) {
+    console.warn('Firebase not initialized');
+    return [];
+  }
+  
   try {
     const q = query(
       collection(db, COLLECTIONS.USTALAR),
       where('isPremium', '==', true),
       where('status', '==', 'approved'),
       orderBy('rating', 'desc'),
-      orderBy('createdAt', 'desc'),
       firestoreLimit(limitCount)
     );
+    
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     })) as Usta[];
   } catch (error) {
-    console.error('Premium ustalar getirilemedi:', error);
+    logger.error('Premium ustalar getirilemedi', { limitCount });
     return [];
   }
 };
 
-// Arama fonksiyonu
-export const searchUstalar = async (
-  searchTerm: string,
-  categoryId?: string,
-  districtId?: string,
-  limitCount: number = 20
-): Promise<Usta[]> => {
+// Ustaları ara
+export const searchUstalar = async (searchTerm: string, limitCount: number = 20): Promise<Usta[]> => {
+  // Server-side rendering safety check
+  if (typeof window === 'undefined') {
+    console.warn('Firestore operations should not be called during SSR');
+    return [];
+  }
+  
+  if (!db) {
+    console.warn('Firebase not initialized');
+    return [];
+  }
+  
   try {
-    let q = query(
+    const q = query(
       collection(db, COLLECTIONS.USTALAR),
-      where('status', '==', 'approved')
-    );
-
-    if (categoryId) {
-      q = query(q, where('categoryId', '==', categoryId));
-    }
-
-    if (districtId) {
-      q = query(q, where('districtId', '==', districtId));
-    }
-
-    q = query(
-      q,
-      orderBy('isPremium', 'desc'),
+      where('status', '==', 'approved'),
       orderBy('rating', 'desc'),
       firestoreLimit(limitCount)
     );
-
+    
     const querySnapshot = await getDocs(q);
-    let ustalar = querySnapshot.docs.map(doc => ({
+    const allUstalar = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     })) as Usta[];
-
-    // Client-side filtering for search term
+    
+    // Client-side filtering for search
     if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      ustalar = ustalar.filter(usta => 
-        usta.name.toLowerCase().includes(term) ||
-        usta.description?.toLowerCase().includes(term) ||
-        usta.skills?.some(skill => skill.toLowerCase().includes(term))
+      const searchLower = searchTerm.toLowerCase();
+      return allUstalar.filter(usta => 
+        usta.name.toLowerCase().includes(searchLower) ||
+        usta.category.toLowerCase().includes(searchLower) ||
+        usta.district.toLowerCase().includes(searchLower) ||
+        usta.specialties.some(specialty => specialty.toLowerCase().includes(searchLower))
       );
     }
-
-    return ustalar;
+    
+    return allUstalar;
   } catch (error) {
-    console.error('Arama yapılamadı:', error);
+    logger.error('Usta arama başarısız', { searchTerm, limitCount });
     return [];
   }
 };
 
-// Fotoğraf yükleme
-export const uploadImage = async (
-  file: File,
-  path: string
-): Promise<string> => {
-  try {
-    const imageRef = ref(storage, path);
-    const snapshot = await uploadBytes(imageRef, file);
-    const downloadURL = await getDownloadURL(snapshot.ref);
-    return downloadURL;
-  } catch (error) {
-    console.error('Fotoğraf yüklenemedi:', error);
-    throw error;
-  }
-};
-
-// Admin kimlik doğrulama
-export const adminLogin = async (email: string, password: string): Promise<User> => {
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+// İstatistikleri getir
+export const getStatistics = async (): Promise<{
+  totalUstalar: number;
+  totalCategories: number;
+  totalDistricts: number;
+  averageRating: number;
+}> => {
+  // Server-side rendering safety check
+  if (typeof window === 'undefined') {
+    console.warn('Firestore operations should not be called during SSR');
     return {
-      id: userCredential.user.uid,
-      email: userCredential.user.email || '',
-      role: 'admin',
-      name: userCredential.user.displayName || '',
-      createdAt: new Date(),
+      totalUstalar: 0,
+      totalCategories: 0,
+      totalDistricts: 0,
+      averageRating: 0
+    };
+  }
+  
+  if (!db) {
+    console.warn('Firebase not initialized');
+    return {
+      totalUstalar: 0,
+      totalCategories: 0,
+      totalDistricts: 0,
+      averageRating: 0
+    };
+  }
+  
+  try {
+    const q = query(
+      collection(db, COLLECTIONS.USTALAR),
+      where('status', '==', 'approved')
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const ustalar = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Usta[];
+    
+    const totalUstalar = ustalar.length;
+    const categories = new Set(ustalar.map(u => u.category));
+    const districts = new Set(ustalar.map(u => u.district));
+    const averageRating = ustalar.length > 0 
+      ? ustalar.reduce((sum, u) => sum + (u.rating || 0), 0) / ustalar.length 
+      : 0;
+    
+    return {
+      totalUstalar,
+      totalCategories: categories.size,
+      totalDistricts: districts.size,
+      averageRating: Math.round(averageRating * 10) / 10
     };
   } catch (error) {
-    console.error('Admin girişi başarısız:', error);
+    logger.error('İstatistikler getirilemedi');
+    return {
+      totalUstalar: 0,
+      totalCategories: 0,
+      totalDistricts: 0,
+      averageRating: 0
+    };
+  }
+};
+
+// Auth functions
+export const loginUser = async (email: string, password: string): Promise<FirebaseUser | null> => {
+  // Server-side rendering safety check
+  if (typeof window === 'undefined') {
+    console.warn('Auth operations should not be called during SSR');
+    return null;
+  }
+  
+  if (!auth) {
+    throw new Error('Firebase Auth not initialized');
+  }
+  
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    return userCredential.user;
+  } catch (error) {
+    logger.error('Login failed', { email });
     throw error;
   }
 };
 
-// Admin çıkış
-export const adminLogout = async (): Promise<void> => {
+export const logoutUser = async (): Promise<void> => {
+  // Server-side rendering safety check
+  if (typeof window === 'undefined') {
+    console.warn('Auth operations should not be called during SSR');
+    return;
+  }
+  
+  if (!auth) {
+    throw new Error('Firebase Auth not initialized');
+  }
+  
   try {
     await signOut(auth);
   } catch (error) {
-    console.error('Admin çıkışı başarısız:', error);
+    logger.error('Logout failed', {});
     throw error;
   }
 };
 
-// Auth state listener
 export const onAuthStateChange = (callback: (user: FirebaseUser | null) => void) => {
+  // Server-side rendering safety check
+  if (typeof window === 'undefined') {
+    console.warn('Auth operations should not be called during SSR');
+    return () => {};
+  }
+  
+  if (!auth) {
+    console.warn('Firebase Auth not initialized');
+    return () => {};
+  }
+  
   return onAuthStateChanged(auth, callback);
 };
-
-// İstatistikler
-export const getStatistics = async () => {
-  try {
-    const [ustalarSnapshot, kategorilerSnapshot] = await Promise.all([
-      getDocs(query(collection(db, COLLECTIONS.USTALAR), where('status', '==', 'approved'))),
-      getDocs(collection(db, COLLECTIONS.KATEGORILER))
-    ]);
-
-    return {
-      totalUstalar: ustalarSnapshot.size,
-      totalKategoriler: kategorilerSnapshot.size,
-      premiumUstalar: ustalarSnapshot.docs.filter(doc => doc.data().isPremium).length,
-      pendingUstalar: ustalarSnapshot.docs.filter(doc => doc.data().status === 'pending').length
-    };
-  } catch (error) {
-    console.error('İstatistikler getirilemedi:', error);
-    return {
-      totalUstalar: 0,
-      totalKategoriler: 0,
-      premiumUstalar: 0,
-      pendingUstalar: 0
-    };
-  }
-};
-
-export { analytics }; 

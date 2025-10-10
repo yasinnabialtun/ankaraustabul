@@ -31,6 +31,11 @@ class AnalyticsService {
 
   // Event kaydet
   async trackEvent(event: Omit<AnalyticsEvent, 'id' | 'timestamp'>): Promise<void> {
+    if (!db) {
+      console.warn('Firebase not initialized');
+      return;
+    }
+    
     try {
       await addDoc(collection(db, this.collectionName), {
         ...event,
@@ -119,6 +124,22 @@ class AnalyticsService {
 
   // Analytics istatistikleri getir
   async getAnalyticsStats(days: number = 30): Promise<AnalyticsStats> {
+    if (!db) {
+      console.warn('Firebase not initialized');
+      return {
+        totalViews: 0,
+        pageViews: 0,
+        ustaViews: 0,
+        blogViews: 0,
+        searches: 0,
+        contacts: 0,
+        topPages: [],
+        topUstalar: [],
+        topBlogs: [],
+        dailyStats: []
+      };
+    }
+    
     try {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - days);
@@ -243,6 +264,11 @@ class AnalyticsService {
 
   // Gerçek zamanlı görüntülenme sayısı getir
   async getRealTimeViewCount(type: 'total' | 'blog' | 'usta' = 'total'): Promise<number> {
+    if (!db) {
+      console.warn('Firebase not initialized');
+      return 0;
+    }
+
     try {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -271,6 +297,11 @@ class AnalyticsService {
 
   // Popüler arama terimleri
   async getPopularSearchTerms(limit: number = 10): Promise<{ term: string; count: number }[]> {
+    if (!db) {
+      console.warn('Firebase not initialized');
+      return [];
+    }
+
     try {
       const q = query(
         collection(db, this.collectionName),

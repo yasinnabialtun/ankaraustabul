@@ -1,4 +1,5 @@
-import { Link, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, 
   Users, 
@@ -18,7 +19,7 @@ interface SidebarProps {
 }
 
 function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const location = useLocation();
+  const pathname = usePathname();
 
   const menuItems = [
     { 
@@ -74,9 +75,9 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const isActive = (href: string) => {
     if (href === '/admin') {
-      return location.pathname === '/admin';
+      return pathname === '/admin';
     }
-    return location.pathname.startsWith(href);
+    return pathname.startsWith(href);
   };
 
   const getColorClass = (color: string, active: boolean) => {
@@ -110,7 +111,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
       `}>
         {/* Sidebar Header */}
         <div className="h-16 lg:h-20 border-b border-gray-200 flex items-center px-6">
-          <Link to="/admin" className="flex items-center space-x-3">
+          <Link href="/admin" className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl flex items-center justify-center">
               <span className="text-white font-bold text-lg">AU</span>
             </div>
@@ -130,7 +131,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
             return (
               <Link
                 key={item.id}
-                to={item.href}
+                href={item.href}
                 onClick={onClose}
                 className={`
                   w-full flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
@@ -154,7 +155,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
           
           {/* Additional Links */}
           <Link
-            to="/"
+            href="/"
             onClick={onClose}
             className="w-full flex items-center px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
           >

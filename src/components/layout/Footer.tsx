@@ -1,306 +1,160 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import {
-  Box,
-  Container,
-  Typography,
-  Grid,
-  Button,
-  Chip,
-  Avatar,
-  Divider,
-  IconButton,
-} from '@mui/material';
-import {
-  WhatsApp as WhatsAppIcon,
-  Telegram as TelegramIcon,
-  Star as StarIcon,
-  Verified as VerifiedIcon,
-  Security as SecurityIcon,
-} from '@mui/icons-material';
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin, MessageCircle, FileText } from 'lucide-react'
 
-const Footer: React.FC = () => {
-  const socialLinks = [
-    { icon: <WhatsAppIcon />, href: 'https://wa.me/903121234567', color: '#25D366', label: 'WhatsApp' },
-    { icon: <TelegramIcon />, href: 'https://t.me/ankaraustabul', color: '#0088cc', label: 'Telegram' },
-  ];
-
-  const quickLinks = [
-    { name: 'Ana Sayfa', href: '/' },
-    { name: 'Ustalar', href: '/ustalar' },
-    { name: 'Kategoriler', href: '/kategoriler' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Hakkımızda', href: '/hakkimizda' },
-    { name: 'İletişim', href: '/iletisim' },
-  ];
-
-  const services = [
-    { name: 'Elektrik', href: '/kategoriler/elektrik' },
-    { name: 'Su Tesisatı', href: '/kategoriler/su-tesisati' },
-    { name: 'Temizlik', href: '/kategoriler/temizlik' },
-    { name: 'Boya Badana', href: '/kategoriler/boya-badana' },
-    { name: 'İnşaat Tadilat', href: '/kategoriler/insaat-tadilat' },
-    { name: 'Klima Havalandırma', href: '/kategoriler/klima-havalandirma' },
-  ];
-
+export default function Footer() {
   return (
-    <Box
-      component="footer"
-      sx={{
-        background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
-        color: 'white',
-        position: 'relative',
-        overflow: 'hidden',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%)',
-          pointerEvents: 'none',
-        },
-      }}
-    >
-      <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1 }}>
-        <Box sx={{ py: { xs: 6, md: 8 } }}>
-          <Grid container spacing={4}>
-            {/* Company Info */}
-            <Grid item xs={12} md={4}>
-              <Box sx={{ mb: 4 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                  <Avatar
-                    sx={{
-                      bgcolor: 'rgba(59, 130, 246, 0.2)',
-                      width: 56,
-                      height: 56,
-                      mr: 2,
-                      border: '2px solid rgba(59, 130, 246, 0.3)',
-                    }}
-                  >
-                    <VerifiedIcon />
-                  </Avatar>
-                  <Box>
-                    <Typography variant="h5" sx={{ fontWeight: 700, color: 'white', textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)' }}>
-                      Ankara Usta Bul
-                    </Typography>
-                    <Chip
-                      label="Güvenilir Platform"
-                      size="small"
-                      icon={<SecurityIcon />}
-                      sx={{
-                        backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                        color: '#22c55e',
-                        border: '1px solid rgba(34, 197, 94, 0.3)',
-                        fontWeight: 600,
-                        mt: 1,
-                      }}
-                    />
-                  </Box>
-                </Box>
-                <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.9)', mb: 3, lineHeight: 1.7, textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
-                  Ankara'nın en güvenilir usta arama platformu. Binlerce doğrulanmış usta ile hızlı, kaliteli ve uygun fiyatlı hizmet alın.
-                </Typography>
-              </Box>
+    <footer className="bg-gray-900 text-white">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Company Info */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">AU</span>
+              </div>
+              <span className="text-xl font-bold">Ankara Usta Bul</span>
+            </div>
+            <p className="text-gray-400 text-sm">
+              Ankara'da güvenilir ve profesyonel ustaları bulmanın en kolay yolu. 
+              Elektrik, su tesisatı, temizlik ve daha fazla hizmet için tek adres.
+            </p>
+            <div className="flex space-x-4">
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <Twitter className="w-5 h-5" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <Linkedin className="w-5 h-5" />
+              </a>
+            </div>
+          </div>
 
-              {/* Contact Info */}
-              <Box sx={{ space: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, p: 2, backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 2, backdropFilter: 'blur(10px)' }}>
-                  <Avatar sx={{ bgcolor: 'rgba(59, 130, 246, 0.2)', width: 40, height: 40, mr: 2 }}>
-                    <StarIcon />
-                  </Avatar>
-                  <Box>
-                    <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 600, textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
-                      +90 312 123 45 67
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
-                      7/24 Destek
-                    </Typography>
-                  </Box>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, p: 2, backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 2, backdropFilter: 'blur(10px)' }}>
-                  <Avatar sx={{ bgcolor: 'rgba(34, 197, 94, 0.2)', width: 40, height: 40, mr: 2 }}>
-                    <VerifiedIcon />
-                  </Avatar>
-                  <Box>
-                    <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 600, textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
-                      info@ankaraustabul.com
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)', textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
-                      E-posta Desteği
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-            </Grid>
+          {/* Quick Links */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Hızlı Linkler</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  Ana Sayfa
+                </Link>
+              </li>
+              <li>
+                <Link href="/ustalar" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  Ustalar
+                </Link>
+              </li>
+              <li>
+                <Link href="/one-cikan-ustalar" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  Öne Çıkan Ustalar
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link href="/iletisim" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  İletişim
+                </Link>
+              </li>
+              <li>
+                <Link href="/usta-ekle" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  Usta Ol
+                </Link>
+              </li>
+            </ul>
+          </div>
 
-            {/* Quick Links */}
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: 'white', mb: 3, textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)' }}>
-                Hızlı Linkler
-              </Typography>
-              <Box sx={{ mb: 3 }}>
-                <Box sx={{ width: 50, height: 3, background: 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%)', borderRadius: 2, mb: 2 }} />
-              </Box>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {quickLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    to={link.href}
-                    style={{ textDecoration: 'none' }}
-                  >
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: 'rgba(255, 255, 255, 0.8)',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          color: 'white',
-                          transform: 'translateX(8px)',
-                          textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
-                        },
-                        textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
-                      }}
-                    >
-                      {link.name}
-                    </Typography>
-                  </Link>
-                ))}
-              </Box>
-            </Grid>
+          {/* Categories */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Hizmet Kategorileri</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/ustalar?category=elektrik" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  Elektrik
+                </Link>
+              </li>
+              <li>
+                <Link href="/ustalar?category=su-tesisati" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  Su Tesisatı
+                </Link>
+              </li>
+              <li>
+                <Link href="/ustalar?category=temizlik" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  Temizlik
+                </Link>
+              </li>
+              <li>
+                <Link href="/ustalar?category=mobilya" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  Mobilya
+                </Link>
+              </li>
+              <li>
+                <Link href="/ustalar?category=tadilat" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  Tadilat
+                </Link>
+              </li>
+            </ul>
+          </div>
 
-            {/* Services */}
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: 'white', mb: 3, textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)' }}>
-                Hizmet Kategorileri
-              </Typography>
-              <Box sx={{ mb: 3 }}>
-                <Box sx={{ width: 50, height: 3, background: 'linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%)', borderRadius: 2, mb: 2 }} />
-              </Box>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {services.map((service) => (
-                  <Link
-                    key={service.name}
-                    to={service.href}
-                    style={{ textDecoration: 'none' }}
-                  >
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: 'rgba(255, 255, 255, 0.8)',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          color: 'white',
-                          transform: 'translateX(8px)',
-                          textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
-                        },
-                        textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
-                      }}
-                    >
-                      {service.name}
-                    </Typography>
-                  </Link>
-                ))}
-              </Box>
-            </Grid>
-          </Grid>
+          {/* Contact Info */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">İletişim</h3>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <Phone className="w-4 h-4 text-blue-400" />
+                <span className="text-gray-400 text-sm">+90 312 XXX XX XX</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Mail className="w-4 h-4 text-blue-400" />
+                <span className="text-gray-400 text-sm">info@ankaraustabul.com</span>
+              </div>
+              <div className="flex items-start space-x-3">
+                <MapPin className="w-4 h-4 text-blue-400 mt-1" />
+                <span className="text-gray-400 text-sm">
+                  Çankaya, Ankara<br />
+                  Türkiye
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          {/* Newsletter & Social */}
-          <Box sx={{ mt: 6, p: 4, backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 3, backdropFilter: 'blur(10px)' }}>
-            <Grid container spacing={4} alignItems="center">
-              <Grid item xs={12} md={6}>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: 'white', mb: 2, textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)' }}>
-                  Bültenimize Katılın
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)', mb: 3, textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
-                  En güncel usta hizmetleri ve kampanyalardan haberdar olun.
-                </Typography>
-                <Button
-                  variant="contained"
-                  size="large"
-                  sx={{
-                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                    color: 'white',
-                    fontWeight: 600,
-                    px: 4,
-                    py: 1.5,
-                    borderRadius: 2,
-                    boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
-                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
-                    '&:hover': {
-                      background: 'linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%)',
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 6px 20px rgba(59, 130, 246, 0.4)',
-                    },
-                  }}
-                >
-                  Abone Ol
-                </Button>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Box sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' }, gap: 2 }}>
-                  {socialLinks.map((social) => (
-                    <IconButton
-                      key={social.label}
-                      component="a"
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      sx={{
-                        width: 56,
-                        height: 56,
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                        border: '2px solid rgba(255, 255, 255, 0.2)',
-                        color: 'white',
-                        backdropFilter: 'blur(10px)',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          backgroundColor: social.color,
-                          borderColor: social.color,
-                          transform: 'translateY(-4px) scale(1.1)',
-                          boxShadow: `0 8px 25px ${social.color}40`,
-                        },
-                      }}
-                    >
-                      {social.icon}
-                    </IconButton>
-                  ))}
-                </Box>
-              </Grid>
-            </Grid>
-          </Box>
-        </Box>
-      </Container>
-
-      {/* Bottom Section */}
-      <Box sx={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
-        <Container maxWidth="xl">
-          <Box sx={{ py: 3, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
-            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', textAlign: { xs: 'center', md: 'left' }, textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
+        {/* Bottom Bar */}
+        <div className="border-t border-gray-800 mt-8 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <p className="text-gray-400 text-sm">
               © 2024 Ankara Usta Bul. Tüm hakları saklıdır.
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Chip
-                label="SSL Güvenli"
-                size="small"
-                icon={<SecurityIcon />}
-                sx={{
-                  backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                  color: '#22c55e',
-                  border: '1px solid rgba(34, 197, 94, 0.3)',
-                  fontWeight: 500,
-                }}
-              />
-              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.6)', textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
-                Güvenli Ödeme
-              </Typography>
-            </Box>
-          </Box>
-        </Container>
-      </Box>
-    </Box>
-  );
-};
-
-export default Footer;
+            </p>
+            <div className="flex space-x-6">
+              <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors text-sm">
+                Gizlilik Politikası
+              </Link>
+              <Link href="/terms" className="text-gray-400 hover:text-white transition-colors text-sm">
+                Kullanım Şartları
+              </Link>
+              <Link href="/cookies" className="text-gray-400 hover:text-white transition-colors text-sm">
+                Çerez Politikası
+              </Link>
+              <a 
+                href="https://www.ynadijital.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors text-sm"
+              >
+                Web Tasarım
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}

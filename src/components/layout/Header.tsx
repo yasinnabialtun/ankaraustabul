@@ -1,452 +1,144 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+'use client'
 
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  IconButton,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Box,
-  Container,
-  useTheme,
-  useMediaQuery,
-  Chip,
-  Avatar,
-  Badge,
-  Fade,
-  Slide,
-} from '@mui/material';
-import {
-  Menu as MenuIcon,
-  Home as HomeIcon,
-  People as PeopleIcon,
-  Category as CategoryIcon,
-  Article as ArticleIcon,
-  ContactSupport as ContactIcon,
-  Phone as PhoneIcon,
-  Email as EmailIcon,
-  LocationOn as LocationIcon,
-  Close as CloseIcon,
-  Notifications as NotificationsIcon,
-  Search as SearchIcon,
-} from '@mui/icons-material';
+import Link from 'next/link'
+import { useState, useEffect } from 'react'
+import { Search, Menu, X, Phone, User } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
-const Header: React.FC = () => {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const location = useLocation();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
+export default function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const navigationItems = [
-    { path: '/', label: 'Ana Sayfa', icon: <HomeIcon /> },
-    { path: '/ustalar', label: 'Ustalar', icon: <PeopleIcon /> },
-    { path: '/kategoriler', label: 'Kategoriler', icon: <CategoryIcon /> },
-    { path: '/blog', label: 'Blog', icon: <ArticleIcon /> },
-    { path: '/iletisim', label: 'İletişim', icon: <ContactIcon /> },
-  ];
-
-  const isActive = (path: string) => {
-    if (path === '/') {
-      return location.pathname === '/';
+      setIsScrolled(window.scrollY > 10)
     }
-    return location.pathname.startsWith(path);
-  };
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
-  const drawer = (
-    <Box sx={{ 
-      width: { xs: '100vw', sm: 320 }, 
-      height: '100vh',
-      background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-      color: 'white',
-      position: 'relative',
-      overflow: 'hidden',
-      '&::before': {
-        content: '""',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(10px)',
-        zIndex: 0,
-      }
-    }}>
-      <Box sx={{ position: 'relative', zIndex: 1, height: '100%', display: 'flex', flexDirection: 'column' }}>
-        {/* Header */}
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between',
-          p: 3, 
-          borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(10px)'
-        }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar
-              sx={{
-                bgcolor: 'rgba(255, 255, 255, 0.2)',
-                width: 48,
-                height: 48,
-                mr: 2,
-                border: '2px solid rgba(255, 255, 255, 0.3)',
-              }}
-            >
-              <PeopleIcon />
-            </Avatar>
-            <Box>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: 'white', textShadow: '0 1px 3px rgba(0, 0, 0, 0.3)' }}>
-                Ankara Usta Bul
-              </Typography>
-              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.9)', textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
-                Güvenilir Usta Platformu
-              </Typography>
-            </Box>
-          </Box>
-          <IconButton
-            onClick={handleDrawerToggle}
-            sx={{ color: 'white', border: '1px solid rgba(255, 255, 255, 0.3)' }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </Box>
-        
-        {/* Navigation */}
-        <Box sx={{ flex: 1, overflow: 'auto', py: 2 }}>
-          <List>
-            {navigationItems.map((item, index) => (
-              <ListItem
-                key={item.path}
-                component={Link}
-                to={item.path}
-                onClick={handleDrawerToggle}
-                sx={{
-                  mx: 2,
-                  mb: 1,
-                  borderRadius: 2,
-                  color: isActive(item.path) ? 'white' : 'rgba(255, 255, 255, 0.9)',
-                  backgroundColor: isActive(item.path) ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
-                  backdropFilter: isActive(item.path) ? 'blur(10px)' : 'none',
-                  border: isActive(item.path) ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid transparent',
-                  transition: 'all 0.3s ease',
-                  textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                    transform: 'translateX(8px)',
-                  },
-                }}
-              >
-                <ListItemIcon sx={{ 
-                  color: 'inherit',
-                  minWidth: 40,
-                }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText 
-                  primary={item.label}
-                  primaryTypographyProps={{
-                    fontWeight: isActive(item.path) ? 600 : 400,
-                    fontSize: '1rem',
-                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
-                  }}
-                />
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-
-        {/* Contact Info */}
-        <Box sx={{ 
-          p: 3, 
-          borderTop: '1px solid rgba(255, 255, 255, 0.2)',
-          background: 'rgba(255, 255, 255, 0.05)',
-          backdropFilter: 'blur(10px)'
-        }}>
-          <Typography variant="subtitle2" sx={{ color: 'rgba(255, 255, 255, 0.95)', mb: 2, fontWeight: 600, textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
-            İletişim Bilgileri
-          </Typography>
-          <Box sx={{ space: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <PhoneIcon sx={{ fontSize: 18, mr: 2, color: 'rgba(255, 255, 255, 0.9)' }} />
-              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)', textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
-                +90 312 123 45 67
-              </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <EmailIcon sx={{ fontSize: 18, mr: 2, color: 'rgba(255, 255, 255, 0.9)' }} />
-              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)', textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
-                info@ankaraustabul.com
-              </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <LocationIcon sx={{ fontSize: 18, mr: 2, color: 'rgba(255, 255, 255, 0.9)' }} />
-              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)', textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>
-                Ankara, Türkiye
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-    </Box>
-  );
+  const navItems = [
+    { href: "/", label: "Ana Sayfa" },
+    { href: "/ustalar", label: "Ustalar" },
+    { href: "/one-cikan-ustalar", label: "Öne Çıkanlar" },
+    { href: "/haberler", label: "Haberler" },
+    { href: "/usta-ekle", label: "Usta Ol" }
+  ]
 
   return (
-    <>
-      <AppBar
-        position="fixed"
-        elevation={0}
-        sx={{
-          backgroundColor: scrolled 
-            ? 'rgba(255, 255, 255, 0.98)' 
-            : 'transparent',
-          backdropFilter: scrolled ? 'blur(20px)' : 'none',
-          borderBottom: scrolled ? '1px solid rgba(0, 0, 0, 0.1)' : 'none',
-          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-          zIndex: theme.zIndex.drawer + 1,
-        }}
-      >
-        <Container maxWidth="xl">
-          <Toolbar sx={{ 
-            px: { xs: 1, sm: 2 },
-            py: { xs: 1, sm: 1.5 },
-            minHeight: { xs: 64, sm: 72 }
-          }}>
-            {/* Logo */}
-            <Box
-              component={Link}
-              to="/"
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                textDecoration: 'none',
-                color: 'inherit',
-                mr: { xs: 2, md: 4 },
-                transition: 'transform 0.3s ease',
-                '&:hover': {
-                  transform: 'scale(1.05)',
-                }
-              }}
-            >
-              <Avatar
-                sx={{
-                  bgcolor: scrolled ? 'primary.main' : 'rgba(255, 255, 255, 0.2)',
-                  width: { xs: 36, sm: 40 },
-                  height: { xs: 36, sm: 40 },
-                  mr: 2,
-                  border: scrolled ? 'none' : '2px solid rgba(255, 255, 255, 0.3)',
-                  transition: 'all 0.3s ease',
-                }}
-              >
-                <PeopleIcon />
-              </Avatar>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 700,
-                  color: scrolled ? '#1e293b' : 'white',
-                  display: { xs: 'none', sm: 'block' },
-                  fontSize: { xs: '1.1rem', sm: '1.25rem' },
-                  textShadow: scrolled ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.3)',
-                }}
-              >
+    <motion.header 
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        isScrolled 
+          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100' 
+          : 'bg-white shadow-sm'
+      }`}
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16 md:h-20">
+          {/* Enhanced Logo */}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Link href="/" className="flex items-center space-x-3">
+              <div className="relative w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-lg">AU</span>
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl opacity-0 hover:opacity-20 blur-xl transition-opacity duration-300" />
+              </div>
+              <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                 Ankara Usta Bul
-              </Typography>
-            </Box>
+              </span>
+            </Link>
+          </motion.div>
 
-            {/* Desktop Navigation */}
-            {!isMobile && (
-              <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-                {navigationItems.map((item) => (
-                  <Button
-                    key={item.path}
-                    component={Link}
-                    to={item.path}
-                    startIcon={item.icon}
-                    sx={{
-                      color: scrolled ? '#1e293b' : 'white',
-                      mx: 1,
-                      px: 2,
-                      py: 1,
-                      borderRadius: 2,
-                      transition: 'all 0.3s ease',
-                      textShadow: scrolled ? 'none' : '0 1px 2px rgba(0, 0, 0, 0.2)',
-                      '&:hover': {
-                        backgroundColor: scrolled 
-                          ? 'rgba(59, 130, 246, 0.1)' 
-                          : 'rgba(255, 255, 255, 0.15)',
-                        transform: 'translateY(-2px)',
-                      },
-                      ...(isActive(item.path) && {
-                        backgroundColor: scrolled 
-                          ? 'rgba(59, 130, 246, 0.15)' 
-                          : 'rgba(255, 255, 255, 0.2)',
-                        fontWeight: 600,
-                        backdropFilter: 'blur(10px)',
-                      }),
-                    }}
-                  >
-                    {item.label}
-                  </Button>
-                ))}
-              </Box>
-            )}
-
-            {/* Desktop Actions */}
-            {!isMobile && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <IconButton
-                  onClick={() => setSearchOpen(!searchOpen)}
-                  sx={{
-                    color: scrolled ? '#1e293b' : 'white',
-                    backgroundColor: scrolled ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.1)',
-                    '&:hover': {
-                      backgroundColor: scrolled ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.2)',
-                    },
-                  }}
+          {/* Enhanced Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            {navItems.map((item, index) => (
+              <motion.div
+                key={item.href}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <Link 
+                  href={item.href} 
+                  className="relative text-gray-600 hover:text-blue-600 transition-colors duration-300 font-medium group"
                 >
-                  <SearchIcon />
-                </IconButton>
-                
-                <Badge badgeContent={3} color="error">
-                  <IconButton
-                    sx={{
-                      color: scrolled ? '#1e293b' : 'white',
-                      backgroundColor: scrolled ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.1)',
-                      '&:hover': {
-                        backgroundColor: scrolled ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.2)',
-                      },
-                    }}
-                  >
-                    <NotificationsIcon />
-                  </IconButton>
-                </Badge>
+                  {item.label}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300 group-hover:w-full" />
+                </Link>
+              </motion.div>
+            ))}
+          </nav>
 
-                <Chip
-                  icon={<PhoneIcon />}
-                  label="+90 312 123 45 67"
-                  size="small"
-                  sx={{
-                    backgroundColor: scrolled ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255, 255, 255, 0.2)',
-                    color: scrolled ? '#3b82f6' : 'white',
-                    border: scrolled ? '1px solid rgba(59, 130, 246, 0.2)' : '1px solid rgba(255, 255, 255, 0.3)',
-                    textShadow: scrolled ? 'none' : '0 1px 2px rgba(0, 0, 0, 0.2)',
-                    '& .MuiChip-icon': {
-                      color: 'inherit',
-                    },
-                    '&:hover': {
-                      backgroundColor: scrolled ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.3)',
-                    },
-                  }}
-                />
-                
-                <Button
-                  component={Link}
-                  to="/usta-ekle"
-                  variant="contained"
-                  size="small"
-                  sx={{
-                    background: scrolled 
-                      ? 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'
-                      : 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%)',
-                    color: scrolled ? 'white' : '#3b82f6',
-                    fontWeight: 600,
-                    px: 3,
-                    py: 1,
-                    borderRadius: 2,
-                    boxShadow: scrolled 
-                      ? '0 4px 12px rgba(59, 130, 246, 0.3)'
-                      : '0 4px 12px rgba(0, 0, 0, 0.1)',
-                    textShadow: scrolled ? '0 1px 2px rgba(0, 0, 0, 0.2)' : 'none',
-                    '&:hover': {
-                      background: scrolled 
-                        ? 'linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%)'
-                        : 'linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 100%)',
-                      transform: 'translateY(-2px)',
-                      boxShadow: scrolled 
-                        ? '0 6px 20px rgba(59, 130, 246, 0.4)'
-                        : '0 6px 20px rgba(0, 0, 0, 0.15)',
-                    },
-                  }}
+          {/* Enhanced Mobile Menu Button */}
+          <motion.button
+            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-300"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <AnimatePresence mode="wait">
+              {isMenuOpen ? (
+                <motion.div
+                  key="close"
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
                 >
-                  Usta Ekle
-                </Button>
-              </Box>
-            )}
+                  <X className="w-6 h-6" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="menu"
+                  initial={{ rotate: 90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Menu className="w-6 h-6" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.button>
+        </div>
 
-            {/* Mobile Menu Button */}
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{
-                ml: 'auto',
-                color: scrolled ? '#1e293b' : 'white',
-                display: { md: 'none' },
-                backgroundColor: scrolled ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.1)',
-                border: scrolled ? '1px solid rgba(0, 0, 0, 0.1)' : '1px solid rgba(255, 255, 255, 0.2)',
-                '&:hover': {
-                  backgroundColor: scrolled ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.2)',
-                },
-              }}
+        {/* Enhanced Mobile Menu */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div 
+              className="md:hidden border-t border-gray-200 py-6"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
             >
-              <MenuIcon />
-            </IconButton>
-          </Toolbar>
-        </Container>
-      </AppBar>
-
-      {/* Mobile Drawer */}
-      <Drawer
-        variant="temporary"
-        anchor="right"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true,
-        }}
-        sx={{
-          display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': {
-            boxSizing: 'border-box',
-            width: { xs: '100vw', sm: 320 },
-            border: 'none',
-            background: 'transparent',
-          },
-        }}
-      >
-        <Slide direction="left" in={mobileOpen} mountOnEnter unmountOnExit>
-          <Box>{drawer}</Box>
-        </Slide>
-      </Drawer>
-
-      {/* Toolbar spacer */}
-      <Toolbar />
-    </>
-  );
-};
-
-export default Header;
+              <nav className="flex flex-col space-y-4">
+                {navItems.map((item, index) => (
+                  <motion.div
+                    key={item.href}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                  >
+                    <Link 
+                      href={item.href} 
+                      className="block text-gray-600 hover:text-blue-600 transition-colors duration-300 font-medium py-2 px-4 rounded-lg hover:bg-gray-50"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                ))}
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.header>
+  )
+}

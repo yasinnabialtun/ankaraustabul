@@ -1,294 +1,150 @@
-# 🏠 Ankara Usta Bul - Modern Usta Arama Platformu
+# 🔧 Ankara Usta Bul
 
-[![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3.3-blue.svg)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.1-38B2AC.svg)](https://tailwindcss.com/)
-[![Vite](https://img.shields.io/badge/Vite-5.1.0-646CFF.svg)](https://vitejs.dev/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+Modern ve kullanıcı dostu bir platform ile Ankara'da güvenilir ustaları bulun.
 
-Modern, responsive ve kullanıcı dostu Ankara usta arama platformu. React, TypeScript ve Tailwind CSS ile geliştirilmiştir.
+## 🚀 Özellikler
 
-## ✨ Özellikler
-
-### 🎨 Modern UI/UX
-- **Glassmorphism** efektleri
-- **Micro-interactions** ve smooth animasyonlar
-- **Responsive** tasarım (Mobile-first)
-- **Dark/Light** tema desteği
-- **Accessibility** standartlarına uygun
-
-### 🚀 Performance
-- **Lazy loading** ile hızlı yükleme
-- **Code splitting** ve bundle optimization
-- **Image optimization** ve WebP desteği
-- **PWA** desteği
-- **SEO** optimizasyonu
-
-### 🔧 Teknik Özellikler
-- **TypeScript** ile tip güvenliği
-- **Framer Motion** animasyonları
-- **React Router** ile SPA routing
-- **Firebase** backend entegrasyonu
-- **Analytics** ve error tracking
+- ⚡ **Modern Teknolojiler**: Next.js 15, TypeScript, Tailwind CSS
+- 🎨 **Responsive Tasarım**: Tüm cihazlarda mükemmel görünüm
+- 🔥 **Yüksek Performans**: Optimized bundle ve lazy loading
+- 🛡️ **Güvenlik**: XSS protection, CSRF güvenliği
+- 📊 **Admin Dashboard**: Kapsamlı yönetim paneli
+- 🔍 **Gelişmiş Arama**: Kategori ve lokasyon filtreleri
+- 📱 **PWA Ready**: Progressive Web App desteği
 
 ## 🛠️ Teknoloji Stack
 
 ### Frontend
-- **React 18** - UI framework
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Utility-first CSS
-- **Framer Motion** - Animations
-- **React Router** - Routing
-- **Lucide React** - Icons
+- **Framework**: Next.js 15.0.0
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS + Material-UI
+- **Animation**: Framer Motion
+- **State Management**: Zustand
+- **Forms**: React Hook Form + Zod
+- **Charts**: Recharts
 
-### Backend & Services
-- **Firebase** - Backend as a Service
-- **Firestore** - Database
-- **Firebase Auth** - Authentication
-- **Firebase Storage** - File storage
+### Backend & Database
+- **Database**: Firebase Firestore
+- **Authentication**: Firebase Auth
+- **Storage**: Firebase Storage
+- **Hosting**: Vercel
 
 ### Development Tools
-- **Vite** - Build tool
-- **ESLint** - Code linting
-- **PostCSS** - CSS processing
-- **PWA** - Progressive Web App
+- **Linting**: ESLint + TypeScript ESLint
+- **Bundler**: Next.js built-in
+- **Package Manager**: npm
 
 ## 📦 Kurulum
 
 ### Gereksinimler
-- Node.js 18.0.0 veya üzeri
-- npm veya yarn
+- Node.js 18+ 
+- npm 9+
 
-### Adımlar
-
-1. **Repository'yi klonlayın**
+### 1. Proje Klonlama
 ```bash
-git clone https://github.com/your-username/ankaraustabul.git
+git clone https://github.com/yasinnabialtun/ankaraustabul.git
 cd ankaraustabul
 ```
 
-2. **Bağımlılıkları yükleyin**
+### 2. Bağımlılıkları Yükleme
 ```bash
 npm install
 ```
 
-3. **Environment variables'ları ayarlayın**
+### 3. Environment Variables
+`.env` dosyasını oluşturun:
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
 
-4. **Firebase konfigürasyonunu yapın**
-- Firebase Console'dan yeni proje oluşturun
-- `src/services/firebase.ts` dosyasındaki config'i güncelleyin
+Firebase konfigürasyonunu ekleyin:
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
+```
 
-5. **Development server'ı başlatın**
+### 4. Development Server
 ```bash
 npm run dev
 ```
 
-## 🚀 Scripts
+Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacak.
 
+## 🏗️ Build ve Deploy
+
+### Production Build
 ```bash
-# Development server
-npm run dev
-
-# Production build
 npm run build
+npm start
+```
 
-# Preview production build
-npm run preview
-
-# Linting
-npm run lint
-
-# Type checking
-npm run type-check
+### Vercel Deploy
+```bash
+npm install -g vercel
+vercel --prod
 ```
 
 ## 📁 Proje Yapısı
 
 ```
 src/
-├── components/          # React bileşenleri
-│   ├── ui/             # UI bileşenleri
-│   ├── layout/         # Layout bileşenleri
-│   └── animations/     # Animasyon bileşenleri
-├── pages/              # Sayfa bileşenleri
-├── services/           # API ve servis fonksiyonları
-├── hooks/              # Custom React hooks
-├── types/              # TypeScript type tanımları
-├── data/               # Statik veriler
-├── utils/              # Utility fonksiyonları
-└── styles/             # Global stiller
+├── app/                 # Next.js App Router
+│   ├── globals.css     # Global styles
+│   ├── layout.tsx      # Root layout
+│   └── page.tsx        # Home page
+├── components/         # Reusable components
+│   ├── ui/            # Base UI components
+│   └── layout/        # Layout components
+├── pages/             # Page components
+├── services/          # API services
+├── types/             # TypeScript types
+├── hooks/             # Custom hooks
+├── store/             # State management
+└── utils/             # Utility functions
 ```
 
-## 🎨 UI Bileşenleri
+## 🎯 Ana Sayfalar
 
-### Temel Bileşenler
-- **Button** - Çoklu variant ve size desteği
-- **Card** - Glassmorphism ve hover efektleri
-- **Input** - Form input bileşenleri
-- **Badge** - Etiket ve durum göstergeleri
-- **Skeleton** - Loading state bileşenleri
+- **Ana Sayfa** (`/`): Hero section, öne çıkan ustalar
+- **Ustalar** (`/ustalar`): Usta listesi ve filtreleme
+- **Kategoriler** (`/kategoriler`): Hizmet kategorileri
+- **Blog** (`/blog`): Blog yazıları
+- **İletişim** (`/iletisim`): İletişim formu
+- **Admin Panel** (`/admin`): Yönetim paneli
 
-### Layout Bileşenleri
-- **Header** - Responsive navigation
-- **Footer** - Modern footer tasarımı
-- **BottomNav** - Mobile navigation
-- **Hero** - Hero section bileşeni
-- **Section** - Sayfa bölümleri
+## 🔧 Available Scripts
 
-### Özel Bileşenler
-- **Search** - Gelişmiş arama bileşeni
-- **LoadingSpinner** - Çoklu loading animasyonları
-- **ErrorBoundary** - Hata yakalama
-- **BackToTop** - Yukarı çıkma butonu
-
-## 📱 Responsive Tasarım
-
-### Breakpoints
-- **Mobile**: 320px - 768px
-- **Tablet**: 768px - 1024px
-- **Desktop**: 1024px+
-
-### Özellikler
-- **Mobile-first** yaklaşım
-- **Touch-friendly** interface
-- **Adaptive layouts**
-- **Flexible grids**
-
-## 🎭 Animasyonlar
-
-### Framer Motion
-- **Page transitions**
-- **Scroll-triggered** animasyonlar
-- **Micro-interactions**
-- **Loading states**
-
-### CSS Animations
-- **Keyframe** animasyonları
-- **Transform** efektleri
-- **Transition** geçişleri
-
-## 🔧 Konfigürasyon
-
-### Tailwind CSS
-```javascript
-// tailwind.config.js
-module.exports = {
-  content: ['./src/**/*.{js,ts,jsx,tsx}'],
-  theme: {
-    extend: {
-      colors: {
-        primary: { /* Custom colors */ },
-        secondary: { /* Custom colors */ },
-      },
-      animation: {
-        'fade-in': 'fadeIn 0.6s ease-out',
-        'float': 'float 6s ease-in-out infinite',
-      },
-    },
-  },
-}
-```
-
-### Vite
-```javascript
-// vite.config.ts
-export default defineConfig({
-  plugins: [
-    react(),
-    PWA({
-      registerType: 'autoUpdate',
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-      },
-    }),
-  ],
-})
-```
-
-## 🚀 Deployment
-
-### Vercel (Önerilen)
 ```bash
-npm run build
-vercel --prod
+# Development
+npm run dev          # Development server
+npm run build        # Production build
+npm run start        # Production server
+npm run lint         # ESLint check
 ```
-
-### Netlify
-```bash
-npm run build
-netlify deploy --prod --dir=dist
-```
-
-### Firebase Hosting
-```bash
-npm run build
-firebase deploy
-```
-
-## 📊 Performance
-
-### Lighthouse Scores
-- **Performance**: 95+
-- **Accessibility**: 100
-- **Best Practices**: 100
-- **SEO**: 100
-
-### Optimizasyonlar
-- **Code splitting**
-- **Lazy loading**
-- **Image optimization**
-- **Bundle analysis**
-
-## 🔒 Güvenlik
-
-- **HTTPS** zorunlu
-- **CSP** headers
-- **XSS** koruması
-- **CSRF** koruması
-- **Input validation**
-
-## 📈 Analytics
-
-### Google Analytics
-- **Page views** tracking
-- **User behavior** analizi
-- **Conversion** tracking
-- **Error** tracking
-
-### Custom Events
-- **Search** queries
-- **Category** clicks
-- **Contact** form submissions
-- **User** interactions
 
 ## 🤝 Katkıda Bulunma
 
 1. Fork yapın
 2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Commit yapın (`git commit -m 'Add amazing feature'`)
-4. Push yapın (`git push origin feature/amazing-feature`)
+3. Değişikliklerinizi commit edin (`git commit -m 'Add amazing feature'`)
+4. Branch'inizi push edin (`git push origin feature/amazing-feature`)
 5. Pull Request oluşturun
 
-## 📝 Lisans
+## 📄 Lisans
 
-Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakın.
+Bu proje MIT lisansı altında lisanslanmıştır.
 
-## 📞 İletişim
+## 👥 İletişim
 
+- **Developer**: Yasin Nabi Altun
+- **GitHub**: [@yasinnabialtun](https://github.com/yasinnabialtun)
 - **Website**: [ankaraustabul.com](https://ankaraustabul.com)
-- **Email**: info@ankaraustabul.com
-- **GitHub**: [@your-username](https://github.com/your-username)
-
-## 🙏 Teşekkürler
-
-- [React](https://reactjs.org/) ekibi
-- [Tailwind CSS](https://tailwindcss.com/) ekibi
-- [Framer Motion](https://www.framer.com/motion/) ekibi
-- [Vite](https://vitejs.dev/) ekibi
 
 ---
 
-⭐ Bu projeyi beğendiyseniz yıldız vermeyi unutmayın! 
+⭐ Bu projeyi beğendiyseniz yıldız vermeyi unutmayın!

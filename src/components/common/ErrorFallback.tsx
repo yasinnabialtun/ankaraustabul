@@ -1,5 +1,5 @@
 import { AlertCircle, RefreshCw, Home } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 interface ErrorFallbackProps {
   error: Error;
@@ -44,7 +44,7 @@ function ErrorFallback({ error, resetError }: ErrorFallbackProps) {
           </button>
           
           <Link
-            to="/"
+            href="/"
             className="w-full flex items-center justify-center space-x-2 bg-gray-100 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
           >
             <Home className="w-5 h-5" />

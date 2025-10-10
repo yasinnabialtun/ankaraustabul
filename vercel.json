@@ -1,33 +1,58 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "framework": "vite",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "maxDuration": 30
     }
-  ],
+  },
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
         {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "key": "X-Frame-Options",
+          "value": "DENY"
         },
         {
-          "key": "Pragma",
-          "value": "no-cache"
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
         },
         {
-          "key": "Expires",
-          "value": "0"
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
         }
       ]
     },
     {
-      "source": "/assets/(.*)",
+      "source": "/static/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/_next/static/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -52,6 +77,42 @@
           "value": "public, max-age=0, must-revalidate"
         }
       ]
+    },
+    {
+      "source": "/sitemap.xml",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    },
+    {
+      "source": "/robots.txt",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/home",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
     }
   ]
 } 

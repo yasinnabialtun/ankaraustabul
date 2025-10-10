@@ -1,12 +1,28 @@
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, getDoc, query, orderBy, where } from 'firebase/firestore';
 import { db } from './firebase';
-import { BlogPost } from '../data/blogData';
+
+interface BlogPost {
+  id: string;
+  title: string;
+  content: string;
+  excerpt: string;
+  author: string;
+  category: string;
+  tags: string[];
+  publishedAt: string;
+  imageUrl?: string;
+}
 
 class BlogService {
   private collectionName = 'blogs';
 
   // Tüm blog yazılarını getir
   async getAllBlogs(): Promise<BlogPost[]> {
+    if (!db) {
+      console.warn('Firebase not initialized');
+      return [];
+    }
+
     try {
       const q = query(
         collection(db, this.collectionName),
@@ -20,14 +36,17 @@ class BlogService {
       })) as BlogPost[];
     } catch (error) {
       console.error('Blog yazıları alınırken hata:', error);
-      // Fallback olarak static data'yı döndür
-      const { blogPosts } = await import('../data/blogData');
-      return blogPosts;
+      return [];
     }
   }
 
   // ID'ye göre blog yazısı getir
   async getBlogById(id: string): Promise<BlogPost | null> {
+    if (!db) {
+      console.warn('Firebase not initialized');
+      return null;
+    }
+
     try {
       const docRef = doc(db, this.collectionName, id);
       const docSnap = await getDoc(docRef);
@@ -42,14 +61,17 @@ class BlogService {
       return null;
     } catch (error) {
       console.error('Blog yazısı alınırken hata:', error);
-      // Fallback olarak static data'dan ara
-      const { blogPosts } = await import('../data/blogData');
-      return blogPosts.find(blog => blog.id === id) || null;
+      return null;
     }
   }
 
   // Slug'a göre blog yazısı getir
   async getBlogBySlug(slug: string): Promise<BlogPost | null> {
+    if (!db) {
+      console.warn('Firebase not initialized');
+      return null;
+    }
+
     try {
       const q = query(
         collection(db, this.collectionName),
@@ -68,14 +90,17 @@ class BlogService {
       return null;
     } catch (error) {
       console.error('Blog yazısı alınırken hata:', error);
-      // Fallback olarak static data'dan ara
-      const { blogPosts } = await import('../data/blogData');
-      return blogPosts.find(blog => blog.slug === slug) || null;
+      return null;
     }
   }
 
   // Yeni blog yazısı ekle
   async addBlog(blogData: Omit<BlogPost, 'id'>): Promise<string> {
+    if (!db) {
+      console.warn('Firebase not initialized');
+      throw new Error('Firebase not initialized');
+    }
+
     try {
       const docRef = await addDoc(collection(db, this.collectionName), {
         ...blogData,
@@ -92,6 +117,11 @@ class BlogService {
 
   // Blog yazısını güncelle
   async updateBlog(id: string, blogData: Partial<BlogPost>): Promise<void> {
+    if (!db) {
+      console.warn('Firebase not initialized');
+      throw new Error('Firebase not initialized');
+    }
+
     try {
       const docRef = doc(db, this.collectionName, id);
       await updateDoc(docRef, {
@@ -106,6 +136,11 @@ class BlogService {
 
   // Blog yazısını sil
   async deleteBlog(id: string): Promise<void> {
+    if (!db) {
+      console.warn('Firebase not initialized');
+      throw new Error('Firebase not initialized');
+    }
+
     try {
       const docRef = doc(db, this.collectionName, id);
       await deleteDoc(docRef);
@@ -117,6 +152,11 @@ class BlogService {
 
   // Kategoriye göre blog yazıları getir
   async getBlogsByCategory(category: string): Promise<BlogPost[]> {
+    if (!db) {
+      console.warn('Firebase not initialized');
+      return [];
+    }
+
     try {
       const q = query(
         collection(db, this.collectionName),
@@ -131,9 +171,7 @@ class BlogService {
       })) as BlogPost[];
     } catch (error) {
       console.error('Kategori blogları alınırken hata:', error);
-      // Fallback olarak static data'yı filtrele
-      const { blogPosts } = await import('../data/blogData');
-      return blogPosts.filter(blog => blog.category === category);
+      return [];
     }
   }
 
@@ -141,7 +179,7 @@ class BlogService {
   async getBlogStats() {
     try {
       const blogs = await this.getAllBlogs();
-      const categories = [...new Set(blogs.map(blog => blog.category))];
+      const categories = Array.from(new Set(blogs.map(blog => blog.category)));
       
       return {
         totalBlogs: blogs.length,

@@ -1,197 +1,108 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import {
-  Box,
-  Container,
-  Typography,
-  Button,
-  Paper,
-  Alert,
-  AlertTitle,
-} from '@mui/material';
-import {
-  Error as ErrorIcon,
-  Refresh as RefreshIcon,
-  Home as HomeIcon,
-} from '@mui/icons-material';
+import { AlertTriangle, RefreshCcw, Home } from 'lucide-react';
+import { logger } from '../utils';
+import { Button } from './ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
 interface ErrorFallbackProps {
   error: Error;
   resetErrorBoundary: () => void;
 }
 
-const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error }) => {
+const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorBoundary }) => {
+  // Log the error
+  React.useEffect(() => {
+    logger.error('Application error boundary triggered', {
+      errorMessage: error.message,
+      errorStack: error.stack,
+      url: typeof window !== 'undefined' ? window.location.href : 'unknown',
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
+    }, error);
+  }, [error]);
+
   const handleRefresh = () => {
+    logger.info('User clicked refresh button in error boundary');
     window.location.reload();
   };
 
   const handleGoHome = () => {
+    logger.info('User clicked go home button in error boundary');
     window.location.href = '/';
   };
 
+  const handleReset = () => {
+    logger.info('User clicked try again button in error boundary');
+    resetErrorBoundary();
+  };
+
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'grey.50',
-        p: 2,
-      }}
-    >
-      <Container maxWidth="md">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <Paper
-            elevation={3}
-            sx={{
-              p: { xs: 3, md: 6 },
-              textAlign: 'center',
-              borderRadius: 3,
-              background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 80,
-                height: 80,
-                borderRadius: '50%',
-                backgroundColor: 'error.50',
-                color: 'error.main',
-                mx: 'auto',
-                mb: 3,
-              }}
-            >
-              <ErrorIcon sx={{ fontSize: 40 }} />
-            </Box>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <div className="max-w-2xl w-full">
+        <Card className="p-8 text-center">
+          <div className="flex items-center justify-center w-20 h-20 rounded-full bg-red-50 text-red-500 mx-auto mb-6">
+            <AlertTriangle className="w-10 h-10" />
+          </div>
 
-            <Typography
-              variant="h3"
-              sx={{
-                fontWeight: 700,
-                mb: 2,
-                color: 'text.primary',
-              }}
-            >
-              Bir Hata Oluştu
-            </Typography>
+          <h1 className="text-3xl font-bold mb-4 text-gray-900">
+            Bir Hata Oluştu
+          </h1>
 
-            <Typography
-              variant="h6"
-              sx={{
-                color: 'text.secondary',
-                mb: 4,
-                lineHeight: 1.6,
-              }}
-            >
-              Üzgünüz, beklenmeyen bir hata oluştu. Lütfen tekrar deneyin veya ana sayfaya dönün.
-            </Typography>
+          <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+            Üzgünüz, beklenmeyen bir hata oluştu. Lütfen tekrar deneyin veya ana sayfaya dönün.
+          </p>
 
-            <Alert
-              severity="error"
-              sx={{
-                mb: 4,
-                textAlign: 'left',
-                '& .MuiAlert-message': {
-                  width: '100%',
-                },
-              }}
-            >
-              <AlertTitle>Hata Detayları</AlertTitle>
-              <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
-                {error.message}
-              </Typography>
-            </Alert>
+          <Alert variant="destructive" className="mb-6 text-left">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Hata Detayları</AlertTitle>
+            <AlertDescription className="font-mono text-sm">
+              {error.message}
+            </AlertDescription>
+          </Alert>
 
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: { xs: 'column', sm: 'row' },
-                gap: 2,
-                justifyContent: 'center',
-              }}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              onClick={handleReset}
+              className="px-6 py-3 text-base font-semibold hover:-translate-y-0.5 transition-all duration-300"
             >
-              <Button
-                variant="contained"
-                size="large"
-                startIcon={<RefreshIcon />}
-                onClick={handleRefresh}
-                sx={{
-                  px: 4,
-                  py: 1.5,
-                  fontSize: '1rem',
-                  fontWeight: 600,
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                  },
-                  transition: 'all 0.3s ease',
-                }}
+              <RefreshCcw className="mr-2" size={18} />
+              Tekrar Dene
+            </Button>
+
+            <Button
+              variant="secondary"
+              onClick={handleRefresh}
+              className="px-6 py-3 text-base font-semibold hover:-translate-y-0.5 transition-all duration-300"
+            >
+              <RefreshCcw className="mr-2" size={18} />
+              Sayfayı Yenile
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={handleGoHome}
+              className="px-6 py-3 text-base font-semibold border-2 hover:-translate-y-0.5 transition-all duration-300"
+            >
+              <Home className="mr-2" size={18} />
+              Ana Sayfaya Dön
+            </Button>
+          </div>
+
+          <div className="mt-6">
+            <p className="text-sm text-gray-600">
+              Sorun devam ederse lütfen{' '}
+              <a
+                href="/iletisim"
+                className="text-primary font-semibold hover:underline"
               >
-                Sayfayı Yenile
-              </Button>
-
-              <Button
-                variant="outlined"
-                size="large"
-                startIcon={<HomeIcon />}
-                onClick={handleGoHome}
-                sx={{
-                  px: 4,
-                  py: 1.5,
-                  fontSize: '1rem',
-                  fontWeight: 600,
-                  borderWidth: 2,
-                  '&:hover': {
-                    borderWidth: 2,
-                    transform: 'translateY(-2px)',
-                  },
-                  transition: 'all 0.3s ease',
-                }}
-              >
-                Ana Sayfaya Dön
-              </Button>
-            </Box>
-
-            <Box sx={{ mt: 4 }}>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: 'text.secondary',
-                  fontSize: '0.875rem',
-                }}
-              >
-                Sorun devam ederse lütfen{' '}
-                <Button
-                  component="a"
-                  href="/iletisim"
-                  sx={{
-                    color: 'primary.main',
-                    textDecoration: 'none',
-                    p: 0,
-                    minWidth: 'auto',
-                    fontSize: 'inherit',
-                    fontWeight: 600,
-                    '&:hover': {
-                      textDecoration: 'underline',
-                    },
-                  }}
-                >
-                  bizimle iletişime geçin
-                </Button>
-              </Typography>
-            </Box>
-          </Paper>
-        </motion.div>
-      </Container>
-    </Box>
+                bizimle iletişime geçin
+              </a>
+            </p>
+          </div>
+        </Card>
+      </div>
+    </div>
   );
 };
 
-export default ErrorFallback; 
+export default ErrorFallback;

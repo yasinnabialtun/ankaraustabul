@@ -1,117 +1,134 @@
-# Firebase Kurulum ve Güvenlik Kuralları
+# 🔥 Firebase Setup Rehberi
 
-## 🔥 Firebase Console'a Erişim
+## 1. Firebase Console'a Git
+https://console.firebase.google.com/
 
-1. **Firebase Console'a gidin:** https://console.firebase.google.com/
-2. **Projenizi seçin:** `ankaraustabul`
-3. **Sol menüden "Firestore Database" seçin**
+## 2. Yeni Proje Oluştur
+- Proje adı: `ankaraustabul`
+- Google Analytics: Aktif et
+- Bölge: `europe-west1` (Avrupa)
 
-## 📝 Güvenlik Kurallarını Güncelleme
+## 3. Web App Ekle
+- Firebase Console > Project Settings > General
+- "Add app" > Web (</>) ikonu
+- App nickname: `ankaraustabul-web`
+- Firebase Hosting: Şimdilik hayır
 
-### Adım 1: Rules Sekmesine Gidin
-- Firestore Database sayfasında **"Rules"** sekmesine tıklayın
-
-### Adım 2: Mevcut Kuralları Değiştirin
-Aşağıdaki kuralları **tamamen değiştirin** (mevcut kuralları silin ve bunları yapıştırın):
-
+## 4. Firebase Config Bilgilerini Al
 ```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    
-    // Ustalar koleksiyonu için kurallar
-    match /ustalar/{ustaId} {
-      // Herkes okuyabilir (onaylanmış ustalar)
-      allow read: if true;
-      
-      // Herkes yeni usta ekleyebilir (kayıt için)
-      allow create: if true;
-      
-      // Sadece admin güncelleyebilir (durum değişiklikleri için)
-      allow update: if request.auth != null && 
-        (request.auth.token.admin == true || 
-         request.auth.token.email == 'admin@ankaraustabul.com');
-      
-      // Sadece admin silebilir
-      allow delete: if request.auth != null && 
-        (request.auth.token.admin == true || 
-         request.auth.token.email == 'admin@ankaraustabul.com');
-    }
-    
-    // Kategoriler koleksiyonu için kurallar
-    match /kategoriler/{kategoriId} {
-      allow read: if true;
-      allow write: if request.auth != null && 
-        (request.auth.token.admin == true || 
-         request.auth.token.email == 'admin@ankaraustabul.com');
-    }
-    
-    // İlçeler koleksiyonu için kurallar
-    match /ilceler/{ilceId} {
-      allow read: if true;
-      allow write: if request.auth != null && 
-        (request.auth.token.admin == true || 
-         request.auth.token.email == 'admin@ankaraustabul.com');
-    }
-    
-    // Blog koleksiyonu için kurallar
-    match /blog/{blogId} {
-      allow read: if true;
-      allow write: if request.auth != null && 
-        (request.auth.token.admin == true || 
-         request.auth.token.email == 'admin@ankaraustabul.com');
-    }
-    
-    // Diğer tüm koleksiyonlar için varsayılan kural
-    match /{document=**} {
-      allow read, write: if false;
-    }
-  }
+const firebaseConfig = {
+  apiKey: "AIzaSyB...",
+  authDomain: "ankaraustabul.firebaseapp.com",
+  projectId: "ankaraustabul",
+  storageBucket: "ankaraustabul.appspot.com",
+  messagingSenderId: "123456789012",
+  appId: "1:123456789012:web:abcdef1234567890",
+  measurementId: "G-XXXXXXXXXX"
+};
+```
+
+## 5. Environment Variables Oluştur
+`.env.local` dosyası oluştur:
+
+```env
+# Firebase Configuration
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyB...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=ankaraustabul.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=ankaraustabul
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=ankaraustabul.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789012
+NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789012:web:abcdef1234567890
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
+
+# App Configuration
+NEXT_PUBLIC_APP_NAME=Ankara Usta Bul
+NEXT_PUBLIC_APP_URL=https://ankaraustabul.com
+```
+
+## 6. Firestore Database Oluştur
+- Firebase Console > Firestore Database
+- "Create database" > Test mode (geliştirme için)
+- Bölge: `europe-west1`
+
+## 7. Firestore Collections Oluştur
+Aşağıdaki koleksiyonları oluştur:
+
+### `ustalar` Collection
+```json
+{
+  "id": "usta-1",
+  "name": "Ahmet Yılmaz",
+  "category": "elektrik",
+  "district": "Çankaya",
+  "rating": 4.8,
+  "phone": "+90 532 123 45 67",
+  "email": "ahmet@example.com",
+  "services": ["Elektrik tesisatı", "Aydınlatma"],
+  "experience": "10+ yıl",
+  "isActive": true,
+  "createdAt": "2024-01-01T00:00:00Z"
 }
 ```
 
-### Adım 3: Kuralları Yayınlayın
-- **"Publish"** butonuna tıklayın
-- Onay mesajında **"Publish"** seçin
-
-## ✅ Kuralların Açıklaması
-
-### 🔓 Ustalar Koleksiyonu
-- **Okuma:** Herkes okuyabilir (müşteriler usta listesini görebilir)
-- **Yazma:** Herkes yeni usta ekleyebilir (kayıt formu çalışır)
-- **Güncelleme:** Sadece admin (durum değişiklikleri için)
-- **Silme:** Sadece admin
-
-### 🔒 Diğer Koleksiyonlar
-- **Okuma:** Herkes okuyabilir
-- **Yazma:** Sadece admin
-
-## 🚨 Önemli Notlar
-
-1. **Kurallar yayınlandıktan sonra** usta kaydı çalışacak
-2. **Test etmek için** uygulamayı yeniden yükleyin
-3. **Console'da hata mesajları** artık görünmeyecek
-
-## 🔧 Alternatif Çözüm (Test Modu)
-
-Eğer hala sorun yaşıyorsanız, **test modu** için geçici olarak şu kuralı kullanabilirsiniz:
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
-    }
-  }
+### `blogs` Collection
+```json
+{
+  "id": "blog-1",
+  "title": "Ankara'da Elektrik Arızaları",
+  "content": "Blog içeriği...",
+  "author": "Admin",
+  "category": "elektrik",
+  "tags": ["elektrik", "ankara"],
+  "publishedAt": "2024-01-01T00:00:00Z",
+  "isPublished": true
 }
 ```
 
-⚠️ **Dikkat:** Bu kural güvenlik sağlamaz, sadece test için kullanın!
+### `payments` Collection
+```json
+{
+  "id": "payment-1",
+  "ustaId": "usta-1",
+  "customerName": "Müşteri Adı",
+  "amount": 299,
+  "status": "completed",
+  "createdAt": "2024-01-01T00:00:00Z"
+}
+```
 
-## 📞 Destek
+## 8. Firebase Security Rules
+`firestore.rules` dosyası zaten mevcut, Firebase Console'da aktif et.
 
-Sorun devam ederse:
-1. Firebase Console'da **"Usage"** sekmesini kontrol edin
-2. **"Authentication"** bölümünde kullanıcıların doğru ayarlandığından emin olun
-3. **"Project Settings"** > **"Service accounts"** bölümünü kontrol edin
+## 9. Firebase Storage Rules
+`storage.rules` dosyası zaten mevcut, Firebase Console'da aktif et.
+
+## 10. Test Et
+```bash
+npm run dev
+```
+
+Firebase bağlantısını test et:
+- http://localhost:3000/test-firebase (eğer varsa)
+- Console'da hata olmamalı
+- Firestore'da veri görünmeli
+
+## 11. Production Deploy
+```bash
+npm run build
+npx vercel --prod
+```
+
+## 🔧 Troubleshooting
+
+### Firebase bağlantı hatası
+- Environment variables doğru mu?
+- Firebase projesi aktif mi?
+- Firestore rules doğru mu?
+
+### Build hatası
+- `npm run validate-env` çalıştır
+- Tüm environment variables set edilmiş mi?
+
+### Deploy hatası
+- Vercel'de environment variables ekle
+- Firebase domain'i Vercel'de whitelist'e ekle

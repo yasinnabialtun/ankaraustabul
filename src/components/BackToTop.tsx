@@ -1,94 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import { Fab, Zoom, Tooltip } from '@mui/material';
-import { KeyboardArrowUp as KeyboardArrowUpIcon } from '@mui/icons-material';
-import { motion, AnimatePresence } from 'framer-motion';
+'use client'
+
+import React, { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowUp } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 const BackToTop: React.FC = () => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
     const toggleVisibility = () => {
       if (window.pageYOffset > 300) {
-        setIsVisible(true);
+        setIsVisible(true)
       } else {
-        setIsVisible(false);
+        setIsVisible(false)
       }
-    };
+    }
 
-    window.addEventListener('scroll', toggleVisibility);
-    return () => window.removeEventListener('scroll', toggleVisibility);
-  }, []);
+    window.addEventListener('scroll', toggleVisibility)
+    return () => window.removeEventListener('scroll', toggleVisibility)
+  }, [])
 
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth',
-    });
-  };
+    })
+  }
 
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ opacity: 0, scale: 0, y: 20 }}
+          initial={{ opacity: 0, scale: 0.8, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0, y: 20 }}
-          transition={{
-            duration: 0.3,
-            ease: [0.4, 0, 0.2, 1],
-          }}
-          style={{
-            position: 'fixed',
-            bottom: 24,
-            right: 24,
-            zIndex: 1000,
-          }}
+          exit={{ opacity: 0, scale: 0.8, y: 20 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="fixed bottom-6 right-6 z-50"
         >
-          <Tooltip title="Yukarı Çık" placement="left" arrow>
-            <Fab
+          <motion.div
+            whileHover={{ scale: 1.1, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            animate={{ y: [0, -4, 0] }}
+            transition={{ 
+              y: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+            }}
+          >
+            <Button
               onClick={scrollToTop}
-              size="large"
-              sx={{
-                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(29, 78, 216, 0.9) 100%)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)',
-                color: 'white',
-                width: 56,
-                height: 56,
-                '&:hover': {
-                  background: 'linear-gradient(135deg, rgba(29, 78, 216, 0.95) 0%, rgba(30, 64, 175, 0.95) 100%)',
-                  transform: 'translateY(-4px) scale(1.05)',
-                  boxShadow: '0 12px 40px rgba(59, 130, 246, 0.4)',
-                },
-                '&:active': {
-                  transform: 'translateY(-2px) scale(1.02)',
-                },
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                '@media (max-width: 600px)': {
-                  width: 48,
-                  height: 48,
-                  bottom: 16,
-                  right: 16,
-                },
-              }}
+              size="icon"
+              variant="gradient"
+              className="w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+              aria-label="Yukarı Çık"
             >
-              <motion.div
-                animate={{ y: [0, -2, 0] }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
-              >
-                <KeyboardArrowUpIcon />
-              </motion.div>
-            </Fab>
-          </Tooltip>
+              <ArrowUp className="w-6 h-6" />
+            </Button>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
-  );
-};
+  )
+}
 
-export default BackToTop; 
+export default BackToTop

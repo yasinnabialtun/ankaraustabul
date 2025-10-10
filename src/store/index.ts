@@ -128,12 +128,12 @@ export const useAppStore = create<Store>()(
       ...initialState,
       
       // Auth Actions
-      setUser: (user) => set({ user }, false, 'setUser'),
-      setAuthenticated: (isAuthenticated) => set({ isAuthenticated }, false, 'setAuthenticated'),
+      setUser: (user: User | null) => set({ user }, false, 'setUser'),
+      setAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }, false, 'setAuthenticated'),
       logout: () => set({ user: null, isAuthenticated: false }, false, 'logout'),
       
       // UI Actions
-      setTheme: (theme) => {
+      setTheme: (theme: 'light' | 'dark' | 'auto') => {
         set({ theme }, false, 'setTheme');
         if (typeof window !== 'undefined') {
           localStorage.setItem('theme', theme);
@@ -152,48 +152,48 @@ export const useAppStore = create<Store>()(
           }
         }
       },
-      setLanguage: (language) => {
+      setLanguage: (language: 'tr' | 'en') => {
         set({ language }, false, 'setLanguage');
         if (typeof window !== 'undefined') {
           localStorage.setItem('language', language);
         }
       },
-      setLoading: (isLoading) => set({ isLoading }, false, 'setLoading'),
-      setMobile: (isMobile) => set({ isMobile }, false, 'setMobile'),
+      setLoading: (isLoading: boolean) => set({ isLoading }, false, 'setLoading'),
+      setMobile: (isMobile: boolean) => set({ isMobile }, false, 'setMobile'),
       
       // Data Actions
-      setUstalar: (ustalar) => set({ ustalar }, false, 'setUstalar'),
-      addUsta: (usta) => {
+      setUstalar: (ustalar: Usta[]) => set({ ustalar }, false, 'setUstalar'),
+      addUsta: (usta: Usta) => {
         const { ustalar } = get();
         set({ ustalar: [...ustalar, usta] }, false, 'addUsta');
       },
-      updateUsta: (id, updates) => {
+      updateUsta: (id: string, updates: Partial<Usta>) => {
         const { ustalar } = get();
-        const updatedUstalar = ustalar.map(usta => 
+        const updatedUstalar = ustalar.map((usta: Usta) => 
           usta.id === id ? { ...usta, ...updates } : usta
         );
         set({ ustalar: updatedUstalar }, false, 'updateUsta');
       },
-      removeUsta: (id) => {
+      removeUsta: (id: string) => {
         const { ustalar } = get();
-        const filteredUstalar = ustalar.filter(usta => usta.id !== id);
+        const filteredUstalar = ustalar.filter((usta: Usta) => usta.id !== id);
         set({ ustalar: filteredUstalar }, false, 'removeUsta');
       },
-      setCategories: (categories) => set({ categories }, false, 'setCategories'),
-      setDistricts: (districts) => set({ districts }, false, 'setDistricts'),
+      setCategories: (categories: Category[]) => set({ categories }, false, 'setCategories'),
+      setDistricts: (districts: District[]) => set({ districts }, false, 'setDistricts'),
       
       // Search Actions
-      setSearchQuery: (searchQuery) => set({ searchQuery }, false, 'setSearchQuery'),
-      setSearchFilters: (filters) => {
+      setSearchQuery: (searchQuery: string) => set({ searchQuery }, false, 'setSearchQuery'),
+      setSearchFilters: (filters: Partial<SearchFilters>) => {
         const { searchFilters } = get();
         set({ searchFilters: { ...searchFilters, ...filters } }, false, 'setSearchFilters');
       },
       clearSearchFilters: () => set({ searchFilters: {} }, false, 'clearSearchFilters'),
-      setSearchResults: (searchResults) => set({ searchResults }, false, 'setSearchResults'),
-      setSearching: (isSearching) => set({ isSearching }, false, 'setSearching'),
+      setSearchResults: (searchResults: Usta[]) => set({ searchResults }, false, 'setSearchResults'),
+      setSearching: (isSearching: boolean) => set({ isSearching }, false, 'setSearching'),
       
       // Toast Actions
-      addToast: (toast) => {
+      addToast: (toast: Omit<ToastProps, 'id'>) => {
         const id = Date.now().toString();
         const newToast = { ...toast, id };
         const { toasts } = get();
@@ -205,27 +205,27 @@ export const useAppStore = create<Store>()(
           get().removeToast(id);
         }, duration);
       },
-      removeToast: (id) => {
+      removeToast: (id: string) => {
         const { toasts } = get();
-        const filteredToasts = toasts.filter(toast => toast.id !== id);
+        const filteredToasts = toasts.filter((toast: ToastProps) => toast.id !== id);
         set({ toasts: filteredToasts }, false, 'removeToast');
       },
       clearToasts: () => set({ toasts: [] }, false, 'clearToasts'),
       
       // Pagination Actions
-      setCurrentPage: (currentPage) => set({ currentPage }, false, 'setCurrentPage'),
-      setItemsPerPage: (itemsPerPage) => set({ itemsPerPage }, false, 'setItemsPerPage'),
-      setTotalItems: (totalItems) => set({ totalItems }, false, 'setTotalItems'),
+      setCurrentPage: (currentPage: number) => set({ currentPage }, false, 'setCurrentPage'),
+      setItemsPerPage: (itemsPerPage: number) => set({ itemsPerPage }, false, 'setItemsPerPage'),
+      setTotalItems: (totalItems: number) => set({ totalItems }, false, 'setTotalItems'),
       
       // View Actions
-      setViewMode: (viewMode) => {
+      setViewMode: (viewMode: 'grid' | 'list') => {
         set({ viewMode }, false, 'setViewMode');
         if (typeof window !== 'undefined') {
           localStorage.setItem('viewMode', viewMode);
         }
       },
-      setSortBy: (sortBy) => set({ sortBy }, false, 'setSortBy'),
-      setSortOrder: (sortOrder) => set({ sortOrder }, false, 'setSortOrder'),
+      setSortBy: (sortBy: 'rating' | 'price' | 'experience' | 'recent') => set({ sortBy }, false, 'setSortBy'),
+      setSortOrder: (sortOrder: 'asc' | 'desc') => set({ sortOrder }, false, 'setSortOrder'),
       
       // Utility Actions
       resetState: () => set(initialState, false, 'resetState'),
@@ -238,7 +238,7 @@ export const useAppStore = create<Store>()(
 );
 
 // Selectors for better performance
-export const useAuth = () => useAppStore(state => ({
+export const useAuth = () => useAppStore((state: Store) => ({
   user: state.user,
   isAuthenticated: state.isAuthenticated,
   setUser: state.setUser,
@@ -246,7 +246,7 @@ export const useAuth = () => useAppStore(state => ({
   logout: state.logout,
 }));
 
-export const useUI = () => useAppStore(state => ({
+export const useUI = () => useAppStore((state: Store) => ({
   theme: state.theme,
   language: state.language,
   isLoading: state.isLoading,
@@ -257,7 +257,7 @@ export const useUI = () => useAppStore(state => ({
   setMobile: state.setMobile,
 }));
 
-export const useData = () => useAppStore(state => ({
+export const useData = () => useAppStore((state: Store) => ({
   ustalar: state.ustalar,
   categories: state.categories,
   districts: state.districts,
@@ -269,7 +269,7 @@ export const useData = () => useAppStore(state => ({
   setDistricts: state.setDistricts,
 }));
 
-export const useSearch = () => useAppStore(state => ({
+export const useSearch = () => useAppStore((state: Store) => ({
   searchQuery: state.searchQuery,
   searchFilters: state.searchFilters,
   searchResults: state.searchResults,
@@ -281,14 +281,21 @@ export const useSearch = () => useAppStore(state => ({
   setSearching: state.setSearching,
 }));
 
-export const useToasts = () => useAppStore(state => ({
-  toasts: state.toasts,
-  addToast: state.addToast,
-  removeToast: state.removeToast,
-  clearToasts: state.clearToasts,
-}));
+export const useToasts = () => {
+  const store = useAppStore((state: Store) => ({
+    toasts: state.toasts,
+    addToast: state.addToast,
+    removeToast: state.removeToast,
+    clearToasts: state.clearToasts,
+  }));
+  
+  return {
+    ...store,
+    getState: useAppStore.getState,
+  };
+};
 
-export const usePagination = () => useAppStore(state => ({
+export const usePagination = () => useAppStore((state: Store) => ({
   currentPage: state.currentPage,
   itemsPerPage: state.itemsPerPage,
   totalItems: state.totalItems,
@@ -297,7 +304,7 @@ export const usePagination = () => useAppStore(state => ({
   setTotalItems: state.setTotalItems,
 }));
 
-export const useViewSettings = () => useAppStore(state => ({
+export const useViewSettings = () => useAppStore((state: Store) => ({
   viewMode: state.viewMode,
   sortBy: state.sortBy,
   sortOrder: state.sortOrder,

@@ -1,175 +1,97 @@
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Paper,
-  BottomNavigation,
-  BottomNavigationAction,
-  Fab,
-  useTheme,
-  useMediaQuery,
-} from '@mui/material';
+'use client'
+
+import React from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 import {
   Home as HomeIcon,
-  People as PeopleIcon,
-  Category as CategoryIcon,
-  Article as ArticleIcon,
-  ContactSupport as ContactIcon,
-  Add as AddIcon,
-} from '@mui/icons-material';
+  Users as UsersIcon,
+  Crown as CrownIcon,
+  FileText as FileTextIcon,
+  MessageCircle as MessageCircleIcon,
+  Plus as PlusIcon,
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 const BottomNav: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const pathname = usePathname()
+  const router = useRouter()
 
   const navigationItems = [
-    { path: '/', label: 'Ana Sayfa', icon: <HomeIcon /> },
-    { path: '/ustalar', label: 'Ustalar', icon: <PeopleIcon /> },
-    { path: '/kategoriler', label: 'Kategoriler', icon: <CategoryIcon /> },
-    { path: '/blog', label: 'Blog', icon: <ArticleIcon /> },
-    { path: '/iletisim', label: 'İletişim', icon: <ContactIcon /> },
-  ];
+    { path: '/', label: 'Ana Sayfa', icon: HomeIcon },
+    { path: '/ustalar', label: 'Ustalar', icon: UsersIcon },
+    { path: '/one-cikan-ustalar', label: 'Öne Çıkanlar', icon: CrownIcon },
+    { path: '/blog', label: 'Blog', icon: FileTextIcon },
+    { path: '/iletisim', label: 'İletişim', icon: MessageCircleIcon },
+  ]
 
   const isActive = (path: string) => {
+    if (!pathname) return false
     if (path === '/') {
-      return location.pathname === '/';
+      return pathname === '/'
     }
-    return location.pathname.startsWith(path);
-  };
-
-  if (!isMobile) {
-    return null;
+    return pathname.startsWith(path)
   }
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 100, opacity: 0 }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
-        style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-        }}
-      >
-        <Paper
-          elevation={8}
-          sx={{
-            position: 'relative',
-            background: 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(20px)',
-            borderTop: '1px solid rgba(255, 255, 255, 0.3)',
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%)',
-              zIndex: -1,
-            },
-          }}
-        >
-          <BottomNavigation
-            value={location.pathname}
-            onChange={(event, newValue) => {
-              navigate(newValue);
-            }}
-            sx={{
-              height: 70,
-              '& .MuiBottomNavigationAction-root': {
-                color: '#64748b',
-                minWidth: 'auto',
-                padding: '6px 8px',
-                '&.Mui-selected': {
-                  color: '#3b82f6',
-                  fontWeight: 600,
-                },
-                '&:hover': {
-                  color: '#3b82f6',
-                  backgroundColor: 'rgba(59, 130, 246, 0.05)',
-                },
-              },
-              '& .MuiBottomNavigationAction-label': {
-                fontSize: '0.75rem',
-                fontWeight: 500,
-                marginTop: '4px',
-                '&.Mui-selected': {
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                },
-              },
-              '& .MuiSvgIcon-root': {
-                fontSize: '1.5rem',
-              },
-            }}
-          >
-            {navigationItems.map((item) => (
-              <BottomNavigationAction
-                key={item.path}
-                label={item.label}
-                value={item.path}
-                icon={item.icon}
-                sx={{
-                  '&.Mui-selected': {
-                    '& .MuiBottomNavigationAction-label': {
-                      color: '#3b82f6',
-                      fontWeight: 600,
-                    },
-                    '& .MuiSvgIcon-root': {
-                      color: '#3b82f6',
-                    },
-                  },
-                }}
-              />
-            ))}
-          </BottomNavigation>
-
-          {/* Usta Ekle Floating Button */}
-          <motion.div
-            layoutId="usta-ekle-button"
-            style={{
-              position: 'absolute',
-              top: -25,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 1001,
-            }}
-          >
-            <Fab
-              color="primary"
-              size="medium"
-              onClick={() => navigate('/usta-ekle')}
-              sx={{
-                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                color: 'white',
-                width: 50,
-                height: 50,
-                boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%)',
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 6px 20px rgba(59, 130, 246, 0.4)',
-                },
-                '&:active': {
-                  transform: 'translateY(0)',
-                },
-              }}
+    <motion.div
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-border shadow-lg"
+    >
+      <div className="flex items-center justify-around px-4 py-2">
+        {navigationItems.map((item) => {
+          const IconComponent = item.icon
+          const active = isActive(item.path)
+          
+          return (
+            <motion.button
+              key={item.path}
+              onClick={() => router.push(item.path)}
+              className={cn(
+                "flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-300",
+                active 
+                  ? "text-primary bg-primary/10" 
+                  : "text-muted-foreground hover:text-primary hover:bg-primary/5"
+              )}
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05 }}
             >
-              <AddIcon />
-            </Fab>
-          </motion.div>
-        </Paper>
-      </motion.div>
-    </AnimatePresence>
-  );
-};
+              <IconComponent className={cn(
+                "w-5 h-5 mb-1 transition-all duration-300",
+                active && "scale-110"
+              )} />
+              <span className={cn(
+                "text-xs font-medium transition-all duration-300",
+                active && "font-semibold"
+              )}>
+                {item.label}
+              </span>
+            </motion.button>
+          )
+        })}
+      </div>
 
-export default BottomNav;
+      {/* Floating Add Button */}
+      <motion.div
+        className="absolute -top-6 left-1/2 transform -translate-x-1/2"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <Button
+          onClick={() => router.push('/usta-ekle')}
+          size="icon"
+          variant="gradient"
+          className="w-12 h-12 rounded-full shadow-lg"
+          aria-label="Usta Ekle"
+        >
+          <PlusIcon className="w-6 h-6" />
+        </Button>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+export default BottomNav

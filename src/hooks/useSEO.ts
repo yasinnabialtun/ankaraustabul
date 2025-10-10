@@ -1,163 +1,211 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+'use client'
 
-interface UseSEOProps {
-  title?: string;
-  description?: string;
-  keywords?: string;
-  ogTitle?: string;
-  ogDescription?: string;
-  ogImage?: string;
-  twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player';
-  twitterTitle?: string;
-  twitterDescription?: string;
-  twitterImage?: string;
-  canonicalUrl?: string;
-  noindex?: boolean;
-  structured?: object;
+import { useEffect } from 'react'
+import { usePathname } from 'next/navigation'
+
+interface SEOData {
+  title: string
+  description: string
+  keywords: string[]
+  image?: string
+  url?: string
+  type?: 'website' | 'article' | 'profile'
+  publishedTime?: string
+  modifiedTime?: string
+  author?: string
+  section?: string
+  tags?: string[]
 }
 
-/**
- * Enhanced hook to set SEO metadata for better search engine optimization
- */
-const useSEO = ({ 
-  title,
-  description,
-  keywords,
-  ogTitle,
-  ogDescription,
-  ogImage,
-  twitterCard = 'summary_large_image',
-  twitterTitle,
-  twitterDescription,
-  twitterImage,
-  canonicalUrl,
-  noindex = false,
-  structured,
-}: UseSEOProps) => {
-  const location = useLocation();
-  const siteUrl = 'https://ankaraustabul.com';
-  const siteName = 'Ankara Usta Bul';
-  
-  // Default values
-  const defaultTitle = 'Ankara Usta Bul - Güvenilir Usta Arama Platformu';
-  const defaultDescription = "Ankara'da güvenilir usta arama platformu. Elektrik, su tesisatı, temizlik ve diğer hizmetler için profesyonel ustalar bulun.";
-  const defaultKeywords = 'ankara usta, elektrik ustası, su tesisatı ustası, temizlik hizmeti, mobilya tamiri, tadilat, ankara hizmet, usta ara, güvenilir usta';
-  const defaultOgImage = `${siteUrl}/images/og-image.jpg`;
-  
-  // Use provided values or defaults
-  const finalTitle = title ? `${title} | Ankara Usta Bul` : defaultTitle;
-  const finalDescription = description || defaultDescription;
-  const finalKeywords = keywords || defaultKeywords;
-  const finalOgTitle = ogTitle || finalTitle;
-  const finalOgDescription = ogDescription || finalDescription;
-  const finalOgImage = ogImage || defaultOgImage;
-  const finalTwitterTitle = twitterTitle || finalOgTitle;
-  const finalTwitterDescription = twitterDescription || finalOgDescription;
-  const finalTwitterImage = twitterImage || finalOgImage;
-  const finalCanonicalUrl = canonicalUrl || `${siteUrl}${location.pathname}`;
-  
-  // Generate schema.org structured data if not provided
-  const finalStructured = structured || {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    'name': siteName,
-    'url': siteUrl,
-    'logo': `${siteUrl}/images/logo.webp`,
-    'sameAs': [
-      'https://facebook.com/ankaraustabul',
-      'https://twitter.com/ankaraustabul',
-      'https://instagram.com/ankaraustabul',
-    ],
-    'contactPoint': {
-      '@type': 'ContactPoint',
-      'telephone': '+90-312-XXX-XXXX',
-      'contactType': 'customer service',
-    },
-  };
-  
+export const useSEO = (seoData: SEOData) => {
+  const pathname = usePathname()
+  const baseUrl = 'https://ankaraustabul.com'
+  const fullUrl = `${baseUrl}${pathname}`
+
   useEffect(() => {
-    // Set document title
-    document.title = finalTitle;
-    
-    // Update basic meta tags
-    updateMetaTag('description', finalDescription);
-    updateMetaTag('keywords', finalKeywords);
-    
-    // Open Graph meta tags
-    updateMetaTag('og:title', finalOgTitle, 'property');
-    updateMetaTag('og:description', finalOgDescription, 'property');
-    updateMetaTag('og:image', finalOgImage, 'property');
-    updateMetaTag('og:url', finalCanonicalUrl, 'property');
-    updateMetaTag('og:type', 'website', 'property');
-    updateMetaTag('og:site_name', siteName, 'property');
-    updateMetaTag('og:locale', 'tr_TR', 'property');
-    
-    // Twitter Card meta tags
-    updateMetaTag('twitter:card', twitterCard);
-    updateMetaTag('twitter:title', finalTwitterTitle);
-    updateMetaTag('twitter:description', finalTwitterDescription);
-    updateMetaTag('twitter:image', finalTwitterImage);
-    
-    // Robots meta tag
-    updateMetaTag('robots', noindex ? 'noindex, nofollow' : 'index, follow');
-    
-    // Canonical URL
-    let canonicalElement = document.querySelector('link[rel="canonical"]');
-    if (!canonicalElement) {
-      canonicalElement = document.createElement('link');
-      canonicalElement.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonicalElement);
+    // Update document title
+    document.title = seoData.title
+
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]')
+    if (metaDescription) {
+      metaDescription.setAttribute('content', seoData.description)
+    } else {
+      const meta = document.createElement('meta')
+      meta.name = 'description'
+      meta.content = seoData.description
+      document.head.appendChild(meta)
     }
-    canonicalElement.setAttribute('href', finalCanonicalUrl);
-    
-    // Schema.org structured data
-    updateStructuredData(finalStructured);
-    
-    return () => {
-      // No need to cleanup as the next page will set its own values
-    };
-  }, [
-    finalTitle,
-    finalDescription,
-    finalKeywords,
-    finalOgTitle,
-    finalOgDescription,
-    finalOgImage,
-    finalTwitterTitle,
-    finalTwitterDescription,
-    finalTwitterImage,
-    finalCanonicalUrl,
-    twitterCard,
-    noindex,
-    finalStructured,
-  ]);
-};
 
-// Helper function to update meta tags
-const updateMetaTag = (name: string, content: string, attributeName: 'name' | 'property' = 'name') => {
-  let metaElement = document.querySelector(`meta[${attributeName}="${name}"]`);
-  
-  if (!metaElement) {
-    metaElement = document.createElement('meta');
-    metaElement.setAttribute(attributeName, name);
-    document.head.appendChild(metaElement);
+    // Update meta keywords
+    const metaKeywords = document.querySelector('meta[name="keywords"]')
+    if (metaKeywords) {
+      metaKeywords.setAttribute('content', seoData.keywords.join(', '))
+    } else {
+      const meta = document.createElement('meta')
+      meta.name = 'keywords'
+      meta.content = seoData.keywords.join(', ')
+      document.head.appendChild(meta)
+    }
+
+    // Update Open Graph tags
+    const ogTitle = document.querySelector('meta[property="og:title"]')
+    if (ogTitle) {
+      ogTitle.setAttribute('content', seoData.title)
+    } else {
+      const meta = document.createElement('meta')
+      meta.setAttribute('property', 'og:title')
+      meta.content = seoData.title
+      document.head.appendChild(meta)
+    }
+
+    const ogDescription = document.querySelector('meta[property="og:description"]')
+    if (ogDescription) {
+      ogDescription.setAttribute('content', seoData.description)
+    } else {
+      const meta = document.createElement('meta')
+      meta.setAttribute('property', 'og:description')
+      meta.content = seoData.description
+      document.head.appendChild(meta)
+    }
+
+    const ogUrl = document.querySelector('meta[property="og:url"]')
+    if (ogUrl) {
+      ogUrl.setAttribute('content', fullUrl)
+    } else {
+      const meta = document.createElement('meta')
+      meta.setAttribute('property', 'og:url')
+      meta.content = fullUrl
+      document.head.appendChild(meta)
+    }
+
+    const ogImage = document.querySelector('meta[property="og:image"]')
+    if (ogImage) {
+      ogImage.setAttribute('content', seoData.image || `${baseUrl}/images/og-image-2025.jpg`)
+    } else {
+      const meta = document.createElement('meta')
+      meta.setAttribute('property', 'og:image')
+      meta.content = seoData.image || `${baseUrl}/images/og-image-2025.jpg`
+      document.head.appendChild(meta)
+    }
+
+    const ogType = document.querySelector('meta[property="og:type"]')
+    if (ogType) {
+      ogType.setAttribute('content', seoData.type || 'website')
+    } else {
+      const meta = document.createElement('meta')
+      meta.setAttribute('property', 'og:type')
+      meta.content = seoData.type || 'website'
+      document.head.appendChild(meta)
+    }
+
+    // Update Twitter Card tags
+    const twitterTitle = document.querySelector('meta[name="twitter:title"]')
+    if (twitterTitle) {
+      twitterTitle.setAttribute('content', seoData.title)
+    } else {
+      const meta = document.createElement('meta')
+      meta.name = 'twitter:title'
+      meta.content = seoData.title
+      document.head.appendChild(meta)
+    }
+
+    const twitterDescription = document.querySelector('meta[name="twitter:description"]')
+    if (twitterDescription) {
+      twitterDescription.setAttribute('content', seoData.description)
+    } else {
+      const meta = document.createElement('meta')
+      meta.name = 'twitter:description'
+      meta.content = seoData.description
+      document.head.appendChild(meta)
+    }
+
+    const twitterImage = document.querySelector('meta[name="twitter:image"]')
+    if (twitterImage) {
+      twitterImage.setAttribute('content', seoData.image || `${baseUrl}/images/og-image-2025.jpg`)
+    } else {
+      const meta = document.createElement('meta')
+      meta.name = 'twitter:image'
+      meta.content = seoData.image || `${baseUrl}/images/og-image-2025.jpg`
+      document.head.appendChild(meta)
+    }
+
+    // Update canonical URL
+    const canonical = document.querySelector('link[rel="canonical"]')
+    if (canonical) {
+      canonical.setAttribute('href', fullUrl)
+    } else {
+      const link = document.createElement('link')
+      link.rel = 'canonical'
+      link.href = fullUrl
+      document.head.appendChild(link)
+    }
+
+    // Article specific meta tags
+    if (seoData.type === 'article') {
+      if (seoData.publishedTime) {
+        const publishedTime = document.querySelector('meta[property="article:published_time"]')
+        if (publishedTime) {
+          publishedTime.setAttribute('content', seoData.publishedTime)
+        } else {
+          const meta = document.createElement('meta')
+          meta.setAttribute('property', 'article:published_time')
+          meta.content = seoData.publishedTime
+          document.head.appendChild(meta)
+        }
+      }
+
+      if (seoData.modifiedTime) {
+        const modifiedTime = document.querySelector('meta[property="article:modified_time"]')
+        if (modifiedTime) {
+          modifiedTime.setAttribute('content', seoData.modifiedTime)
+        } else {
+          const meta = document.createElement('meta')
+          meta.setAttribute('property', 'article:modified_time')
+          meta.content = seoData.modifiedTime
+          document.head.appendChild(meta)
+        }
+      }
+
+      if (seoData.author) {
+        const author = document.querySelector('meta[property="article:author"]')
+        if (author) {
+          author.setAttribute('content', seoData.author)
+        } else {
+          const meta = document.createElement('meta')
+          meta.setAttribute('property', 'article:author')
+          meta.content = seoData.author
+          document.head.appendChild(meta)
+        }
+      }
+
+      if (seoData.section) {
+        const section = document.querySelector('meta[property="article:section"]')
+        if (section) {
+          section.setAttribute('content', seoData.section)
+        } else {
+          const meta = document.createElement('meta')
+          meta.setAttribute('property', 'article:section')
+          meta.content = seoData.section
+          document.head.appendChild(meta)
+        }
+      }
+
+      if (seoData.tags && seoData.tags.length > 0) {
+        seoData.tags.forEach(tag => {
+          const tagMeta = document.createElement('meta')
+          tagMeta.setAttribute('property', 'article:tag')
+          tagMeta.content = tag
+          document.head.appendChild(tagMeta)
+        })
+      }
+    }
+  }, [seoData, pathname, fullUrl])
+
+  return {
+    title: seoData.title,
+    description: seoData.description,
+    keywords: seoData.keywords,
+    url: fullUrl
   }
-  
-  metaElement.setAttribute('content', content);
-};
-
-// Helper function to update structured data
-const updateStructuredData = (data: object) => {
-  let scriptElement = document.querySelector('script[type="application/ld+json"]');
-  
-  if (!scriptElement) {
-    scriptElement = document.createElement('script');
-    scriptElement.setAttribute('type', 'application/ld+json');
-    document.head.appendChild(scriptElement);
-  }
-  
-  scriptElement.textContent = JSON.stringify(data);
-};
-
-export default useSEO;
+}

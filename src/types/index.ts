@@ -185,6 +185,13 @@ export interface ContactRequest {
   updatedAt: Date;
 }
 
+// Firebase Types
+export interface PaginatedQuery {
+  data: Usta[];
+  lastDoc: any;
+  hasMore: boolean;
+}
+
 // Enhanced Form Types
 export interface UstaFormData {
   name: string;
@@ -390,7 +397,7 @@ export interface UseIntersectionObserverOptions {
 }
 
 export interface UseDebounceOptions {
-  delay: number;
+  delay?: number;
   leading?: boolean;
   trailing?: boolean;
 }
@@ -403,24 +410,21 @@ export interface UseLocalStorageOptions {
 }
 
 export interface SEOProps {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   keywords?: string;
   ogTitle?: string;
   ogDescription?: string;
   ogImage?: string;
-  ogType?: string;
   twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player';
-  canonical?: string;
-  robots?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  twitterImage?: string;
+  canonicalUrl?: string;
+  noindex?: boolean;
   structured?: object;
-  alternates?: {
-    canonical?: string;
-    languages?: { [key: string]: string };
-  };
 }
 
-// Service Types
 export interface FirebaseConfig {
   apiKey: string;
   authDomain: string;

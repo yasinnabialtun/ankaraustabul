@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import { useIntersectionObserverLegacy } from '../../hooks/useIntersectionObserver';
 
 interface SectionTransitionProps {
   children: ReactNode;
@@ -16,7 +16,7 @@ function SectionTransition({
   delay = 0,
   duration = 600,
 }: SectionTransitionProps) {
-  const { targetRef, hasIntersected } = useIntersectionObserver({
+  const { targetRef, hasIntersected } = useIntersectionObserverLegacy({
     threshold: 0.1,
     rootMargin: '-50px',
     triggerOnce: true,

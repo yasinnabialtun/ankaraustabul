@@ -1,12 +1,30 @@
-// Ankara İlçeleri
+// Ankara İlçeleri - Tüm 25 İlçe
 export const DISTRICTS = [
-  { id: 'cankaya', name: 'Çankaya', ustaCount: 8 },
-  { id: 'kecioren', name: 'Keçiören', ustaCount: 6 },
-  { id: 'mamak', name: 'Mamak', ustaCount: 5 },
-  { id: 'yenimahalle', name: 'Yenimahalle', ustaCount: 4 },
-  { id: 'etimesgut', name: 'Etimesgut', ustaCount: 4 },
-  { id: 'sincan', name: 'Sincan', ustaCount: 3 },
-  { id: 'altindag', name: 'Altındağ', ustaCount: 3 },
+  { id: 'cankaya', name: 'Çankaya', ustaCount: 25 },
+  { id: 'kecioren', name: 'Keçiören', ustaCount: 18 },
+  { id: 'mamak', name: 'Mamak', ustaCount: 15 },
+  { id: 'yenimahalle', name: 'Yenimahalle', ustaCount: 12 },
+  { id: 'etimesgut', name: 'Etimesgut', ustaCount: 10 },
+  { id: 'sincan', name: 'Sincan', ustaCount: 8 },
+  { id: 'altindag', name: 'Altındağ', ustaCount: 7 },
+  { id: 'pursaklar', name: 'Pursaklar', ustaCount: 6 },
+  { id: 'golbasi', name: 'Gölbaşı', ustaCount: 5 },
+  { id: 'beypazari', name: 'Beypazarı', ustaCount: 4 },
+  { id: 'elmadag', name: 'Elmadağ', ustaCount: 3 },
+  { id: 'evren', name: 'Evren', ustaCount: 2 },
+  { id: 'haymana', name: 'Haymana', ustaCount: 3 },
+  { id: 'kalecik', name: 'Kalecik', ustaCount: 2 },
+  { id: 'kizilcahamam', name: 'Kızılcahamam', ustaCount: 4 },
+  { id: 'nallihan', name: 'Nallıhan', ustaCount: 3 },
+  { id: 'polatli', name: 'Polatlı', ustaCount: 5 },
+  { id: 'sereflikochisar', name: 'Şereflikoçhisar', ustaCount: 3 },
+  { id: 'akyurt', name: 'Akyurt', ustaCount: 2 },
+  { id: 'ayas', name: 'Ayaş', ustaCount: 1 },
+  { id: 'bala', name: 'Bala', ustaCount: 2 },
+  { id: 'camlidere', name: 'Çamlıdere', ustaCount: 1 },
+  { id: 'cubuk', name: 'Çubuk', ustaCount: 3 },
+  { id: 'gudul', name: 'Güdül', ustaCount: 1 },
+  { id: 'kahramankazan', name: 'Kahramankazan', ustaCount: 2 },
 ];
 
 // Hizmet Kategorileri
@@ -57,142 +75,8 @@ export const CATEGORIES = [
   },
 ];
 
-// Öne Çıkan Ustalar
-export const FEATURED_USTALAR = [
-  {
-    id: '1',
-    name: 'Ahmet Yılmaz',
-    category: 'Elektrik',
-    categoryId: 'elektrik',
-    location: 'Çankaya, Ankara',
-    districtId: 'cankaya',
-    experience: '8 yıl',
-    hourlyRate: '150 TL',
-    specialties: ['Elektrik Tesisatı', 'Aydınlatma'],
-    completedJobs: 156,
-    responseTime: '2 saat',
-    verified: true,
-    available: true,
-    phone: '+90 555 123 45 67',
-    email: 'ahmet.yilmaz@email.com',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face',
-    rating: 4.9,
-    isPremium: true,
-    premiumFeatures: ['Öncelikli Liste', 'WhatsApp Yönlendirme'],
-    premiumBadge: '⭐ Premium Usta',
-    featuredUntil: '2024-12-31',
-  },
-  {
-    id: '2',
-    name: 'Mehmet Demir',
-    category: 'Su Tesisatı',
-    categoryId: 'su-tesisati',
-    location: 'Keçiören, Ankara',
-    districtId: 'kecioren',
-    experience: '12 yıl',
-    hourlyRate: '180 TL',
-    specialties: ['Su Tesisatı', 'Kanal Açma'],
-    completedJobs: 134,
-    responseTime: '1 saat',
-    verified: true,
-    available: true,
-    phone: '+90 555 234 56 78',
-    email: 'mehmet.demir@email.com',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face',
-    rating: 4.8,
-    isPremium: true,
-    premiumFeatures: ['Öncelikli Liste', 'WhatsApp Yönlendirme'],
-    premiumBadge: '⭐ Premium Usta',
-    featuredUntil: '2024-12-31',
-  },
-];
+// Note: Mock data removed - these should be loaded from Firebase
+// Use AdminService.getAllUstalar() or similar methods to get real data
 
-// Ek Ustalar
-export const EXTRA_USTALAR = [
-  {
-    id: '9',
-    name: 'Murat Şahin',
-    category: 'Elektrik',
-    categoryId: 'elektrik',
-    location: 'Keçiören, Ankara',
-    districtId: 'kecioren',
-    experience: '6 yıl',
-    hourlyRate: '140 TL',
-    specialties: ['Elektrik Tesisatı', 'Aydınlatma'],
-    completedJobs: 89,
-    responseTime: '3 saat',
-    verified: true,
-    available: true,
-    phone: '+90 555 901 23 45',
-    email: 'murat.sahin@email.com',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face',
-    rating: 4.6,
-    isPremium: false,
-  },
-];
-
-// Tüm Ustalar Listesi
-export const ALL_USTALAR = [
-  ...FEATURED_USTALAR,
-  ...EXTRA_USTALAR,
-];
-
-// Home Page Mock Data
-export const HOME_FEATURED_USTALAR = [
-  {
-    id: 1,
-    name: 'Ahmet Yılmaz',
-    category: 'Elektrikçi',
-    district: 'Çankaya',
-    reviews: 127,
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-    responseTime: '2 saat',
-    price: '150-200 TL/saat',
-  },
-  {
-    id: 2,
-    name: 'Mehmet Özkan',
-    category: 'Tesisatçı',
-    district: 'Keçiören',
-    reviews: 89,
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-    responseTime: '1 saat',
-    price: '180-250 TL/saat',
-  },
-  {
-    id: 3,
-    name: 'Ali Demir',
-    category: 'Boyacı',
-    district: 'Mamak',
-    reviews: 156,
-    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face',
-    responseTime: '3 saat',
-    price: '120-180 TL/saat',
-  },
-];
-
-export const HOME_TESTIMONIALS = [
-  {
-    name: 'Ayşe Kaya',
-    role: 'Ev Sahibi',
-    content: 'Elektrik arızam için bulduğum usta çok profesyoneldi. Hızlı ve güvenilir hizmet aldım.',
-    image: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face',
-    rating: 5,
-  },
-  {
-    name: 'Mehmet Öz',
-    role: 'İşyeri Sahibi',
-    content: 'Su tesisatı sorunu için aldığım hizmet mükemmeldi. Kesinlikle tavsiye ederim.',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-    rating: 5,
-  },
-];
-
-// İstatistikler
-export const STATS = {
-  totalUstalar: 200,
-  totalJobs: 1500,
-  totalDistricts: 7,
-  monthlyActiveUstalar: 50,
-  customerSatisfaction: 98,
-};
+// Note: These stats should be calculated from real data
+// Use AdminService.getStats() to get actual statistics
