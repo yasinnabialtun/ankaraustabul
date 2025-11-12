@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { useSEO } from '@/hooks/useSEO'
 import { 
   Search, 
   Filter, 
@@ -20,10 +22,41 @@ import { businesses } from '@/data/businesses'
 import { businessSectors } from '@/data/sectors'
 
 export default function FeaturedCraftsmenPage() {
+  const router = useRouter()
   const [selectedSector, setSelectedSector] = useState('')
   const [selectedDistrict, setSelectedDistrict] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState('rating')
+  
+  // SEO optimization - "usta" focused
+  useSEO({
+    title: 'Öne Çıkan Ustalar | En İyi Usta Seçimi - Ankara Usta Bul',
+    description: 'Öne çıkan ustalar. Ankara\'nın en kaliteli, en güvenilir ve en çok tercih edilen ustaları. Elektrik usta, su tesisatı usta, temizlik usta ve tüm hizmetler için en iyi usta seçimi.',
+    keywords: [
+      'usta',
+      'öne çıkan usta',
+      'en iyi usta',
+      'usta seçimi',
+      'ankara usta',
+      'elektrik usta',
+      'su tesisatı usta',
+      'temizlik usta',
+      'mobilya usta',
+      'tadilat usta',
+      'usta değerlendirme',
+      'güvenilir usta',
+      'profesyonel usta'
+    ],
+    type: 'website'
+  })
+  
+  const handleUstaClick = (ustaId: string) => {
+    router.push(`/usta/${ustaId}`)
+  }
+  
+  const handleCallClick = (phone: string) => {
+    window.location.href = `tel:${phone}`
+  }
 
   const filteredBusinesses = businesses
     .filter(business => {
@@ -75,11 +108,11 @@ export default function FeaturedCraftsmenPage() {
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
             <span className="text-gradient">Öne Çıkan</span>
             <br />
-            <span className="text-white">Ustalar</span>
+            <span className="text-white">Usta</span>
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-            Ankara'nın en kaliteli, en güvenilir ve en çok tercih edilen ustaları ile tanışın
+            Ankara'nın en kaliteli, en güvenilir ve en çok tercih edilen ustaları ile tanışın. Elektrik usta, su tesisatı usta, temizlik usta ve tüm hizmetler için en iyi usta seçimi.
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
@@ -242,7 +275,8 @@ export default function FeaturedCraftsmenPage() {
                   transition={{ delay: index * 0.1, duration: 0.6 }}
                   viewport={{ once: true }}
                   whileHover={{ y: -10, scale: 1.02 }}
-                  className="card p-6 relative overflow-hidden group"
+                  className="card p-6 relative overflow-hidden group cursor-pointer"
+                  onClick={() => handleUstaClick(String(business.id))}
                 >
                   {business.featured && (
                     <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
@@ -304,10 +338,19 @@ export default function FeaturedCraftsmenPage() {
                       {business.experience} yıl deneyim
                     </div>
                     <div className="flex space-x-2">
-                      <button className="btn-secondary text-sm px-3 py-2">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleUstaClick(String(business.id))
+                        }}
+                        className="btn-secondary text-sm px-3 py-2"
+                      >
                         Detay
                       </button>
-                      <button className="btn-primary text-sm px-3 py-2">
+                      <button 
+                        onClick={() => handleCallClick(business.phone)}
+                        className="btn-primary text-sm px-3 py-2"
+                      >
                         Ara
                       </button>
                     </div>
@@ -337,11 +380,17 @@ export default function FeaturedCraftsmenPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="btn-gradient text-lg px-8 py-4">
+              <button 
+                onClick={() => router.push('/usta-ekle')}
+                className="btn-gradient text-lg px-8 py-4"
+              >
                 Hemen Kayıt Ol
               </button>
-              <button className="btn-outline text-lg px-8 py-4">
-                Daha Fazla Bilgi
+              <button 
+                onClick={() => router.push('/ustalar')}
+                className="btn-outline text-lg px-8 py-4"
+              >
+                Tüm Ustaları Gör
               </button>
             </div>
           </motion.div>

@@ -140,10 +140,10 @@ export default function CategoryCards({ onCategoryClick }: CategoryCardsProps) {
           viewport={{ once: true }}
         >
           <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Hizmet Kategorileri
+            Usta Kategorileri
           </h2>
           <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto">
-            İhtiyacınıza uygun kategoriyi seçin ve profesyonel ustalarla tanışın
+            İhtiyacınıza uygun usta kategorisini seçin ve profesyonel usta bulun. Elektrik usta, su tesisatı usta, temizlik usta ve daha fazlası.
           </p>
         </motion.div>
         

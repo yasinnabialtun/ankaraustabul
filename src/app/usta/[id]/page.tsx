@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Star, Phone, MessageCircle, MapPin, Clock, Award, CheckCircle, Calendar, Shield } from 'lucide-react'
+import { useSEO } from '@/hooks/useSEO'
 
 interface Usta {
   id: string
@@ -75,15 +76,34 @@ export default function UstaDetailPage({ params }: { params: Promise<{ id: strin
 
   const getCategoryName = (category: string) => {
     const categories: { [key: string]: string } = {
-      'elektrik': 'Elektrik Ustası',
-      'su-tesisati': 'Su Tesisatçısı',
-      'temizlik': 'Temizlik Hizmeti',
-      'mobilya': 'Mobilya Ustası',
-      'tadilat': 'Tadilat Ustası',
-      'klima': 'Klima Teknisyeni'
+      'elektrik': 'Elektrik Usta',
+      'su-tesisati': 'Su Tesisatı Usta',
+      'temizlik': 'Temizlik Usta',
+      'mobilya': 'Mobilya Usta',
+      'tadilat': 'Tadilat Usta',
+      'klima': 'Klima Usta'
     }
     return categories[category] || category
   }
+
+  // SEO optimization - "usta" focused
+  useSEO({
+    title: `${usta.name} - ${getCategoryName(usta.category)} | Usta Profili`,
+    description: `${usta.name} - ${getCategoryName(usta.category)}. ${usta.description} ${usta.location} bölgesinde hizmet veren profesyonel usta. Usta değerlendirmeleri, usta fiyatları ve usta iletişim bilgileri.`,
+    keywords: [
+      'usta',
+      'usta profili',
+      `${usta.name} usta`,
+      `${getCategoryName(usta.category).toLowerCase()}`,
+      `usta ${usta.location}`,
+      'usta değerlendirme',
+      'usta fiyatları',
+      'usta yorumları',
+      'güvenilir usta',
+      'profesyonel usta'
+    ],
+    type: 'website'
+  })
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
@@ -111,8 +131,8 @@ export default function UstaDetailPage({ params }: { params: Promise<{ id: strin
                   {usta.name.charAt(0)}
                 </div>
                 <div className="flex-1">
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{usta.name}</h1>
-                  <p className="text-xl text-blue-600 font-medium mb-4">{getCategoryName(usta.category)}</p>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{usta.name} - {getCategoryName(usta.category)}</h1>
+                  <p className="text-xl text-blue-600 font-medium mb-4">Profesyonel Usta</p>
                   
                   <div className="flex items-center space-x-6 mb-4">
                     <div className="flex items-center">

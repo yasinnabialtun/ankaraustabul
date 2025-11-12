@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { CheckCircle, AlertCircle, Upload, User, Building, Wrench, DollarSign } from 'lucide-react'
+import { useSEO } from '@/hooks/useSEO'
 
 export default function UstaEklePage() {
   const router = useRouter()
@@ -33,6 +34,25 @@ export default function UstaEklePage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+
+  // SEO optimization - "usta" focused
+  useSEO({
+    title: 'Usta Ol - Usta Kayıt | Ankara Usta Bul',
+    description: 'Usta olmak ister misiniz? Ankara Usta Bul platformuna kayıt olun ve daha fazla müşteriye ulaşın. Elektrik usta, su tesisatı usta, temizlik usta ve tüm hizmetler için usta kayıt.',
+    keywords: [
+      'usta ol',
+      'usta kayıt',
+      'usta ekle',
+      'usta platformu',
+      'ankara usta',
+      'elektrik usta',
+      'su tesisatı usta',
+      'temizlik usta',
+      'usta iş ilanları',
+      'usta işi'
+    ],
+    type: 'website'
+  })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -121,7 +141,7 @@ export default function UstaEklePage() {
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Usta Ekle</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Usta Ol - Usta Kayıt</h1>
             <p className="text-xl text-gray-600">İşletmenizi platformumuza ekleyin ve daha fazla müşteriye ulaşın</p>
           </div>
 

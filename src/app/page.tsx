@@ -6,20 +6,20 @@ import { NewsWidget } from '@/components/news'
 import HomePageClient from './HomePageClient'
 
 export const metadata = {
-  title: 'Ankara Usta | En İyi Ustalar ve Hizmet Sağlayıcıları 2025',
-  description: 'Ankara usta arama platformu. Elektrik, su tesisatı, temizlik, mobilya, tadilat ve daha fazlası için güvenilir ankara usta bulun. 500+ kayıtlı usta, 25 ilçe, 7/24 hizmet.',
-  keywords: 'ankara usta, ankara ustalar, ankara elektrik ustası, ankara su tesisatı ustası, ankara temizlik, ankara mobilya ustası, ankara tadilat ustası, ankara klima servisi, ankara boya badana, ankara bahçe peyzaj, ankara inşaat tadilat, usta ara ankara, güvenilir usta ankara, profesyonel usta ankara',
+  title: 'Usta | Ankara Usta Bul - Türkiye\'nin En Büyük Usta Platformu 2025',
+  description: 'Usta arama ve bulma platformu. Ankara\'da elektrik usta, su tesisatı usta, temizlik usta, mobilya usta, tadilat usta ve tüm hizmetler için profesyonel usta bulun. 1000+ kayıtlı usta, 25 ilçe, 7/24 usta hizmeti. Usta ara, usta bul, usta değerlendir.',
+  keywords: 'usta, usta ara, usta bul, ankara usta, usta ankara, elektrik usta, su tesisatı usta, temizlik usta, mobilya usta, tadilat usta, klima usta, boya usta, inşaat usta, bahçe usta, usta değerlendirme, güvenilir usta, profesyonel usta, usta fiyatları, usta yorumları, usta tavsiye, en iyi usta, usta platformu, usta arama, usta hizmeti, usta servisi',
   openGraph: {
-    title: 'Ankara Usta | En İyi Ustalar ve Hizmet Sağlayıcıları 2025',
-    description: 'Ankara usta arama platformu. Elektrik, su tesisatı, temizlik ve daha fazlası için güvenilir ankara usta bulun.',
+    title: 'Usta | Ankara Usta Bul - Türkiye\'nin En Büyük Usta Platformu 2025',
+    description: 'Usta arama ve bulma platformu. Ankara\'da elektrik usta, su tesisatı usta, temizlik usta, mobilya usta, tadilat usta ve tüm hizmetler için profesyonel usta bulun. 1000+ kayıtlı usta, 25 ilçe, 7/24 usta hizmeti.',
     url: 'https://ankaraustabul.com',
-    siteName: 'Ankara Usta Bul',
+    siteName: 'Usta - Ankara Usta Bul',
     images: [
       {
         url: '/images/hero-usta.jpg',
         width: 1200,
         height: 630,
-        alt: 'Ankara Usta - En İyi Ustalar Platformu',
+        alt: 'Usta - Türkiye\'nin En Büyük Usta Platformu',
       },
     ],
     locale: 'tr_TR',
@@ -27,8 +27,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Ankara Usta | En İyi Ustalar ve Hizmet Sağlayıcıları 2025',
-    description: 'Ankara usta arama platformu. Elektrik, su tesisatı, temizlik ve daha fazlası için güvenilir ankara usta bulun.',
+    title: 'Usta | Ankara Usta Bul - Türkiye\'nin En Büyük Usta Platformu 2025',
+    description: 'Usta arama ve bulma platformu. Ankara\'da elektrik usta, su tesisatı usta, temizlik usta, mobilya usta, tadilat usta ve tüm hizmetler için profesyonel usta bulun.',
     images: ['/images/hero-usta.jpg'],
   },
   alternates: {
@@ -53,7 +53,43 @@ export default function HomePage() {
         type="organization" 
         data={{
           name: "Ankara Usta Bul",
-          description: "Ankara usta arama platformu - En iyi ustalar ve hizmet sağlayıcıları"
+          description: "Usta arama ve bulma platformu - Türkiye'nin en büyük usta platformu"
+        }} 
+      />
+      
+      <StructuredData 
+        type="faq" 
+        data={[
+          {
+            question: "Usta nedir?",
+            answer: "Usta, belirli bir meslek dalında uzmanlaşmış, deneyimli ve profesyonel hizmet sağlayan kişidir. Elektrik usta, su tesisatı usta, temizlik usta, mobilya usta, tadilat usta gibi farklı alanlarda hizmet veren ustalar bulunmaktadır."
+          },
+          {
+            question: "Usta nasıl bulunur?",
+            answer: "Usta bulmak için Ankara Usta Bul platformunu kullanabilirsiniz. Kategori, ilçe veya arama terimi ile istediğiniz usta'yı bulabilir, değerlendirmeleri inceleyebilir ve doğrudan iletişime geçebilirsiniz."
+          },
+          {
+            question: "Güvenilir usta nasıl seçilir?",
+            answer: "Güvenilir usta seçmek için değerlendirmeleri, deneyim yıllarını, yorumları ve fiyatları inceleyin. Platformumuzda tüm ustalar kimlik doğrulaması yapılmış ve referansları kontrol edilmiştir."
+          },
+          {
+            question: "Usta fiyatları nasıl belirlenir?",
+            answer: "Usta fiyatları hizmet türüne, işin kapsamına, usta'nın deneyimine ve bölgeye göre değişiklik gösterebilir. Platformumuzda her usta'nın saatlik ücret bilgisi bulunmaktadır."
+          },
+          {
+            question: "Usta değerlendirme nasıl yapılır?",
+            answer: "Usta hizmeti aldıktan sonra platformumuzda usta'yı değerlendirebilir, yorum yazabilir ve puan verebilirsiniz. Bu değerlendirmeler diğer kullanıcılar için önemli bir referans kaynağıdır."
+          }
+        ]} 
+      />
+      
+      <StructuredData 
+        type="service" 
+        data={{
+          name: "Usta Arama Hizmeti",
+          description: "Ankara'da elektrik usta, su tesisatı usta, temizlik usta, mobilya usta, tadilat usta ve tüm hizmetler için profesyonel usta bulma hizmeti",
+          serviceType: "Usta Arama ve Bulma Platformu",
+          price: "0"
         }} 
       />
 

@@ -5,11 +5,11 @@ import Footer from '@/components/layout/Footer'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Ankara Usta | En İyi Ustalar ve Hizmet Sağlayıcıları 2025',
-    template: '%s | Ankara Usta Bul'
+    default: 'Usta | Ankara Usta Bul - Türkiye\'nin En Büyük Usta Platformu 2025',
+    template: '%s | Usta - Ankara Usta Bul'
   },
-  description: 'Ankara usta arama platformu. Elektrik, su tesisatı, temizlik, mobilya, tadilat ve daha fazlası için güvenilir ankara usta bulun. 500+ kayıtlı usta, 25 ilçe, 7/24 hizmet.',
-  keywords: 'ankara usta, ankara ustalar, ankara elektrik ustası, ankara su tesisatı ustası, ankara temizlik, ankara mobilya ustası, ankara tadilat ustası, ankara klima servisi, ankara boya badana, ankara bahçe peyzaj, ankara inşaat tadilat, usta ara ankara, güvenilir usta ankara, profesyonel usta ankara',
+  description: 'Usta arama ve bulma platformu. Ankara\'da elektrik usta, su tesisatı usta, temizlik usta, mobilya usta, tadilat usta ve tüm hizmetler için profesyonel usta bulun. 1000+ kayıtlı usta, 25 ilçe, 7/24 usta hizmeti. Usta ara, usta bul, usta değerlendir.',
+  keywords: 'usta, usta ara, usta bul, ankara usta, usta ankara, elektrik usta, su tesisatı usta, temizlik usta, mobilya usta, tadilat usta, klima usta, boya usta, inşaat usta, bahçe usta, usta değerlendirme, güvenilir usta, profesyonel usta, usta fiyatları, usta yorumları, usta tavsiye, en iyi usta, usta platformu, usta arama, usta hizmeti, usta servisi',
   authors: [{ name: 'Ankara Usta Bul' }],
   creator: 'Ankara Usta Bul',
   publisher: 'Ankara Usta Bul',

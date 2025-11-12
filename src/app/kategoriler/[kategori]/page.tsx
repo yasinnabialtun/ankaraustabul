@@ -41,23 +41,26 @@ export async function generateMetadata({ params, searchParams }: KategoriPagePro
   const ilce = ilceSlug ? districts.find(d => d.slug === ilceSlug) : null
   const locationText = ilce ? ` ${ilce.name} ilçesinde` : ' Ankara\'da'
   
-  const title = `${sector.name} Ustaları${locationText} | ${sector.name} Hizmetleri | Ankara Usta Bul`
-  const description = `${sector.name} hizmetleri için${locationText} en iyi ustaları bulun! Profesyonel ${sector.name.toLowerCase()} ustaları, 7/24 hizmet, güvenilir çözümler.`
+  const title = `${sector.name} Usta${locationText} | ${sector.name} Usta Ara | Usta Bul`
+  const description = `${sector.name} usta${locationText} bulun! Profesyonel ${sector.name.toLowerCase()} usta, 7/24 usta hizmeti, güvenilir usta. Usta ara, usta bul, usta değerlendir.`
 
   return {
     title,
     description,
     keywords: [
-      `${sector.name.toLowerCase()} ustası`,
-      `${sector.name.toLowerCase()} ankara`,
-      `${sector.name.toLowerCase()} hizmeti`,
-      `${sector.name.toLowerCase()} servisi`,
-      `ankara ${sector.name.toLowerCase()}`,
-      `güvenilir ${sector.name.toLowerCase()} ustası`,
-      `profesyonel ${sector.name.toLowerCase()}`,
-      `7/24 ${sector.name.toLowerCase()}`,
-      `uygun fiyat ${sector.name.toLowerCase()}`,
-      `hızlı ${sector.name.toLowerCase()}`
+      `${sector.name.toLowerCase()} usta`,
+      `usta`,
+      `usta ara`,
+      `usta bul`,
+      `${sector.name.toLowerCase()} usta ankara`,
+      `ankara ${sector.name.toLowerCase()} usta`,
+      `güvenilir ${sector.name.toLowerCase()} usta`,
+      `profesyonel ${sector.name.toLowerCase()} usta`,
+      `7/24 ${sector.name.toLowerCase()} usta`,
+      `uygun fiyat ${sector.name.toLowerCase()} usta`,
+      `hızlı ${sector.name.toLowerCase()} usta`,
+      `usta fiyatları`,
+      `usta yorumları`
     ].join(', '),
     openGraph: {
       title,
@@ -108,7 +111,7 @@ export default async function KategoriPage({ params, searchParams }: KategoriPag
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Service",
-    "name": `${sector.name} Hizmetleri`,
+    "name": `${sector.name} Usta`,
     "description": sector.description,
     "provider": {
       "@type": "LocalBusiness",
@@ -168,7 +171,7 @@ export default async function KategoriPage({ params, searchParams }: KategoriPag
                 </div>
               </div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                {sector.name} Ustaları
+                {sector.name} Usta
                 {ilce && ` - ${ilce.name}`}
               </h1>
               <p className="text-xl md:text-2xl mb-8 text-blue-100">

@@ -33,29 +33,33 @@ export async function generateMetadata({ params }: IlcePageProps): Promise<Metad
     }
   }
 
-  const title = `${district.name} Ustaları | ${district.name} Elektrik, Su Tesisatı, Temizlik Ustaları | Ankara Usta Bul`
-  const description = `${district.name} ilçesinde en iyi ustaları bulun! Elektrik, su tesisatı, temizlik, mobilya, tadilat hizmetleri. ${district.name} bölgesinde güvenilir ustalar, 7/24 hizmet, uygun fiyatlar.`
+  const title = `${district.name} Usta | ${district.name} Elektrik Usta, Su Tesisatı Usta, Temizlik Usta | Usta Ara`
+  const description = `${district.name} ilçesinde usta bulun! Elektrik usta, su tesisatı usta, temizlik usta, mobilya usta, tadilat usta. ${district.name} bölgesinde güvenilir usta, 7/24 usta hizmeti, usta fiyatları. Usta ara, usta bul.`
 
   return {
     title,
     description,
     keywords: [
+      `usta`,
+      `usta ara`,
+      `usta bul`,
       `${district.name} usta`,
-      `${district.name} elektrik ustası`,
-      `${district.name} su tesisatı`,
-      `${district.name} temizlik`,
-      `${district.name} mobilya`,
-      `${district.name} tadilat`,
-      `${district.name} klima`,
-      `${district.name} boya`,
-      `${district.name} inşaat`,
+      `${district.name} elektrik usta`,
+      `${district.name} su tesisatı usta`,
+      `${district.name} temizlik usta`,
+      `${district.name} mobilya usta`,
+      `${district.name} tadilat usta`,
+      `${district.name} klima usta`,
+      `${district.name} boya usta`,
+      `${district.name} inşaat usta`,
       `usta ara ${district.name}`,
       `güvenilir usta ${district.name}`,
       `profesyonel usta ${district.name}`,
       `hızlı usta ${district.name}`,
       `uygun fiyat usta ${district.name}`,
       `7/24 usta ${district.name}`,
-      `AI usta arama ${district.name}`
+      `usta fiyatları`,
+      `usta yorumları`
     ].join(', '),
     openGraph: {
       title,
@@ -102,8 +106,8 @@ export default async function IlcePage({ params }: IlcePageProps) {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": `Ankara Usta Bul - ${district.name}`,
-    "description": `${district.name} ilçesinde en iyi ustaları bulun!`,
+    "name": `${district.name} Usta`,
+    "description": `${district.name} ilçesinde usta bulun! Elektrik usta, su tesisatı usta, temizlik usta ve tüm hizmetler için profesyonel usta.`,
     "url": `https://ankaraustabul.com/ilceler/${district.slug}`,
     "telephone": "+90-312-123-45-67",
     "email": "info@ankaraustabul.com",
@@ -175,7 +179,7 @@ export default async function IlcePage({ params }: IlcePageProps) {
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                {district.name} Ustaları
+                {district.name} Usta
               </h1>
               <p className="text-xl md:text-2xl mb-8 text-blue-100">
                 {district.name} ilçesinde en iyi ustaları bulun! Elektrik, su tesisatı, temizlik, mobilya, tadilat hizmetleri.

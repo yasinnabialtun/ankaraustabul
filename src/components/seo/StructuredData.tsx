@@ -16,11 +16,11 @@ export default function StructuredData({ type, data }: StructuredDataProps) {
         return {
           "@context": "https://schema.org",
           "@type": "WebSite",
-          "name": "Ankara Usta Bul - En İyi Ustalar Platformu",
-          "alternateName": "Ankara Usta Bul",
+          "name": "Usta - Ankara Usta Bul",
+          "alternateName": "Usta Platformu",
           "url": baseUrl,
-          "description": "Ankara'da en iyi ustaları bulun! Elektrik, su tesisatı, temizlik, mobilya, tadilat hizmetleri. 7/24 hizmet, güvenilir ustalar, uygun fiyatlar.",
-          "keywords": "ankara usta, ankara elektrik ustası, ankara su tesisatı, ankara temizlik, ankara mobilya, ankara tadilat, usta ara ankara, güvenilir usta ankara",
+          "description": "Usta arama ve bulma platformu. Elektrik usta, su tesisatı usta, temizlik usta, mobilya usta, tadilat usta ve tüm hizmetler için profesyonel usta bulun. Usta ara, usta bul, usta değerlendir.",
+          "keywords": "usta, usta ara, usta bul, ankara usta, elektrik usta, su tesisatı usta, temizlik usta, mobilya usta, tadilat usta, klima usta, boya usta, inşaat usta, bahçe usta, usta değerlendirme, güvenilir usta, profesyonel usta",
           "inLanguage": "tr-TR",
           "potentialAction": {
             "@type": "SearchAction",

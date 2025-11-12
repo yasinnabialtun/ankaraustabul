@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Calendar, User, Clock, ArrowRight, Search, Filter, Tag } from 'lucide-react'
 
@@ -19,11 +20,18 @@ interface BlogPost {
 }
 
 export default function BlogPage() {
+  const router = useRouter()
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
   const [loading, setLoading] = useState(true)
+  
+  const handlePostClick = (postId: string) => {
+    // Blog detay sayfasına yönlendir (eğer varsa)
+    // Şimdilik sadece console'a yazdırıyoruz
+    router.push(`/blog/${postId}`)
+  }
 
   useEffect(() => {
     // Mock data - gerçek uygulamada API'den gelecek
@@ -221,6 +229,7 @@ export default function BlogPage() {
                   transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
+                  onClick={() => handlePostClick(post.id)}
                 >
                   <div className="relative">
                     <img 
@@ -259,7 +268,13 @@ export default function BlogPage() {
                           </span>
                         ))}
                       </div>
-                      <button className="flex items-center text-blue-600 hover:text-blue-700 transition-colors">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handlePostClick(post.id)
+                        }}
+                        className="flex items-center text-blue-600 hover:text-blue-700 transition-colors"
+                      >
                         <span className="mr-1">Devamını Oku</span>
                         <ArrowRight className="w-4 h-4" />
                       </button>
@@ -295,6 +310,7 @@ export default function BlogPage() {
                   transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
+                  onClick={() => handlePostClick(post.id)}
                 >
                   <div className="relative">
                     <img 
@@ -326,7 +342,13 @@ export default function BlogPage() {
                         <Clock className="w-4 h-4 mr-1" />
                         {post.readTime}
                       </div>
-                      <button className="flex items-center text-blue-600 hover:text-blue-700 transition-colors">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handlePostClick(post.id)
+                        }}
+                        className="flex items-center text-blue-600 hover:text-blue-700 transition-colors"
+                      >
                         <span className="mr-1">Oku</span>
                         <ArrowRight className="w-4 h-4" />
                       </button>

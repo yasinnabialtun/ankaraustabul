@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Search, Filter, Star, Phone, MessageCircle, MapPin, Clock, Award } from 'lucide-react'
 import { LoadingPage, ErrorPage } from '@/components/ui'
@@ -32,30 +32,41 @@ function UstalarPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  // SEO optimization
+  // SEO optimization - "usta" focused for #1 ranking
   useSEO({
-    title: 'Ankara Ustalar - Profesyonel Hizmet Sağlayıcıları | Ankara Usta Bul',
-    description: "Ankara'da elektrik, su tesisatı, temizlik, mobilya ve diğer hizmetler için güvenilir ustalar bulun. Değerlendirmeler, fiyatlar ve iletişim bilgileri ile en iyi usta seçimi yapın.",
+    title: 'Usta Ara - Ankara Ustalar | Usta Bul, Usta Değerlendir',
+    description: 'Usta arama ve bulma platformu. Ankara\'da elektrik usta, su tesisatı usta, temizlik usta, mobilya usta, tadilat usta ve tüm hizmetler için profesyonel usta bulun. Usta değerlendirmeleri, usta fiyatları ve usta yorumları ile en iyi usta seçimi yapın.',
     keywords: [
+      'usta',
+      'usta ara',
+      'usta bul',
       'ankara usta',
-      'ankara ustalar',
-      'elektrik ustası ankara',
-      'su tesisatı ustası ankara',
-      'temizlik hizmeti ankara',
-      'mobilya ustası ankara',
-      'tadilat ustası ankara',
-      'klima servisi ankara',
-      'boya badana ankara',
-      'bahçe peyzaj ankara',
-      'inşaat tadilat ankara',
+      'usta ankara',
+      'elektrik usta',
+      'su tesisatı usta',
+      'temizlik usta',
+      'mobilya usta',
+      'tadilat usta',
+      'klima usta',
+      'boya usta',
+      'inşaat usta',
+      'bahçe usta',
       'usta değerlendirme',
-      'güvenilir usta ankara',
-      'profesyonel hizmet ankara'
+      'güvenilir usta',
+      'profesyonel usta',
+      'usta fiyatları',
+      'usta yorumları',
+      'usta tavsiye',
+      'en iyi usta',
+      'usta platformu',
+      'usta arama',
+      'usta hizmeti',
+      'usta servisi'
     ],
     type: 'website'
   })
 
-  const ustalar: Usta[] = [
+  const ustalar: Usta[] = useMemo(() => [
     { 
       id: "1", 
       name: "Ahmet Yılmaz", 
@@ -140,7 +151,7 @@ function UstalarPageContent() {
       isAvailable: true,
       responseTime: "1 saat"
     }
-  ]
+  ], [])
 
   useEffect(() => {
     // Simulate loading
@@ -248,8 +259,8 @@ function UstalarPageContent() {
       <div className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Ankara Ustaları</h1>
-            <p className="text-xl text-gray-600">Profesyonel hizmet sağlayıcılar</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Usta Ara - Ankara Ustalar</h1>
+            <p className="text-xl text-gray-600">Profesyonel usta bulun. Elektrik usta, su tesisatı usta, temizlik usta ve tüm hizmetler için usta arama platformu.</p>
           </div>
           
           {/* Search and Filters */}
