@@ -25,7 +25,6 @@ export interface Business {
   certificates: string[]
   images: string[]
   createdAt: string
-  completedJobs: number
 }
 
 export const businesses: Business[] = [
@@ -53,8 +52,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Elektrik Teknisyeni', 'İSG Sertifikası'],
     images: ['/businesses/elektrik1.jpg'],
-    createdAt: '2020-01-15',
-    completedJobs: 245
+    createdAt: '2020-01-15'
   },
   {
     id: 2,
@@ -79,8 +77,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Elektrik Mühendisi'],
     images: ['/businesses/elektrik2.jpg'],
-    createdAt: '2018-03-20',
-    completedJobs: 187
+    createdAt: '2018-03-20'
   },
   {
     id: 3,
@@ -105,8 +102,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Elektrik Teknisyeni'],
     images: ['/businesses/elektrik3.jpg'],
-    createdAt: '2019-06-10',
-    completedJobs: 156
+    createdAt: '2019-06-10'
   },
   {
     id: 4,
@@ -131,8 +127,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Elektrik Teknisyeni'],
     images: ['/businesses/elektrik4.jpg'],
-    createdAt: '2021-02-15',
-    completedJobs: 98
+    createdAt: '2021-02-15'
   },
   {
     id: 5,
@@ -157,8 +152,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Elektrik Mühendisi', 'Enerji Verimliliği'],
     images: ['/businesses/elektrik5.jpg'],
-    createdAt: '2017-09-05',
-    completedJobs: 312
+    createdAt: '2017-09-05'
   },
 
   // SU TESİSATI SEKTÖRÜ
@@ -185,8 +179,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Tesisatçılık Sertifikası'],
     images: ['/businesses/sutesisati1.jpg'],
-    createdAt: '2018-11-12',
-    completedJobs: 245
+    createdAt: '2018-11-12'
   },
   {
     id: 7,
@@ -211,8 +204,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Tesisatçılık Sertifikası'],
     images: ['/businesses/sutesisati2.jpg'],
-    createdAt: '2019-04-18',
-    completedJobs: 198
+    createdAt: '2019-04-18'
   },
   {
     id: 8,
@@ -237,8 +229,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Tesisatçılık Sertifikası'],
     images: ['/businesses/sutesisati3.jpg'],
-    createdAt: '2020-07-22',
-    completedJobs: 167
+    createdAt: '2020-07-22'
   },
   {
     id: 9,
@@ -263,8 +254,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Tesisatçılık Sertifikası'],
     images: ['/businesses/sutesisati4.jpg'],
-    createdAt: '2021-01-30',
-    completedJobs: 89
+    createdAt: '2021-01-30'
   },
   {
     id: 10,
@@ -289,8 +279,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Tesisatçılık Sertifikası', 'İSG Sertifikası'],
     images: ['/businesses/sutesisati5.jpg'],
-    createdAt: '2017-12-08',
-    completedJobs: 278
+    createdAt: '2017-12-08'
   },
 
   // TEMİZLİK SEKTÖRÜ
@@ -317,8 +306,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Temizlik Sertifikası'],
     images: ['/businesses/temizlik1.jpg'],
-    createdAt: '2019-03-15',
-    completedJobs: 203
+    createdAt: '2019-03-15'
   },
   {
     id: 12,
@@ -343,8 +331,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Temizlik Sertifikası'],
     images: ['/businesses/temizlik2.jpg'],
-    createdAt: '2020-05-20',
-    completedJobs: 134
+    createdAt: '2020-05-20'
   },
   {
     id: 13,
@@ -369,8 +356,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Temizlik Sertifikası'],
     images: ['/businesses/temizlik3.jpg'],
-    createdAt: '2021-08-12',
-    completedJobs: 76
+    createdAt: '2021-08-12'
   },
   {
     id: 14,
@@ -395,8 +381,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Temizlik Sertifikası'],
     images: ['/businesses/temizlik4.jpg'],
-    createdAt: '2022-01-25',
-    completedJobs: 45
+    createdAt: '2022-01-25'
   },
   {
     id: 15,
@@ -421,8 +406,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Temizlik Sertifikası', 'İSG Sertifikası'],
     images: ['/businesses/temizlik5.jpg'],
-    createdAt: '2018-11-30',
-    completedJobs: 189
+    createdAt: '2018-11-30'
   },
 
   // NAKLİYAT SEKTÖRÜ
@@ -449,8 +433,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Nakliyat Ruhsatı', 'Sigorta Sertifikası'],
     images: ['/businesses/nakliyat1.jpg'],
-    createdAt: '2017-06-18',
-    completedJobs: 267
+    createdAt: '2017-06-18'
   },
   {
     id: 17,
@@ -475,8 +458,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Nakliyat Ruhsatı'],
     images: ['/businesses/nakliyat2.jpg'],
-    createdAt: '2019-02-14',
-    completedJobs: 178
+    createdAt: '2019-02-14'
   },
   {
     id: 18,
@@ -501,8 +483,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Nakliyat Ruhsatı'],
     images: ['/businesses/nakliyat3.jpg'],
-    createdAt: '2020-09-08',
-    completedJobs: 123
+    createdAt: '2020-09-08'
   },
   {
     id: 19,
@@ -527,8 +508,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Nakliyat Ruhsatı'],
     images: ['/businesses/nakliyat4.jpg'],
-    createdAt: '2021-04-12',
-    completedJobs: 67
+    createdAt: '2021-04-12'
   },
   {
     id: 20,
@@ -553,8 +533,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['Nakliyat Ruhsatı', 'Sigorta Sertifikası'],
     images: ['/businesses/nakliyat5.jpg'],
-    createdAt: '2016-12-03',
-    completedJobs: 345
+    createdAt: '2016-12-03'
   },
 
   // TADİLAT SEKTÖRÜ
@@ -581,8 +560,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['İnşaat Teknisyeni', 'İSG Sertifikası'],
     images: ['/businesses/tadilat1.jpg'],
-    createdAt: '2018-05-22',
-    completedJobs: 234
+    createdAt: '2018-05-22'
   },
   {
     id: 22,
@@ -607,8 +585,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['İnşaat Teknisyeni'],
     images: ['/businesses/tadilat2.jpg'],
-    createdAt: '2019-07-15',
-    completedJobs: 156
+    createdAt: '2019-07-15'
   },
   {
     id: 23,
@@ -633,8 +610,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['İnşaat Teknisyeni'],
     images: ['/businesses/tadilat3.jpg'],
-    createdAt: '2020-11-28',
-    completedJobs: 112
+    createdAt: '2020-11-28'
   },
   {
     id: 24,
@@ -659,8 +635,7 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['İnşaat Teknisyeni'],
     images: ['/businesses/tadilat4.jpg'],
-    createdAt: '2021-06-10',
-    completedJobs: 78
+    createdAt: '2021-06-10'
   },
   {
     id: 25,
@@ -685,7 +660,6 @@ export const businesses: Business[] = [
     languages: ['Türkçe'],
     certificates: ['İnşaat Teknisyeni', 'İSG Sertifikası'],
     images: ['/businesses/tadilat5.jpg'],
-    createdAt: '2017-10-05',
-    completedJobs: 298
+    createdAt: '2017-10-05'
   }
 ] 

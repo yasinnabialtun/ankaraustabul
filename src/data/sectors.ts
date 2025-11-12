@@ -331,4 +331,5 @@ export const businessSectors: BusinessSector[] = [
   }
 ]
 
+// Export as sectors for compatibility
 export const sectors = businessSectors 

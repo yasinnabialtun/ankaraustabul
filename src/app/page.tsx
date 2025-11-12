@@ -5,6 +5,37 @@ import { PerformanceMonitor } from '@/components/ui'
 import { NewsWidget } from '@/components/news'
 import HomePageClient from './HomePageClient'
 
+export const metadata = {
+  title: 'Ankara Usta | En İyi Ustalar ve Hizmet Sağlayıcıları 2025',
+  description: 'Ankara usta arama platformu. Elektrik, su tesisatı, temizlik, mobilya, tadilat ve daha fazlası için güvenilir ankara usta bulun. 500+ kayıtlı usta, 25 ilçe, 7/24 hizmet.',
+  keywords: 'ankara usta, ankara ustalar, ankara elektrik ustası, ankara su tesisatı ustası, ankara temizlik, ankara mobilya ustası, ankara tadilat ustası, ankara klima servisi, ankara boya badana, ankara bahçe peyzaj, ankara inşaat tadilat, usta ara ankara, güvenilir usta ankara, profesyonel usta ankara',
+  openGraph: {
+    title: 'Ankara Usta | En İyi Ustalar ve Hizmet Sağlayıcıları 2025',
+    description: 'Ankara usta arama platformu. Elektrik, su tesisatı, temizlik ve daha fazlası için güvenilir ankara usta bulun.',
+    url: 'https://ankaraustabul.com',
+    siteName: 'Ankara Usta Bul',
+    images: [
+      {
+        url: '/images/hero-usta.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Ankara Usta - En İyi Ustalar Platformu',
+      },
+    ],
+    locale: 'tr_TR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Ankara Usta | En İyi Ustalar ve Hizmet Sağlayıcıları 2025',
+    description: 'Ankara usta arama platformu. Elektrik, su tesisatı, temizlik ve daha fazlası için güvenilir ankara usta bulun.',
+    images: ['/images/hero-usta.jpg'],
+  },
+  alternates: {
+    canonical: 'https://ankaraustabul.com',
+  },
+}
+
 export default function HomePage() {
   return (
     <>
@@ -12,8 +43,8 @@ export default function HomePage() {
       <StructuredData 
         type="website" 
         data={{
-          name: "Ankara Usta Bul",
-          description: "Ankara'da güvenilir usta arama platformu",
+          name: "Ankara Usta Bul - En İyi Ustalar Platformu",
+          description: "Ankara usta arama platformu. Elektrik, su tesisatı, temizlik ve daha fazlası için güvenilir ankara usta bulun.",
           url: "https://ankaraustabul.com"
         }} 
       />
@@ -22,7 +53,7 @@ export default function HomePage() {
         type="organization" 
         data={{
           name: "Ankara Usta Bul",
-          description: "Ankara'da güvenilir usta arama platformu"
+          description: "Ankara usta arama platformu - En iyi ustalar ve hizmet sağlayıcıları"
         }} 
       />
 
@@ -64,4 +95,4 @@ export default function HomePage() {
       </Suspense>
     </>
   )
-}
+} 

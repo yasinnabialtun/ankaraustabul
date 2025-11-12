@@ -1,70 +1,39 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // SEO Optimizations
-  trailingSlash: false,
-  generateEtags: true,
-  poweredByHeader: false,
-  
-  // Image optimizations for SEO
+  // Image Optimization
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'via.placeholder.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'firebasestorage.googleapis.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'storage.googleapis.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'lh3.googleusercontent.com',
-      },
-    ],
+    domains: ['images.unsplash.com', 'via.placeholder.com'],
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60,
   },
   
-  // Performance optimizations
+  // Compiler Options
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
   },
   
-  // Experimental features for better SEO and performance
+  // Experimental Features for Performance
   experimental: {
-    optimizePackageImports: ['lucide-react', 'framer-motion', '@radix-ui/react-icons'],
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
-    // Performance optimizations
-    webVitalsAttribution: ['CLS', 'LCP', 'FCP', 'FID', 'TTFB'],
-    // Enable React 18 features
-    reactStrictMode: true,
-    // Enable SWC minification
-    swcMinify: true,
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+    webVitalsAttribution: ['CLS', 'LCP'],
   },
   
-  // Security and SEO headers
+  // Production Optimizations
+  reactStrictMode: true,
+  
+  // Compression
+  compress: true,
+  
+  // Headers for Security and Performance
   async headers() {
     return [
       {
         source: '/(.*)',
         headers: [
-          // Security headers
           {
             key: 'X-Frame-Options',
             value: 'DENY',
@@ -78,17 +47,19 @@ const nextConfig = {
             value: 'origin-when-cross-origin',
           },
           {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
           },
-          // SEO headers
           {
-            key: 'X-Robots-Tag',
-            value: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
           },
         ],
       },
-      // Cache static assets for better performance
       {
         source: '/images/(.*)',
         headers: [
@@ -118,13 +89,14 @@ const nextConfig = {
         destination: '/',
         permanent: true,
       },
-      {
-        source: '/index',
-        destination: '/',
-        permanent: true,
-      },
     ]
   },
+  
+  // Output Configuration
+  output: 'standalone',
+  
+  // Power by header removal
+  poweredByHeader: false,
 }
 
-module.exports = nextConfig
+module.exports = nextConfig 

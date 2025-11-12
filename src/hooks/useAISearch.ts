@@ -133,7 +133,7 @@ export function useAISearch(options: AISearchOptions = {}) {
   // Get search suggestions based on current results
   const suggestions = useMemo(() => {
     const allSuggestions = results.flatMap(result => result.suggestions || [])
-    return [...new Set(allSuggestions)].slice(0, 5)
+    return Array.from(new Set(allSuggestions)).slice(0, 5)
   }, [results])
 
   // Get trending searches (mock data)

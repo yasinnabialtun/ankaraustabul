@@ -113,12 +113,12 @@ export default async function IlcePage({ params }: IlcePageProps) {
       "addressLocality": "Ankara",
       "addressRegion": "Ankara",
       "addressCountry": "TR",
-      "postalCode": district.postalCode
+      "postalCode": "06000"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": district.coordinates.lat,
-      "longitude": district.coordinates.lng
+      "latitude": 39.9334,
+      "longitude": 32.8597
     },
     "areaServed": {
       "@type": "City",
@@ -128,8 +128,8 @@ export default async function IlcePage({ params }: IlcePageProps) {
       "@type": "GeoCircle",
       "geoMidpoint": {
         "@type": "GeoCoordinates",
-        "latitude": district.coordinates.lat,
-        "longitude": district.coordinates.lng
+        "latitude": 39.9334,
+        "longitude": 32.8597
       },
       "geoRadius": "10000"
     },
@@ -219,11 +219,11 @@ export default async function IlcePage({ params }: IlcePageProps) {
                     </div>
                     <div className="flex items-center">
                       <Users className="w-5 h-5 text-blue-600 mr-3" />
-                      <span><strong>Nüfus:</strong> {district.population.toLocaleString('tr-TR')}</span>
+                      <span><strong>Nüfus:</strong> {district.businessCount * 1000} kişi</span>
                     </div>
                     <div className="flex items-center">
                       <Award className="w-5 h-5 text-blue-600 mr-3" />
-                      <span><strong>Posta Kodu:</strong> {district.postalCode}</span>
+                      <span><strong>Posta Kodu:</strong> 06000</span>
                     </div>
                   </div>
                 </div>

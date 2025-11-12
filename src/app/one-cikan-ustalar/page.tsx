@@ -1,413 +1,352 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Star, Phone, MessageCircle, MapPin, Clock, Award, Crown, TrendingUp, Users, CheckCircle } from 'lucide-react'
+import { 
+  Search, 
+  Filter, 
+  Star, 
+  Phone, 
+  MapPin, 
+  Clock, 
+  CheckCircle, 
+  Award,
+  Users,
+  TrendingUp,
+  Shield,
+  Zap
+} from 'lucide-react'
+import { businesses } from '@/data/businesses'
+import { businessSectors } from '@/data/sectors'
 
-interface FeaturedUsta {
-  id: string
-  name: string
-  category: string
-  rating: number
-  reviews: number
-  location: string
-  experience: string
-  price: string
-  description: string
-  phone: string
-  isAvailable: boolean
-  responseTime: string
-  isPremium: boolean
-  isVerified: boolean
-  monthlyBookings: number
-  completionRate: number
-  specialties: string[]
-}
+export default function FeaturedCraftsmenPage() {
+  const [selectedSector, setSelectedSector] = useState('')
+  const [selectedDistrict, setSelectedDistrict] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortBy, setSortBy] = useState('rating')
 
-export default function OneCikanUstalarPage() {
-  const [featuredUstalar, setFeaturedUstalar] = useState<FeaturedUsta[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    // Mock data - gerçek uygulamada API'den gelecek
-    const mockData: FeaturedUsta[] = [
-      {
-        id: "1",
-        name: "Ahmet Yılmaz",
-        category: "elektrik",
-        rating: 4.9,
-        reviews: 127,
-        location: "Çankaya",
-        experience: "15 yıl",
-        price: "₺150/saat",
-        description: "Profesyonel elektrik hizmetleri sunan deneyimli ustayım. Ev ve işyeri elektrik kurulumları, arıza giderme ve bakım hizmetleri veriyorum.",
-        phone: "+90 532 123 45 67",
-        isAvailable: true,
-        responseTime: "1 saat",
-        isPremium: true,
-        isVerified: true,
-        monthlyBookings: 45,
-        completionRate: 98,
-        specialties: ["Elektrik Tesisatı", "Aydınlatma", "Priz Montajı"]
-      },
-      {
-        id: "2",
-        name: "Mehmet Kaya",
-        category: "su-tesisati",
-        rating: 4.8,
-        reviews: 98,
-        location: "Keçiören",
-        experience: "12 yıl",
-        price: "₺120/saat",
-        description: "Su tesisatı kurulumu, tamiri ve bakım hizmetleri konusunda uzmanım. Hızlı ve güvenilir hizmet sunuyorum.",
-        phone: "+90 532 234 56 78",
-        isAvailable: true,
-        responseTime: "2 saat",
-        isPremium: true,
-        isVerified: true,
-        monthlyBookings: 38,
-        completionRate: 96,
-        specialties: ["Su Tesisatı", "Kanal Açma", "Tesisat Tamiri"]
-      },
-      {
-        id: "3",
-        name: "Ayşe Demir",
-        category: "temizlik",
-        rating: 4.9,
-        reviews: 156,
-        location: "Yenimahalle",
-        experience: "8 yıl",
-        price: "₺80/saat",
-        description: "Ev ve ofis temizliği, derinlemesine temizlik hizmetleri sunuyorum. Müşteri memnuniyeti önceliğimdir.",
-        phone: "+90 532 345 67 89",
-        isAvailable: false,
-        responseTime: "3 saat",
-        isPremium: false,
-        isVerified: true,
-        monthlyBookings: 52,
-        completionRate: 99,
-        specialties: ["Ev Temizliği", "Ofis Temizliği", "Derinlemesine Temizlik"]
-      },
-      {
-        id: "4",
-        name: "Ali Özkan",
-        category: "mobilya",
-        rating: 4.7,
-        reviews: 89,
-        location: "Mamak",
-        experience: "20 yıl",
-        price: "₺200/saat",
-        description: "Mobilya montajı, tamiri ve özel tasarım hizmetleri veriyorum. Kaliteli işçilik ve zamanında teslimat garantisi.",
-        phone: "+90 532 456 78 90",
-        isAvailable: true,
-        responseTime: "1 saat",
-        isPremium: true,
-        isVerified: true,
-        monthlyBookings: 28,
-        completionRate: 97,
-        specialties: ["Mobilya Montajı", "Mobilya Tamiri", "Dolap Montajı"]
-      },
-      {
-        id: "5",
-        name: "Fatma Şahin",
-        category: "tadilat",
-        rating: 4.8,
-        reviews: 112,
-        location: "Sincan",
-        experience: "10 yıl",
-        price: "₺180/saat",
-        description: "Ev tadilatı, boya badana ve dekorasyon hizmetleri sunuyorum. Modern teknikler ve kaliteli malzemeler kullanıyorum.",
-        phone: "+90 532 567 89 01",
-        isAvailable: true,
-        responseTime: "2 saat",
-        isPremium: false,
-        isVerified: true,
-        monthlyBookings: 35,
-        completionRate: 95,
-        specialties: ["Banyo Tadilat", "Mutfak Tadilat", "Oda Tadilat"]
-      },
-      {
-        id: "6",
-        name: "Mustafa Çelik",
-        category: "klima",
-        rating: 4.9,
-        reviews: 134,
-        location: "Etimesgut",
-        experience: "18 yıl",
-        price: "₺160/saat",
-        description: "Klima kurulumu, bakımı ve tamiri hizmetleri veriyorum. Tüm marka klimalar için uzman hizmet.",
-        phone: "+90 532 678 90 12",
-        isAvailable: true,
-        responseTime: "1 saat",
-        isPremium: true,
-        isVerified: true,
-        monthlyBookings: 42,
-        completionRate: 98,
-        specialties: ["Klima Montaj", "Klima Bakım", "Klima Tamir"]
+  const filteredBusinesses = businesses
+    .filter(business => {
+      const matchesSector = !selectedSector || business.sectorSlug === selectedSector
+      const matchesDistrict = !selectedDistrict || business.districtSlug === selectedDistrict
+      const matchesSearch = !searchTerm || 
+        business.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        business.description.toLowerCase().includes(searchTerm.toLowerCase())
+      
+      return matchesSector && matchesDistrict && matchesSearch
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'rating':
+          return b.rating - a.rating
+        case 'experience':
+          return b.experience - a.experience
+        case 'reviewCount':
+          return b.reviewCount - a.reviewCount
+        default:
+          return 0
       }
-    ]
+    })
 
-    setTimeout(() => {
-      setFeaturedUstalar(mockData)
-      setLoading(false)
-    }, 1000)
-  }, [])
-
-  const handleCall = (phone: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    window.open(`tel:${phone}`)
-  }
-
-  const handleMessage = (ustaId: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    const usta = featuredUstalar.find(u => u.id === ustaId)
-    const message = `Merhaba ${usta?.name}, hizmetleriniz hakkında bilgi almak istiyorum.`
-    window.open(`https://wa.me/905321234567?text=${encodeURIComponent(message)}`)
-  }
-
-  const getCategoryName = (category: string) => {
-    const categories: { [key: string]: string } = {
-      'elektrik': 'Elektrik',
-      'su-tesisati': 'Su Tesisatı',
-      'temizlik': 'Temizlik',
-      'mobilya': 'Mobilya',
-      'tadilat': 'Tadilat',
-      'klima': 'Klima'
-    }
-    return categories[category] || category
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Öne çıkan ustalar yükleniyor...</p>
-        </div>
-      </div>
-    )
-  }
+  const districts = Array.from(new Set(businesses.map(b => b.district)))
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-12">
-          <motion.div 
-            className="text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center justify-center mb-4">
-              <Crown className="w-8 h-8 text-yellow-500 mr-3" />
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900">Öne Çıkan Ustalar</h1>
-            </div>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              En iyi değerlendirilen, güvenilir ve profesyonel ustalarımızla tanışın
-            </p>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Stats Section */}
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-indigo-900/20"></div>
+        <div className="absolute inset-0 hero-pattern"></div>
+        
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={{ duration: 0.8 }}
+          className="relative z-10 container mx-auto px-4 text-center"
         >
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Star className="w-6 h-6 text-blue-600" />
-            </div>
-            <div className="text-2xl font-bold text-gray-900 mb-1">4.8+</div>
-            <div className="text-sm text-gray-600">Ortalama Puan</div>
-          </div>
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-            </div>
-            <div className="text-2xl font-bold text-gray-900 mb-1">98%</div>
-            <div className="text-sm text-gray-600">Tamamlanma Oranı</div>
-          </div>
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Users className="w-6 h-6 text-purple-600" />
-            </div>
-            <div className="text-2xl font-bold text-gray-900 mb-1">500+</div>
-            <div className="text-sm text-gray-600">Mutlu Müşteri</div>
-          </div>
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <TrendingUp className="w-6 h-6 text-orange-600" />
-            </div>
-            <div className="text-2xl font-bold text-gray-900 mb-1">24/7</div>
-            <div className="text-sm text-gray-600">Destek</div>
-          </div>
-        </motion.div>
-
-        {/* Featured Ustalar Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredUstalar.map((usta, index) => (
-            <motion.div
-              key={usta.id}
-              className="group cursor-pointer"
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full flex items-center justify-center"
+          >
+            <Award className="w-10 h-10 text-white" />
+          </motion.div>
+          
+          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+            <span className="text-gradient">Öne Çıkan</span>
+            <br />
+            <span className="text-white">Ustalar</span>
+          </h1>
+          
+          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+            Ankara'nın en kaliteli, en güvenilir ve en çok tercih edilen ustaları ile tanışın
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <motion.div 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="card p-6 text-center"
             >
-              <div className="relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
-                {/* Premium Badge */}
-                {usta.isPremium && (
-                  <div className="absolute top-4 right-4 z-10">
-                    <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center">
-                      <Crown className="w-3 h-3 mr-1" />
-                      Premium
-                    </div>
-                  </div>
-                )}
-
-                {/* Verified Badge */}
-                {usta.isVerified && (
-                  <div className="absolute top-4 left-4 z-10">
-                    <div className="bg-green-500 text-white p-1 rounded-full">
-                      <CheckCircle className="w-4 h-4" />
-                    </div>
-                  </div>
-                )}
-
-                <div className="relative p-8">
-                  {/* Header */}
-                  <div className="flex items-center mb-6">
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
-                      {usta.name.charAt(0)}
-                    </div>
-                    <div className="ml-4 flex-1">
-                      <h3 className="text-xl font-bold text-gray-900 mb-1">{usta.name}</h3>
-                      <p className="text-blue-600 font-medium">{getCategoryName(usta.category)}</p>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <MapPin className="w-3 h-3 mr-1" />
-                        {usta.location}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Rating and Status */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-2">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star 
-                            key={i} 
-                            className={`w-4 h-4 ${i < Math.floor(usta.rating) ? 'text-yellow-500 fill-current' : 'text-gray-300'}`} 
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm font-semibold text-gray-700">{usta.rating}</span>
-                      <span className="text-sm text-gray-500">({usta.reviews})</span>
-                    </div>
-                    <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      usta.isAvailable 
-                        ? 'bg-green-100 text-green-600' 
-                        : 'bg-red-100 text-red-600'
-                    }`}>
-                      {usta.isAvailable ? 'Müsait' : 'Meşgul'}
-                    </div>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">{usta.description}</p>
-
-                  {/* Specialties */}
-                  <div className="mb-4">
-                    <div className="flex flex-wrap gap-1">
-                      {usta.specialties.slice(0, 2).map((specialty, idx) => (
-                        <span key={idx} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                          {specialty}
-                        </span>
-                      ))}
-                      {usta.specialties.length > 2 && (
-                        <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                          +{usta.specialties.length - 2}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <div className="text-xs text-gray-500 mb-1">Aylık İş</div>
-                      <div className="font-semibold text-gray-900">{usta.monthlyBookings}</div>
-                    </div>
-                    <div className="bg-gray-50 rounded-xl p-3">
-                      <div className="text-xs text-gray-500 mb-1">Başarı Oranı</div>
-                      <div className="font-semibold text-green-600">{usta.completionRate}%</div>
-                    </div>
-                  </div>
-
-                  {/* Price and Response Time */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="text-lg font-bold text-green-600">{usta.price}</div>
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Clock className="w-3 h-3 mr-1" />
-                      {usta.responseTime} yanıt
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-2">
-                    <button 
-                      className="flex-1 bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
-                      onClick={(e) => handleCall(usta.phone, e)}
-                    >
-                      <Phone className="w-4 h-4" />
-                      <span>Ara</span>
-                    </button>
-                    <button 
-                      className="px-4 py-3 border border-gray-300 text-gray-600 rounded-xl hover:bg-gray-50 transition-colors"
-                      onClick={(e) => handleMessage(usta.id, e)}
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                    </button>
-                    <button 
-                      className="px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-colors"
-                      onClick={() => window.location.href = `/usta/${usta.id}`}
-                    >
-                      Detay
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <Star className="w-8 h-8 mx-auto mb-3 text-yellow-400" />
+              <div className="text-2xl font-bold text-white mb-2">4.8+</div>
+              <div className="text-gray-400">Ortalama Puan</div>
             </motion.div>
-          ))}
-        </div>
-
-        {/* CTA Section */}
-        <motion.div 
-          className="text-center mt-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-        >
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 text-white">
-            <h3 className="text-2xl font-bold mb-4">Siz de Usta Olmak İster misiniz?</h3>
-            <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-              Platformumuza katılın ve binlerce müşteriye ulaşın. Profesyonel hizmet verin, gelirinizi artırın.
-            </p>
-            <button 
-              className="bg-white text-blue-600 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors"
-              onClick={() => window.location.href = '/usta-ekle'}
+            
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              className="card p-6 text-center"
             >
-              Hemen Başvur
-            </button>
+              <Users className="w-8 h-8 mx-auto mb-3 text-blue-400" />
+              <div className="text-2xl font-bold text-white mb-2">{businesses.length}+</div>
+              <div className="text-gray-400">Kayıtlı Usta</div>
+            </motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+              className="card p-6 text-center"
+            >
+              <Shield className="w-8 h-8 mx-auto mb-3 text-green-400" />
+              <div className="text-2xl font-bold text-white mb-2">%100</div>
+              <div className="text-gray-400">Güvenilir</div>
+            </motion.div>
           </div>
         </motion.div>
-      </div>
+      </section>
+
+      {/* Filters Section */}
+      <section className="py-12 section-bg">
+        <div className="container mx-auto px-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="max-w-6xl mx-auto"
+          >
+            <div className="card p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-300">
+                    <Search className="w-4 h-4 inline mr-2" />
+                    Arama
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Usta veya hizmet ara..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="input-field"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-300">
+                    <Filter className="w-4 h-4 inline mr-2" />
+                    Kategori
+                  </label>
+                  <select
+                    value={selectedSector}
+                    onChange={(e) => setSelectedSector(e.target.value)}
+                    className="input-field"
+                  >
+                    <option value="">Tüm Kategoriler</option>
+                    {businessSectors.map(sector => (
+                      <option key={sector.id} value={sector.slug}>
+                        {sector.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-300">
+                    <MapPin className="w-4 h-4 inline mr-2" />
+                    İlçe
+                  </label>
+                  <select
+                    value={selectedDistrict}
+                    onChange={(e) => setSelectedDistrict(e.target.value)}
+                    className="input-field"
+                  >
+                    <option value="">Tüm İlçeler</option>
+                    {districts.map(district => (
+                      <option key={district} value={district.toLowerCase().replace(/\s+/g, '-')}>
+                        {district}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-300">
+                    <TrendingUp className="w-4 h-4 inline mr-2" />
+                    Sıralama
+                  </label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="input-field"
+                  >
+                    <option value="rating">Puana Göre</option>
+                    <option value="experience">Deneyime Göre</option>
+                    <option value="reviewCount">Yorum Sayısına Göre</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between text-sm text-gray-400">
+                <span>{filteredBusinesses.length} usta bulundu</span>
+                <button 
+                  onClick={() => {
+                    setSelectedSector('')
+                    setSelectedDistrict('')
+                    setSearchTerm('')
+                    setSortBy('rating')
+                  }}
+                  className="text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  Filtreleri Temizle
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Businesses Grid */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          {filteredBusinesses.length === 0 ? (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-20"
+            >
+              <Zap className="w-16 h-16 mx-auto mb-4 text-gray-500" />
+              <h3 className="text-2xl font-bold text-gray-400 mb-2">Usta Bulunamadı</h3>
+              <p className="text-gray-500">Arama kriterlerinize uygun usta bulunamadı. Filtreleri değiştirmeyi deneyin.</p>
+            </motion.div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredBusinesses.map((business, index) => (
+                <motion.div
+                  key={business.id}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.6 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -10, scale: 1.02 }}
+                  className="card p-6 relative overflow-hidden group"
+                >
+                  {business.featured && (
+                    <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                      Öne Çıkan
+                    </div>
+                  )}
+                  
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold mb-1 group-hover:text-blue-400 transition-colors">
+                        {business.name}
+                      </h3>
+                      <p className="text-gray-400 text-sm mb-2">{business.sector}</p>
+                      <div className="flex items-center space-x-2">
+                        <div className="flex items-center bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full text-sm">
+                          <Star className="w-4 h-4 mr-1" />
+                          {business.rating}
+                        </div>
+                        <span className="text-gray-500 text-sm">
+                          ({business.reviewCount} yorum)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-gray-300 mb-4 line-clamp-3">{business.description}</p>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center text-sm text-gray-400">
+                      <MapPin className="w-4 h-4 mr-2" />
+                      {business.district}
+                    </div>
+                    <div className="flex items-center text-sm text-gray-400">
+                      <Phone className="w-4 h-4 mr-2" />
+                      {business.phone}
+                    </div>
+                    <div className="flex items-center text-sm text-gray-400">
+                      <Clock className="w-4 h-4 mr-2" />
+                      {business.workingHours}
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {business.services.slice(0, 3).map((service, idx) => (
+                      <span key={idx} className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-xs">
+                        {service}
+                      </span>
+                    ))}
+                    {business.services.length > 3 && (
+                      <span className="bg-gray-500/20 text-gray-400 px-2 py-1 rounded-full text-xs">
+                        +{business.services.length - 3} daha
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-700">
+                    <div className="flex items-center text-sm text-gray-400">
+                      <CheckCircle className="w-4 h-4 mr-1 text-green-400" />
+                      {business.experience} yıl deneyim
+                    </div>
+                    <div className="flex space-x-2">
+                      <button className="btn-secondary text-sm px-3 py-2">
+                        Detay
+                      </button>
+                      <button className="btn-primary text-sm px-3 py-2">
+                        Ara
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 section-bg">
+        <div className="container mx-auto px-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center max-w-4xl mx-auto"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <span className="text-gradient-primary">Usta mısınız?</span>
+            </h2>
+            <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+              İşletmenizi ekleyin ve daha fazla müşteriye ulaşın. Ücretsiz kayıt ile başlayın!
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button className="btn-gradient text-lg px-8 py-4">
+                Hemen Kayıt Ol
+              </button>
+              <button className="btn-outline text-lg px-8 py-4">
+                Daha Fazla Bilgi
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
     </div>
   )
-}
+} 

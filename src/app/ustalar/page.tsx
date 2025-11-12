@@ -181,7 +181,7 @@ function UstalarPageContent() {
     }
 
     setFilteredUstalar(filtered)
-  }, [searchTerm, selectedCategory, selectedDistrict])
+  }, [searchTerm, selectedCategory, selectedDistrict, ustalar])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()

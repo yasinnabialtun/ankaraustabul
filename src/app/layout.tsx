@@ -1,21 +1,16 @@
-import './globals.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import './globals.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
-import BottomNav from '@/components/BottomNav'
-import { AccessibilityButton } from '@/components/ui'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: {
-    default: 'Ankara Usta Bul | En İyi Ustalar | Elektrik, Su Tesisatı, Temizlik | 2025',
-    template: '%s | Ankara Usta Bul - Güvenilir Usta Arama Platformu'
+    default: 'Ankara Usta | En İyi Ustalar ve Hizmet Sağlayıcıları 2025',
+    template: '%s | Ankara Usta Bul'
   },
-  description: "Ankara'da en iyi ustaları bulun! Elektrik, su tesisatı, temizlik, mobilya, tadilat hizmetleri. 7/24 hizmet, güvenilir ustalar, uygun fiyatlar. AI destekli arama ile hemen usta bulun.",
-  keywords: 'ankara usta, ankara elektrik ustası, ankara su tesisatı, ankara temizlik, ankara mobilya, ankara tadilat, ankara klima, ankara boya, ankara inşaat, usta ara ankara, güvenilir usta ankara, profesyonel usta ankara, hızlı usta ankara, uygun fiyat usta ankara, 7/24 usta ankara, AI usta arama ankara',
-  authors: [{ name: 'Ankara Usta Bul', url: 'https://ankaraustabul.com' }],
+  description: 'Ankara usta arama platformu. Elektrik, su tesisatı, temizlik, mobilya, tadilat ve daha fazlası için güvenilir ankara usta bulun. 500+ kayıtlı usta, 25 ilçe, 7/24 hizmet.',
+  keywords: 'ankara usta, ankara ustalar, ankara elektrik ustası, ankara su tesisatı ustası, ankara temizlik, ankara mobilya ustası, ankara tadilat ustası, ankara klima servisi, ankara boya badana, ankara bahçe peyzaj, ankara inşaat tadilat, usta ara ankara, güvenilir usta ankara, profesyonel usta ankara',
+  authors: [{ name: 'Ankara Usta Bul' }],
   creator: 'Ankara Usta Bul',
   publisher: 'Ankara Usta Bul',
   formatDetection: {
@@ -28,27 +23,26 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    type: 'website',
-    locale: 'tr_TR',
+    title: 'Ankara Usta | En İyi Ustalar ve Hizmet Sağlayıcıları 2025',
+    description: 'Ankara usta arama platformu. Elektrik, su tesisatı, temizlik ve daha fazlası için güvenilir ankara usta bulun.',
     url: 'https://ankaraustabul.com',
-    title: 'Ankara Usta Bul | En İyi Ustalar | Elektrik, Su Tesisatı, Temizlik',
-    description: "Ankara'da en iyi ustaları bulun! Elektrik, su tesisatı, temizlik, mobilya, tadilat hizmetleri. 7/24 hizmet, güvenilir ustalar, uygun fiyatlar.",
     siteName: 'Ankara Usta Bul',
     images: [
       {
-        url: '/images/og-image-2025.jpg',
+        url: '/images/hero-usta.jpg',
         width: 1200,
         height: 630,
-        alt: 'Ankara Usta Bul - En İyi Ustalar Platformu',
+        alt: 'Ankara Usta - En İyi Ustalar Platformu',
       },
     ],
+    locale: 'tr_TR',
+    type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Ankara Usta Bul | En İyi Ustalar | Elektrik, Su Tesisatı, Temizlik',
-    description: "Ankara'da en iyi ustaları bulun! Elektrik, su tesisatı, temizlik, mobilya, tadilat hizmetleri. 7/24 hizmet, güvenilir ustalar.",
-    images: ['/images/og-image-2025.jpg'],
-    creator: '@ankaraustabul',
+    title: 'Ankara Usta | En İyi Ustalar ve Hizmet Sağlayıcıları 2025',
+    description: 'Ankara usta arama platformu. Elektrik, su tesisatı, temizlik ve daha fazlası için güvenilir ankara usta bulun.',
+    images: ['/images/hero-usta.jpg'],
   },
   robots: {
     index: true,
@@ -62,25 +56,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'google61edf2af12f96880',
-  },
-  category: 'Home Services',
-  classification: 'Usta Arama Platformu',
-  other: {
-    'geo.region': 'TR-06',
-    'geo.placename': 'Ankara',
-    'geo.position': '39.9334;32.8597',
-    'ICBM': '39.9334, 32.8597',
-    // Mobile SEO
-    'mobile-web-app-capable': 'yes',
-    'mobile-web-app-status-bar-style': 'default',
-    'apple-mobile-web-app-capable': 'yes',
-    'apple-mobile-web-app-status-bar-style': 'default',
-    'apple-mobile-web-app-title': 'Ankara Usta Bul',
-    'application-name': 'Ankara Usta Bul',
-    'msapplication-TileColor': '#2563eb',
-    'msapplication-config': '/browserconfig.xml',
-    'theme-color': '#2563eb',
+    google: 'your-google-verification-code',
   },
 }
 
@@ -90,16 +66,21 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="tr" className={inter.className}>
+    <html lang="tr" className="scroll-smooth">
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#1f2937" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
       <body className="antialiased">
         <Header />
-        <main className="pb-20">
+        <main className="min-h-screen">
           {children}
         </main>
         <Footer />
-        <BottomNav />
-        <AccessibilityButton />
       </body>
     </html>
   )
-}
+} 

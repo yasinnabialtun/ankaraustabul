@@ -12,22 +12,28 @@ export default function HomePageClient() {
   const [searchTerm, setSearchTerm] = useState('')
   const router = useRouter()
 
-  // SEO optimization
+  // SEO optimization - "ankara usta" focused
   useSEO({
-    title: 'Ankara Usta Bul - 2025 Modern Usta Arama Platformu',
-    description: "Ankara'da güvenilir usta arama platformu. AI destekli arama, modern tasarım, hızlı eşleştirme. Elektrik, su tesisatı, temizlik ve diğer hizmetler için profesyonel ustalar bulun.",
+    title: 'Ankara Usta | En İyi Ustalar ve Hizmet Sağlayıcıları 2025',
+    description: "Ankara usta arama platformu. Elektrik, su tesisatı, temizlik, mobilya, tadilat ve daha fazlası için güvenilir ankara usta bulun. 500+ kayıtlı usta, 25 ilçe, 7/24 hizmet.",
     keywords: [
       'ankara usta',
-      'elektrik ustası',
-      'su tesisatı',
-      'temizlik',
-      'mobilya',
-      'tadilat',
-      'ankara hizmet',
-      'usta ara',
-      'güvenilir usta',
-      'AI arama',
-      'modern platform'
+      'ankara ustalar',
+      'ankara elektrik ustası',
+      'ankara su tesisatı ustası',
+      'ankara temizlik',
+      'ankara mobilya ustası',
+      'ankara tadilat ustası',
+      'ankara klima servisi',
+      'ankara boya badana',
+      'ankara bahçe peyzaj',
+      'ankara inşaat tadilat',
+      'usta ara ankara',
+      'güvenilir usta ankara',
+      'profesyonel usta ankara',
+      'ankara usta bul',
+      'ankara usta arama',
+      'ankara usta tavsiye'
     ],
     type: 'website'
   })
@@ -102,14 +108,14 @@ export default function HomePageClient() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              Ankara'da En İyi Ustalar
+              <span className="block">Ankara Usta</span>
               <motion.span 
                 className="block bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
-                Elektrik, Su Tesisatı, Temizlik
+                En İyi Ustalar ve Hizmet Sağlayıcıları
               </motion.span>
             </motion.h1>
             
@@ -119,7 +125,7 @@ export default function HomePageClient() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
-              AI destekli arama ile elektrik, su tesisatı, temizlik, mobilya, tadilat hizmetleri için güvenilir ustalar bulun. 7/24 hizmet, uygun fiyatlar, profesyonel çözümler.
+              Ankara usta arama platformu. Elektrik, su tesisatı, temizlik, mobilya, tadilat ve daha fazlası için güvenilir ankara usta bulun. 500+ kayıtlı usta, 25 ilçe, 7/24 hizmet.
             </motion.p>
 
             {/* Enhanced Search Section */}
